@@ -20,7 +20,16 @@ class Label(Widget):
     def show(self):
         print self.text
 
-class Control(Widget):
+class Observable(object):
+    def __init__ (self, **kw):
+        super (Observable, self).__init__ (**kw)
+        self.observers= []
+
+    def announce (self, message):
+        for o in self.observers:
+            o.notify (message)
+
+class Control(Widget, Observable):
     def __init__(self, action=None, value=None, **kw):
         super(Control, self).__init__(**kw)
         if action is None:

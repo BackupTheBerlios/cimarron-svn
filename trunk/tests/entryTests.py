@@ -16,5 +16,4 @@ class TestEntry(abstractTestControl):
         super(TestEntry, self).setUp()
         self.parent = self.win = self.app.Window(title='Test', parent=self.app)
         self.widget = self.entry = self.app.Entry(parent=self.win)
-        self.setUpAction()
-
+        self.setUpControl()

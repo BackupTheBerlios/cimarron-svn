@@ -10,6 +10,7 @@ class abstractTestBasic(unittest.TestCase, object):
     def setUp(self):
         sys.argv[1:] = ['--skin=testable']
         self.app = cimarron.App()
+        super (abstractTestBasic, self).setUp ()
     def testSkinArgv(self):
         self.assertEqual(self.app.skin.__name__, 'papo.cimarron.skins.testable')
 
@@ -21,18 +22,25 @@ class abstractTestContainer(abstractTestBasic):
     def testChilding(self):
         self.assert_(self.widget in self.parent.children)
 
-class abstractTestControl(abstractTestWidget):
-    def setUpAction(self):
-        def action(control):
-            control.flag = True
+class abstractTestObservable(unittest.TestCase, object):
+    def setUp(self):
+        super(abstractTestObservable, self).setUp()
+        self.messages_recieved = []
+        
+    def testAddObserver(self):
+        self.widget.observers.append(self)
 
-        self.widget.action = action
+    def testObserverNotified(self):
+        self.testAddObserver ()
+        self.widget.announce('event')
+        self.assert_('event' in self.messages_recieved)
+
+    def notify(self, message):
+        self.messages_recieved.append(message)
+
+class abstractTestControl(abstractTestWidget, abstractTestObservable):
+    def setUpControl(self):
         self.widget.value = '123'
-
-    def testAction(self):
-        self.widget.action()
-        self.assertEqual(self.widget.flag, True)
-
     def testValue(self):
         self.assertEqual ('123', self.widget.value)
     

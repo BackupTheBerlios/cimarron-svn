@@ -1,6 +1,7 @@
 
 class Widget(object):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, **kw):
+        super (Widget, self).__init__ (**kw)
         self.parent = parent
         if parent is not None:
             parent.children.append(self)
