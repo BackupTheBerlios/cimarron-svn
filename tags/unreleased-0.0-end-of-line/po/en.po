@@ -1,0 +1,344 @@
+# Message catalog template for cimarron
+# Copyright (C) 2004, Fundacion Via Libre
+# John R. Lenton <john@vialibre.org.ar>, 2004.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cimarron $Revision: 1.4 $\n"
+"Report-Msgid-Bugs-To: papo-hackers@nongnu.org\n"
+"POT-Creation-Date: 2004-03-11 17:20-0300\n"
+"PO-Revision-Date: 2004-03-11 17:32-0300\n"
+"Last-Translator: John R Lenton <john@mafalda.org.ar>\n"
+"Language-Team: English <en@translate.freefriends.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../src/Generic/BoolEntry.py:40 ../src/Generic/Button.py:43
+#: ../src/Generic/Frame.py:46 ../src/Generic/Label.py:54
+msgid "Unable to set label"
+msgstr "Unable to set label"
+
+#: ../src/Generic/BoolEntry.py:55
+msgid "Unable to set `inconsistent' flag"
+msgstr "Unable to set `inconsistent' flag"
+
+#: ../src/Generic/BoolEntry.py:58
+msgid "Unable to clear `inconsistent' flag"
+msgstr "Unable to clear `inconsistent' flag"
+
+#: ../src/Generic/Box.py:46 ../src/Generic/Table.py:76
+#: ../src/Generic/Table.py:117
+msgid "Unable to set spacing"
+msgstr "Unable to set spacing"
+
+#: ../src/Generic/Box.py:71 ../src/Generic/Table.py:144
+msgid "Unable to set `homogeneous' flag"
+msgstr "Unable to set `homogeneous' flag"
+
+#: ../src/Generic/Box.py:73 ../src/Generic/Table.py:146
+msgid "Unable to clear `homogeneous' flag"
+msgstr "Unable to clear `homogeneous' flag"
+
+#: ../src/Generic/Button.py:60
+msgid "Unable to set image"
+msgstr "Unable to set image"
+
+#: ../src/Generic/Button.py:73
+msgid "Unable to set from stock"
+msgstr "Unable to set from stock"
+
+#: ../src/Generic/ButtonBox.py:51
+msgid "Unable to set layout style"
+msgstr "Unable to set layout style"
+
+#: ../src/Generic/ButtonBox.py:79
+msgid "Unable to set minimum child size"
+msgstr "Unable to set minimum child size"
+
+#: ../src/Generic/ButtonBox.py:108
+msgid "Unable to set child as secondary"
+msgstr "Unable to set child as secondary"
+
+#: ../src/Generic/ButtonBox.py:136
+msgid "Unable to set internal padding"
+msgstr "Unable to set internal padding"
+
+#: ../src/Generic/CompositeResponder.py:34
+msgid "Child is already parented"
+msgstr "Child is already parented"
+
+#: ../src/Generic/CompositeResponder.py:56
+msgid "Child is not in parent"
+msgstr "Child is not in parent"
+
+#: ../src/Generic/CompositeView.py:55
+msgid "Unable to set border width"
+msgstr "Unable to set border width"
+
+#: ../src/Generic/CompositeView.py:74 ../src/Generic/View.py:201
+msgid "Unable to busy"
+msgstr "Unable to busy"
+
+#: ../src/Generic/CompositeView.py:87 ../src/Generic/View.py:217
+msgid "Unable to idle"
+msgstr "Unable to idle"
+
+#: ../src/Generic/Config.py:39
+#, python-format
+msgid "Unable to find value for configuration key `%s'"
+msgstr "Unable to find value for configuration key `%s'"
+
+#: ../src/Generic/Control.py:132
+msgid "Unable to reload the value from the Model"
+msgstr "Unable to reload the value from the Model"
+
+#: ../src/Generic/Control.py:149
+msgid "Unable to save the value in the Model"
+msgstr "Unable to save the value in the Model"
+
+#: ../src/Generic/Control.py:165
+msgid "Unable to reset the value"
+msgstr "Unable to reset the value"
+
+#: ../src/Generic/DateEntry.py:30
+msgid "%F::%Y%m%d"
+msgstr "%F::%Y%m%d"
+
+#: ../src/Generic/DateEntry.py:39
+msgid "%F"
+msgstr "%F"
+
+#: ../src/Generic/Grid.py:63
+msgid "Attempted to add a row twice"
+msgstr "Attempted to add a row twice"
+
+#: ../src/Generic/Image.py:39
+msgid "Unable to build image from file"
+msgstr "Unable to build image from file"
+
+#: ../src/Generic/Image.py:60
+msgid "Unable to build stock image"
+msgstr "Unable to build stock image"
+
+#: ../src/Generic/Label.py:76
+msgid "Unable to set justification"
+msgstr "Unable to set justification"
+
+#: ../src/Generic/Label.py:107
+msgid "Unable to set mnemonic widget"
+msgstr "Unable to set mnemonic widget"
+
+#: ../src/Generic/Label.py:128
+msgid "Unable to use markup"
+msgstr "Unable to use markup"
+
+#: ../src/Generic/Label.py:130
+msgid "Unable to stop using markup"
+msgstr "Unable to stop using markup"
+
+#: ../src/Generic/Label.py:150
+msgid "Unable to use underlines for mnemonics"
+msgstr "Unable to use underlines for mnemonics"
+
+#: ../src/Generic/Label.py:153
+msgid "Unable to stop using underlines for mnemonics"
+msgstr "Unable to stop using underlines for mnemonics"
+
+#: ../src/Generic/Label.py:173
+msgid "Unable to make text selectable"
+msgstr "Unable to make text selectable"
+
+#: ../src/Generic/Label.py:175
+msgid "Unable to make text unselectable"
+msgstr "Unable to make text unselectable"
+
+#: ../src/Generic/Label.py:188
+msgid "Unable to wrap lines"
+msgstr "Unable to wrap lines"
+
+#: ../src/Generic/Label.py:190
+msgid "Unable to stop wrapping lines"
+msgstr "Unable to stop wrapping lines"
+
+#: ../src/Generic/Misc.py:41
+msgid "Unable to set alignment"
+msgstr "Unable to set alignment"
+
+#: ../src/Generic/Misc.py:69
+msgid "Unable to set padding"
+msgstr "Unable to set padding"
+
+#: ../src/Generic/MsgDialog.py:40
+msgid ""
+"<big><b>You are about to do something dangerous.</b></big>\n"
+"\n"
+"Are you sure you want to proceed?"
+msgstr ""
+"<big><b>You are about to do something dangerous.</b></big>\n"
+"\n"
+"Are you sure you want to proceed?"
+
+#: ../src/Generic/MsgDialog.py:40 ../src/Generic/MsgDialog.py:63
+msgid "_Abort"
+msgstr "_Abort"
+
+#: ../src/Generic/MsgDialog.py:40 ../src/Generic/MsgDialog.py:62
+msgid "_Proceed"
+msgstr "_Proceed"
+
+#: ../src/Generic/MsgDialog.py:61
+msgid ""
+"<big><b>You are about to do something strange or time-consuming.</b></big>\n"
+"\n"
+"Are you sure you want to proceed?"
+msgstr ""
+"<big><b>You are about to do something strange or time-consuming.</b></big>\n"
+"\n"
+"Are you sure you want to proceed?"
+
+#: ../src/Generic/Notebook.py:63
+msgid "Unable to insert page"
+msgstr "Unable to insert page"
+
+#: ../src/Generic/Notebook.py:79
+msgid "Unable to advance to next page"
+msgstr "Unable to advance to next page"
+
+#: ../src/Generic/Notebook.py:94
+msgid "Unable to go back to previous page"
+msgstr "Unable to go back to previous page"
+
+#: ../src/Generic/Notebook.py:109
+#, python-format
+msgid "Unable to change to page %d"
+msgstr "Unable to change to page %d"
+
+#: ../src/Generic/NumEntry.py:53 ../src/Generic/NumEntry.py:68
+msgid "Unable to set range"
+msgstr "Unable to set range"
+
+#: ../src/Generic/Search.py:38
+msgid "Waiting for selection..."
+msgstr "Waiting for selection..."
+
+#: ../src/Generic/SearchTextEntry.py:17
+msgid "Unable to find a Search parent"
+msgstr "Unable to find a Search parent"
+
+#: ../src/Generic/SearchTextEntry.py:24
+msgid "No objects found"
+msgstr "No objects found"
+
+#: ../src/Generic/StatefulControl.py:86
+#, python-format
+msgid "Unable to parse \"%s\""
+msgstr "Unable to parse \"%s\""
+
+#: ../src/Generic/StatefulControl.py:99
+#, python-format
+msgid "Unable to represent \"%s\""
+msgstr "Unable to represent \"%s\""
+
+#: ../src/Generic/Table.py:45
+msgid "Unable to attach"
+msgstr "Unable to attach"
+
+#: ../src/Generic/Table.py:61 ../src/Generic/Table.py:102
+msgid "Unable to set spacings"
+msgstr "Unable to set spacings"
+
+#: ../src/Generic/Table.py:175
+msgid "Unable to resize"
+msgstr "Unable to resize"
+
+#: ../src/Generic/View.py:58
+msgid "View is already parented."
+msgstr "View is already parented."
+
+#: ../src/Generic/View.py:107
+msgid "Unable to focus"
+msgstr "Unable to focus"
+
+#: ../src/Generic/View.py:122
+msgid "Unable to hide"
+msgstr "Unable to hide"
+
+#: ../src/Generic/View.py:137
+msgid "Unable to show"
+msgstr "Unable to show"
+
+#: ../src/Generic/View.py:152
+msgid "Unable to disable"
+msgstr "Unable to disable"
+
+#: ../src/Generic/View.py:167
+msgid "Unable to enable"
+msgstr "Unable to enable"
+
+#: ../src/Generic/View.py:179
+msgid "Unable to set tip"
+msgstr "Unable to set tip"
+
+#: ../src/Generic/View.py:241
+msgid "Unable to set size request"
+msgstr "Unable to set size request"
+
+#: ../src/Generic/Window.py:51
+msgid "Unable to set title"
+msgstr "Unable to set title"
+
+#: ../src/Generic/Window.py:82
+msgid "Unable to push status"
+msgstr "Unable to push status"
+
+#: ../src/Generic/Window.py:97
+msgid "Unable to pop status"
+msgstr "Unable to pop status"
+
+#: ../src/Generic/Window.py:113
+msgid "Unable to remove status"
+msgstr "Unable to remove status"
+
+#: ../src/Generic/Window.py:133
+msgid "Unable to delete"
+msgstr "Unable to delete"
+
+#: ../src/Gtk2/Gtk2DateEntry.py:69
+msgid "Select a date"
+msgstr "Select a date"
+
+#: ../src/Gtk2/Gtk2DateEntry.py:109
+msgid "Waiting for input in calendar"
+msgstr "Waiting for input in calendar"
+
+#: ../src/Gtk2/Gtk2DateEntry.py:134
+msgid "%a %b %e, %Y"
+msgstr "%a %b %e, %Y"
+
+#: ../src/Gtk2/Gtk2Label.py:41
+#, python-format
+msgid "I don't know how to %s-justify"
+msgstr "I don't know how to %s-justify"
+
+#: ../src/Gtk2/Gtk2Search.py:66
+msgid "Multiple objects found; please select one"
+msgstr "Multiple objects found; please select one"
+
+#: ../src/cimarron.py:81
+msgid "Engine has already been set"
+msgstr "Engine has already been set"
+
+#: ../src/cimarron.py:88
+#, python-format
+msgid "Unable to load %s engine"
+msgstr "Unable to load %s engine"
+
+#: ../src/cimarron.py:99
+msgid "Congratulations!"
+msgstr "Congratulations!"
+
+#: ../src/cimarron.py:101
+msgid "It worked!"
+msgstr "It worked!"

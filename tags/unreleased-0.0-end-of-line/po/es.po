@@ -1,0 +1,347 @@
+# Spanish translations for PACKAGE package
+# Traducciones al español para el paquete PACKAGE.
+# Copyright (C) 2004 Fundacion Via Libre
+# John R. Lenton <john@vialibre.org.ar>, 2004.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cimarron $Revision: 1.4 $\n"
+"Report-Msgid-Bugs-To: papo-hackers@nongnu.org\n"
+"POT-Creation-Date: 2004-03-11 17:20-0300\n"
+"PO-Revision-Date: 2004-03-11 17:38-0300\n"
+"Last-Translator: John Lenton <john@vialibre.org.ar>\n"
+"Language-Team: Spanish <translation-es-AR@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../src/Generic/BoolEntry.py:40 ../src/Generic/Button.py:43
+#: ../src/Generic/Frame.py:46 ../src/Generic/Label.py:54
+msgid "Unable to set label"
+msgstr "No pude ponerle la etiqueta"
+
+#: ../src/Generic/BoolEntry.py:55
+msgid "Unable to set `inconsistent' flag"
+msgstr "No pude prenderle la bandera de `inconsistente'"
+
+#: ../src/Generic/BoolEntry.py:58
+msgid "Unable to clear `inconsistent' flag"
+msgstr "No pude apagarle la bandera de `inconsistente'"
+
+#: ../src/Generic/Box.py:46 ../src/Generic/Table.py:76
+#: ../src/Generic/Table.py:117
+msgid "Unable to set spacing"
+msgstr "No pude ajustarle el espaciado"
+
+#: ../src/Generic/Box.py:71 ../src/Generic/Table.py:144
+msgid "Unable to set `homogeneous' flag"
+msgstr "No pude prenderle la bandera de `homogéneo'"
+
+#: ../src/Generic/Box.py:73 ../src/Generic/Table.py:146
+msgid "Unable to clear `homogeneous' flag"
+msgstr "No pude apagarle la bandera de `homogéneo'"
+
+#: ../src/Generic/Button.py:60
+msgid "Unable to set image"
+msgstr "No pude ponerle la imagen"
+
+#: ../src/Generic/Button.py:73
+msgid "Unable to set from stock"
+msgstr "No pude ponerle un genérico"
+
+#: ../src/Generic/ButtonBox.py:51
+msgid "Unable to set layout style"
+msgstr "No pude fijarle el estilo de la dispocición"
+
+#: ../src/Generic/ButtonBox.py:79
+msgid "Unable to set minimum child size"
+msgstr "No pude fijar el tamaño mínimo del hijo"
+
+#: ../src/Generic/ButtonBox.py:108
+msgid "Unable to set child as secondary"
+msgstr "No pude hacer que el hijo fuera secundario"
+
+#: ../src/Generic/ButtonBox.py:136
+msgid "Unable to set internal padding"
+msgstr "No pude fijar el relleno interno"
+
+#: ../src/Generic/CompositeResponder.py:34
+msgid "Child is already parented"
+msgstr "El hijo ya tiene un padre"
+
+#: ../src/Generic/CompositeResponder.py:56
+msgid "Child is not in parent"
+msgstr "El hijo no es de este padre"
+
+#: ../src/Generic/CompositeView.py:55
+msgid "Unable to set border width"
+msgstr "No pude fijar el ancho del borde"
+
+#: ../src/Generic/CompositeView.py:74 ../src/Generic/View.py:201
+msgid "Unable to busy"
+msgstr "No pude ponerlo ocupado"
+
+#: ../src/Generic/CompositeView.py:87 ../src/Generic/View.py:217
+msgid "Unable to idle"
+msgstr "No pude ponerlo desocupado"
+
+#: ../src/Generic/Config.py:39
+#, python-format
+msgid "Unable to find value for configuration key `%s'"
+msgstr "No pude encontrar un valor para la clave de configuración «%s»"
+
+#: ../src/Generic/Control.py:132
+msgid "Unable to reload the value from the Model"
+msgstr "No pude traer el valor desde el Modelo"
+
+#: ../src/Generic/Control.py:149
+msgid "Unable to save the value in the Model"
+msgstr "No pude guardar el valor en el Modelo"
+
+#: ../src/Generic/Control.py:165
+msgid "Unable to reset the value"
+msgstr "No pude volver al valor inicial"
+
+#: ../src/Generic/DateEntry.py:30
+msgid "%F::%Y%m%d"
+msgstr ""
+"%d/%m/%y::%d-%m-%y::%d%m%y::%d/%m/%Y::%d-%m-%Y::%d%m%Y::%d/%m::%d-%m::%d%m::%"
+"y-%m%-d::%y/%m/%d::%y%m%d::%Y-%m%-d::%Y/%m/%d::%Y%m%d"
+
+#: ../src/Generic/DateEntry.py:39
+msgid "%F"
+msgstr "%d/%m/%C%y"
+
+#: ../src/Generic/Grid.py:63
+msgid "Attempted to add a row twice"
+msgstr "Intentaste agregar dos veces una fila"
+
+#: ../src/Generic/Image.py:39
+msgid "Unable to build image from file"
+msgstr "No pude armar la imagen desde el archivo"
+
+#: ../src/Generic/Image.py:60
+msgid "Unable to build stock image"
+msgstr "No pude ponerle la imagen genérica"
+
+#: ../src/Generic/Label.py:76
+msgid "Unable to set justification"
+msgstr "No pude justificar"
+
+#: ../src/Generic/Label.py:107
+msgid "Unable to set mnemonic widget"
+msgstr "No pude fijar el `mnemonic widget'"
+
+#: ../src/Generic/Label.py:128
+msgid "Unable to use markup"
+msgstr "No pude usar el markup"
+
+#: ../src/Generic/Label.py:130
+msgid "Unable to stop using markup"
+msgstr "No pude dejar de usar el markup"
+
+#: ../src/Generic/Label.py:150
+msgid "Unable to use underlines for mnemonics"
+msgstr "No pude usar el subrayado para mnemónicos"
+
+#: ../src/Generic/Label.py:153
+msgid "Unable to stop using underlines for mnemonics"
+msgstr "No pude dejar de usar el subrayado para mnemónicos"
+
+#: ../src/Generic/Label.py:173
+msgid "Unable to make text selectable"
+msgstr "No pude hacer seleccionable al texto"
+
+#: ../src/Generic/Label.py:175
+msgid "Unable to make text unselectable"
+msgstr "No pude hacerlo no-seleccionable al texto"
+
+#: ../src/Generic/Label.py:188
+msgid "Unable to wrap lines"
+msgstr "No pude cortar los renglones"
+
+#: ../src/Generic/Label.py:190
+msgid "Unable to stop wrapping lines"
+msgstr "No pude dejar de cortar los renglones"
+
+#: ../src/Generic/Misc.py:41
+msgid "Unable to set alignment"
+msgstr "No pude fijar la alineación"
+
+#: ../src/Generic/Misc.py:69
+msgid "Unable to set padding"
+msgstr "No pude fijar el relleno"
+
+#: ../src/Generic/MsgDialog.py:40
+msgid ""
+"<big><b>You are about to do something dangerous.</b></big>\n"
+"\n"
+"Are you sure you want to proceed?"
+msgstr ""
+"<big><b>Estás por hacer algo peligroso.</b></big>\n"
+"\n"
+"¿Estás seguro que querés seguir?"
+
+#: ../src/Generic/MsgDialog.py:40 ../src/Generic/MsgDialog.py:63
+msgid "_Abort"
+msgstr "_Abortar"
+
+#: ../src/Generic/MsgDialog.py:40 ../src/Generic/MsgDialog.py:62
+msgid "_Proceed"
+msgstr "_Seguir"
+
+#: ../src/Generic/MsgDialog.py:61
+msgid ""
+"<big><b>You are about to do something strange or time-consuming.</b></big>\n"
+"\n"
+"Are you sure you want to proceed?"
+msgstr ""
+"<big><b>Estás por hacer algo inusual o que requiere mucho tiempo.</b></big>\n"
+"\n"
+"¿Estás seguro que querés seguir?"
+
+#: ../src/Generic/Notebook.py:63
+msgid "Unable to insert page"
+msgstr "No pude agregar la página"
+
+#: ../src/Generic/Notebook.py:79
+msgid "Unable to advance to next page"
+msgstr "No pude avanzar a la próxima página"
+
+#: ../src/Generic/Notebook.py:94
+msgid "Unable to go back to previous page"
+msgstr "No pude volver a la página anterior"
+
+#: ../src/Generic/Notebook.py:109
+#, python-format
+msgid "Unable to change to page %d"
+msgstr "No pude cambiar a la página %d"
+
+#: ../src/Generic/NumEntry.py:53 ../src/Generic/NumEntry.py:68
+msgid "Unable to set range"
+msgstr "No pude fijar el rango"
+
+#: ../src/Generic/Search.py:38
+msgid "Waiting for selection..."
+msgstr "Esperando su selección..."
+
+#: ../src/Generic/SearchTextEntry.py:17
+msgid "Unable to find a Search parent"
+msgstr "No pude encontrar el `Search' padre"
+
+#: ../src/Generic/SearchTextEntry.py:24
+msgid "No objects found"
+msgstr "No se encontraron objetos"
+
+#: ../src/Generic/StatefulControl.py:86
+#, python-format
+msgid "Unable to parse \"%s\""
+msgstr "No pude parsar «%s»"
+
+#: ../src/Generic/StatefulControl.py:99
+#, python-format
+msgid "Unable to represent \"%s\""
+msgstr "No pude representar «%s»"
+
+#: ../src/Generic/Table.py:45
+msgid "Unable to attach"
+msgstr "No pude agregar"
+
+#: ../src/Generic/Table.py:61 ../src/Generic/Table.py:102
+msgid "Unable to set spacings"
+msgstr "No pude fijar los espaciados"
+
+#: ../src/Generic/Table.py:175
+msgid "Unable to resize"
+msgstr "No pude cambiar de tamaño"
+
+#: ../src/Generic/View.py:58
+msgid "View is already parented."
+msgstr "El View ya tiene padre"
+
+#: ../src/Generic/View.py:107
+msgid "Unable to focus"
+msgstr "No pude tomar el foco"
+
+#: ../src/Generic/View.py:122
+msgid "Unable to hide"
+msgstr "No pude esconderme"
+
+#: ../src/Generic/View.py:137
+msgid "Unable to show"
+msgstr "No pude mostrarme"
+
+#: ../src/Generic/View.py:152
+msgid "Unable to disable"
+msgstr "No pude deshabilitarme"
+
+#: ../src/Generic/View.py:167
+msgid "Unable to enable"
+msgstr "No pude habilitarme"
+
+#: ../src/Generic/View.py:179
+msgid "Unable to set tip"
+msgstr "No pude ponerme la pista"
+
+#: ../src/Generic/View.py:241
+msgid "Unable to set size request"
+msgstr "No pude hacer el pedido de tamaño"
+
+#: ../src/Generic/Window.py:51
+msgid "Unable to set title"
+msgstr "No pude ponerme el título"
+
+#: ../src/Generic/Window.py:82
+msgid "Unable to push status"
+msgstr "No pude apilar el estado"
+
+#: ../src/Generic/Window.py:97
+msgid "Unable to pop status"
+msgstr "No pude desapilar el estado"
+
+#: ../src/Generic/Window.py:113
+msgid "Unable to remove status"
+msgstr "No pude quitar el estado"
+
+#: ../src/Generic/Window.py:133
+msgid "Unable to delete"
+msgstr "No pude borrarme"
+
+#: ../src/Gtk2/Gtk2DateEntry.py:69
+msgid "Select a date"
+msgstr "Elija una fecha"
+
+#: ../src/Gtk2/Gtk2DateEntry.py:109
+msgid "Waiting for input in calendar"
+msgstr "Esperando el ingreso por calendario"
+
+#: ../src/Gtk2/Gtk2DateEntry.py:134
+msgid "%a %b %e, %Y"
+msgstr "%a %e de %b de %Y"
+
+#: ../src/Gtk2/Gtk2Label.py:41
+#, python-format
+msgid "I don't know how to %s-justify"
+msgstr "No sé qué clase de justificación es «%s»"
+
+#: ../src/Gtk2/Gtk2Search.py:66
+msgid "Multiple objects found; please select one"
+msgstr "Se encontraron múltiples objetos; por favor, eilja alguno"
+
+#: ../src/cimarron.py:81
+msgid "Engine has already been set"
+msgstr "El Engine ya ha sido fijado"
+
+#: ../src/cimarron.py:88
+#, python-format
+msgid "Unable to load %s engine"
+msgstr "No pude cargar el engine %s"
+
+#: ../src/cimarron.py:99
+msgid "Congratulations!"
+msgstr "¡Felicitaciones!"
+
+#: ../src/cimarron.py:101
+msgid "It worked!"
+msgstr "¡Funcionó!"
