@@ -1,3 +1,4 @@
+from papo.cimarron.tools import Observable
 
 class Widget(object):
     def __init__(self, parent=None, **kw):
@@ -14,3 +15,9 @@ class Container(Widget):
     def show(self):
         for i in self.children:
             i.show()
+
+class Control(Widget, Observable):
+    def __init__(self, value='', **kw):
+        super(Control, self).__init__(**kw)
+        self.value = value
+

@@ -8,11 +8,13 @@ from papo import cimarron
 
 class abstractTestBasic(unittest.TestCase, object):
     def setUp(self):
-        sys.argv[1:] = ['--skin=testable']
         self.app = cimarron.App()
         super (abstractTestBasic, self).setUp ()
     def testSkinArgv(self):
-        self.assertEqual(self.app.skin.__name__, 'papo.cimarron.skins.testable')
+        self.assertEqual(self.app.skin.__name__, 'papo.cimarron.skins.gtk2')
+    def tearDown(self):
+        import gtk
+        while gtk.events_pending(): gtk.main_iteration()
 
 class abstractTestWidget(abstractTestBasic):
     def testParenting(self):

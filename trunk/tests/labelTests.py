@@ -21,21 +21,4 @@ class TestLabel(abstractTestWidget):
         self.assertEqual(self.label.text, 'hello')
 
     def testShow(self):
-        stdout = sys.stdout
-        sys.stdout = s = StringIO()
-        self.label.show()
-        s.seek(0)
-        self.assertEqual(s.read(), self.label.text + '\n')
-        sys.stdout = stdout
-
-    def testShowAll(self):
-        stdout = sys.stdout
-        sys.stdout = s = StringIO()
         self.win.show()
-        s.seek(0)
-        title = '*'*80 + ' ' + self.win.title
-        title = title[len(title)-80:]
-        self.assertEqual(s.read(),
-                         '\n'.join([title, self.label.text, '*'*80, '']))
-        sys.stdout = stdout
-        

@@ -21,16 +21,7 @@ class TestWindow(abstractTestContainer, abstractTestWidget):
         self.assertEqual(self.win.title, 'Test')
 
     def testShow(self):
-        stdout = sys.stdout
-        sys.stdout = s = StringIO()
         self.app.show()
-        s.seek(0)
-        title = '*'*80 + ' ' + self.win.title
-        title = title[len(title)-80:]
-        self.assertEqual(s.read(),
-                         '\n'.join([title, '*'*80, '']))
-        sys.stdout = stdout
-
 
 if __name__ == '__main__':
     unittest.main()
