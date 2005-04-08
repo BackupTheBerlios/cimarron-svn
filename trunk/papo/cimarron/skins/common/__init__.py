@@ -1,5 +1,3 @@
-from papo.cimarron.tools import Observable
-
 class Widget(object):
     def __init__(self, parent=None, **kw):
         super (Widget, self).__init__ (**kw)
@@ -32,7 +30,13 @@ class Container(Widget):
         for i in self.children:
             i.show()
 
-class Control(Widget, Observable):
-    def __init__(self, value='', **kw):
+class Control(Widget):
+    def __init__(self, onAction=None, value='', **kw):
         super(Control, self).__init__(**kw)
         self.value = value
+        self.onAction= onAction
+
+    def _activate(self, *ignore):
+        if self.onAction is not None:
+            self.onAction(self)
+
