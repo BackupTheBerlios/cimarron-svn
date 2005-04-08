@@ -1,10 +1,4 @@
 import unittest
-import sys
-from cStringIO import StringIO
-
-if '..' not in sys.path:
-    sys.path.append('..')
-
 from papo import cimarron
 from commonTests import abstractTestControl
 

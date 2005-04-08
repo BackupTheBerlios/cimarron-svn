@@ -1,9 +1,4 @@
 import unittest
-import sys
-
-if '..' not in sys.path:
-    sys.path.append('..')
-
 from papo import cimarron
 
 class abstractTestBasic(unittest.TestCase, object):

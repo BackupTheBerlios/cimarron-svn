@@ -1,4 +1,5 @@
-import unittest, sys
+import sys
+import unittest
 
 from hello import *
 from windowTests import *

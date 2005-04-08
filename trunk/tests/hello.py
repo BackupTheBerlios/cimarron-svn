@@ -1,9 +1,4 @@
 import unittest
-import sys
-if '..' not in sys.path:
-    sys.path.append('..')
-from cStringIO import StringIO
-
 from papo import cimarron
 
 __all__ = ('TestHelloWorld',)
