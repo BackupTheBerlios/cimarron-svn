@@ -6,8 +6,8 @@ from papo.cimarron.skins.common import Container
 default_skin_name = 'gtk2'
 
 class App(Container):
+    skin = None
     def __init__(self, **kw):
-        self.skin = None
         assert 'parent' not in kw, 'App should have no parent'
         super(App, self).__init__(**kw)
         parser = OptionParser()

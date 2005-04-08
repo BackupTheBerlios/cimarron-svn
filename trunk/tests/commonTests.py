@@ -15,6 +15,9 @@ class abstractTestWidget(abstractTestBasic):
     def testParenting(self):
         self.assertEqual(self.widget.parent, self.parent)
 
+    def testSkin (self):
+        self.assertEqual (self.widget.skin, self.app.skin)
+
 class abstractTestContainer(abstractTestBasic):
     def testChilding(self):
         self.assert_(self.widget in self.parent.children)

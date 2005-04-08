@@ -15,6 +15,14 @@ class Widget(object):
         return getattr(self, '_Widget__parent', None)
     parent = property(__get_parent, __set_parent)
 
+    def __get_skin (self):
+        try:
+            return self.__skin
+        except AttributeError:
+            self.__skin = self.parent.skin
+            return self.__skin
+    skin = property(__get_skin)
+
 class Container(Widget):
     def __init__(self, **kw):
         super(Container, self).__init__(**kw)
