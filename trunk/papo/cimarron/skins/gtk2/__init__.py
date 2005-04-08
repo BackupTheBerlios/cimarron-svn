@@ -3,21 +3,31 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
-class _Container(list):
+class Children(list):
     def __init__(self, parent):
-        super(_Container, self).__init__()
+        super(Children, self).__init__()
         self.__parent = parent
     def append(self, other):
-        super(_Container, self).append(other)
-        self.__parent.add(other._widget)
+        if other in self:
+            raise ValueError, 'child already here'
+        if other.parent is None:
+            other.parent= self.__parent
+            self.__parent._widget.add(other._widget)
+        if other.parent is not self.__parent:
+            raise NotImplementedError, 'Cannot reparent'
+        super(Children, self).append(other)
 
-class Window(Container):
+class GtkContainer(Container):
+    def __init__(self, **kw):
+        super (GtkContainer, self).__init__ (**kw)
+        self.children = Children(self)
+
+class Window(GtkContainer):
     def __init__(self, title='', **kw):
         self._widget = self.__window = gtk.Window()
         super(Window, self).__init__(**kw)
         self.__window.connect('destroy', gtk.main_quit)
         self.title = title
-        self.children = _Container(self.__window)
 
     def __set_title(self, title):
         self.__window.set_title(title)
@@ -27,13 +37,13 @@ class Window(Container):
 
     def show(self):
         self.__window.show_all()
-        
+
 class Label(Widget):
     def __init__(self, text='', **kw):
         self._widget = self.__label = gtk.Label()
         super(Label, self).__init__(**kw)
         self.text = text
-        
+
     def show(self):
         self.__label.show()
 
@@ -68,6 +78,15 @@ class Entry(Control):
     def __activate (self, *ignore):
         self.value= self.__entry.get_text ()
 
+class VBox(GtkContainer):
+    def __init__ (self, **kw):
+        self._widget= self.__vbox = gtk.VBox()
+        super (VBox, self).__init__ (**kw)
+
+class HBox(GtkContainer):
+    def __init__ (self, **kw):
+        self._widget= self.__vbox = gtk.HBox()
+        super (HBox, self).__init__ (**kw)
 
 def run():
     gtk.main()

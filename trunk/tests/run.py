@@ -5,6 +5,7 @@ from windowTests import *
 from labelTests import *
 from buttonTests import *
 from entryTests import *
+from boxTests import *
 
 #from controllerTests import *
 

@@ -20,3 +20,7 @@ class TestButton(abstractTestControl):
 
     def testLabel(self):
         self.assertEqual(self.button.label, 'Click me')
+
+    def testSetLabel (self):
+        self.widget.label= "Don't click me"
+        self.assertEqual(self.widget.label, "Don't click me")

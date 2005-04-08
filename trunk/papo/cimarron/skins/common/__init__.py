@@ -4,8 +4,16 @@ class Widget(object):
     def __init__(self, parent=None, **kw):
         super (Widget, self).__init__ (**kw)
         self.parent = parent
+
+    def __set_parent(self, parent):
+        if self.parent is not None:
+            raise NotImplementedError, 'Cannot reparent'
+        self.__parent = parent
         if parent is not None:
             parent.children.append(self)
+    def __get_parent(self):
+        return getattr(self, '_Widget__parent', None)
+    parent = property(__get_parent, __set_parent)
 
 class Container(Widget):
     def __init__(self, **kw):

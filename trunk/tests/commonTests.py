@@ -28,7 +28,7 @@ class abstractTestObservable(unittest.TestCase, object):
     def setUp(self):
         super(abstractTestObservable, self).setUp()
         self.messages_recieved = []
-        
+
     def testAddObserver(self):
         self.widget.observers.append(self)
 
@@ -45,8 +45,6 @@ class abstractTestControl(abstractTestWidget, abstractTestObservable):
         self.widget.value = '123'
     def testValue(self):
         self.assertEqual ('123', self.widget.value)
-    
-    
 
 if __name__ == '__main__':
     unittest.main()
