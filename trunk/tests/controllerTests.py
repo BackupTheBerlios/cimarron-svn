@@ -23,5 +23,6 @@ class FooController():
     def update(self):
         #
         # update the label to show the stringification of the model
-        
+
         self.label.text = repr(self.model)
+

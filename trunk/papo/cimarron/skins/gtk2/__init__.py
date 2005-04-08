@@ -58,12 +58,16 @@ class Button(Control):
         self._widget = self.__button = gtk.Button()
         super(Button, self).__init__(**kw)
         self.label = label
+        self.__button.connect('activate', self.__activate)
 
     def __set_label(self, label):
         self.__button.set_label(label)
     def __get_label(self):
         return self.__button.get_label()
     label = property(__get_label, __set_label)
+
+    def __activate(self, *ignore):
+        self.announce('activated')
 
 class Entry(Control):
     def __init__(self, **kw):
@@ -77,6 +81,7 @@ class Entry(Control):
 
     def __activate (self, *ignore):
         self.value= self.__entry.get_text ()
+        self.announce('activated')
 
 class VBox(GtkContainer):
     def __init__ (self, **kw):

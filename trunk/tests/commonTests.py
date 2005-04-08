@@ -41,5 +41,10 @@ class abstractTestControl(abstractTestWidget, abstractTestObservable):
     def testValue(self):
         self.assertEqual ('123', self.widget.value)
 
+    def testActivated (self):
+        self.widget.observers.append (self)
+        self.widget._widget.activate ()
+        self.assert_('activated' in self.messages_recieved)
+
 if __name__ == '__main__':
     unittest.main()

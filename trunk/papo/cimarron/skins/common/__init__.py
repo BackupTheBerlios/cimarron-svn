@@ -28,4 +28,3 @@ class Control(Widget, Observable):
     def __init__(self, value='', **kw):
         super(Control, self).__init__(**kw)
         self.value = value
-
