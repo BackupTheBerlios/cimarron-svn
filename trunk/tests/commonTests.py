@@ -22,32 +22,24 @@ class abstractTestContainer(abstractTestBasic):
     def testChilding(self):
         self.assert_(self.widget in self.parent.children)
 
-class abstractTestObservable(unittest.TestCase, object):
+class abstractTestControl(abstractTestWidget):
     def setUp(self):
-        super(abstractTestObservable, self).setUp()
+        super(abstractTestControl, self).setUp()
         self.messages_recieved = []
+    def setUpControl(self, value='123'):
+        self.widget.value = value
+        self.value = value
 
-    def testAddObserver(self):
-        self.widget.observers.append(self)
-
-    def testObserverNotified(self):
-        self.testAddObserver ()
-        self.widget.announce('event')
-        self.assert_('event' in self.messages_recieved)
-
-    def notify(self, message):
-        self.messages_recieved.append(message)
-
-class abstractTestControl(abstractTestWidget, abstractTestObservable):
-    def setUpControl(self):
-        self.widget.value = '123'
     def testValue(self):
-        self.assertEqual ('123', self.widget.value)
+        self.assertEqual (self.value, self.widget.value)
 
-    def testActivated (self):
-        self.widget.observers.append (self)
+    def testOnAction (self):
+        self.widget.onAction= self.notify
         self.widget._widget.activate ()
-        self.assert_('activated' in self.messages_recieved)
+        self.assert_(self.widget in self.messages_recieved)
+
+    def notify(self, origin):
+        self.messages_recieved.append(origin)
 
 if __name__ == '__main__':
     unittest.main()

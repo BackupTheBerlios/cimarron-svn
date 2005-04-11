@@ -20,6 +20,5 @@ class App(Container):
 
         self.skin = __import__('papo.cimarron.skins.' + options.skin,
                                globals(), locals(), options.skin)
-
     def __getattr__(self, attr):
         return getattr(self.skin, attr)

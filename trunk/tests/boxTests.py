@@ -18,8 +18,7 @@ class TestBoxes (abstractTestContainer):
         self.widget= self.vbox= self.app.VBox (parent=self.parent)
 
     def testVisual (self):
-        d= self.app.Button (label='Looking good')
-        self.widget.children.append (d)
+        d= self.app.Button (parent=self.widget, label='Looking good')
         self.assertEqual (d.parent, self.widget)
         self.other= self.app.HBox (parent= self.widget)
 
@@ -36,7 +35,7 @@ class TestBoxes (abstractTestContainer):
         def test():
             b.parent= self.widget
 
-        self.assertRaises(NotImplementedError, test)
+        self.assertRaises(ValueError, test)
 
     def testReparenting2 (self):
         b= self.app.Button (label='reparented 2')
@@ -62,26 +61,3 @@ class TestBoxes (abstractTestContainer):
             b.parent= self.window
 
         self.assertRaises (NotImplementedError, test)
-
-    def testChildrening1(self):
-        b = self.app.Button(label='childrening 1')
-        self.widget.children.append(b)
-
-    def testChildrening2(self):
-        b = self.app.Button(parent=self.widget, label='childrening 2')
-
-        def test():
-            self.widget.children.append(b)
-
-        self.assertRaises(ValueError, test)
-
-        #self.app.show ()
-        #self.app.run ()
-    def testChildrening3(self):
-        b = self.app.Button(label='childrening 3')
-        self.widget.children.append(b)
-        def test ():
-            self.window.children.append(b)
-
-        self.assertRaises(NotImplementedError, test)
-

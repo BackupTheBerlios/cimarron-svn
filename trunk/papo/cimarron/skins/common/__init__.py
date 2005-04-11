@@ -4,13 +4,15 @@ class Widget(object):
         self.parent = parent
 
     def __set_parent(self, parent):
-        if self.parent is not None:
-            raise NotImplementedError, 'Cannot reparent'
-        self.__parent = parent
         if parent is not None:
-            parent.children.append(self)
+            parent._children.append(self)
+            self.__parent = parent
     def __get_parent(self):
-        return getattr(self, '_Widget__parent', None)
+        try:
+            return self.__parent
+        except AttributeError:
+            # only happens during init
+            return None
     parent = property(__get_parent, __set_parent)
 
     def __get_skin (self):
@@ -24,11 +26,15 @@ class Widget(object):
 class Container(Widget):
     def __init__(self, **kw):
         super(Container, self).__init__(**kw)
-        self.children = []
+        self._children = []
 
     def show(self):
         for i in self.children:
             i.show()
+
+    def __get_children(self):
+        return iter(self._children)
+    children = property(__get_children)
 
 class Control(Widget):
     def __init__(self, onAction=None, value='', **kw):
