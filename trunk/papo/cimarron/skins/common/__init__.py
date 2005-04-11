@@ -1,3 +1,7 @@
+from new import instancemethod
+
+def nullAction(*a, **k): pass
+
 class Widget(object):
     def __init__(self, parent=None, **kw):
         super (Widget, self).__init__ (**kw)
@@ -43,6 +47,14 @@ class Control(Widget):
         self.value = value
         self.onAction= onAction
 
+    def __get_on_action (self):
+        return self.__on_action
+    def __set_on_action (self, onAction):
+        if onAction is None:
+            onAction = nullAction
+        self.__on_action= instancemethod (onAction, self, Control)
+    onAction= property (__get_on_action, __set_on_action)
+
     def _activate(self, *ignore):
         if self.onAction is not None:
-            self.onAction(self)
+            self.onAction()
