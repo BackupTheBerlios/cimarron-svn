@@ -2,6 +2,7 @@ class Widget(object):
     def __init__(self, parent=None, **kw):
         super (Widget, self).__init__ (**kw)
         self.parent = parent
+        self.defaultWidget= self
 
     def __set_parent(self, parent):
         if parent is not None:
@@ -45,4 +46,3 @@ class Control(Widget):
     def _activate(self, *ignore):
         if self.onAction is not None:
             self.onAction(self)
-

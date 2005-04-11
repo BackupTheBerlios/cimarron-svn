@@ -1,12 +1,12 @@
 import unittest
-from papo import cimarron
+from papo.cimarron import skin, App
 
 class abstractTestBasic(unittest.TestCase, object):
     def setUp(self):
-        self.app = cimarron.App()
+        self.app = App()
         super (abstractTestBasic, self).setUp ()
     def testSkinArgv(self):
-        self.assertEqual(self.app.skin.__name__, 'papo.cimarron.skins.gtk2')
+        self.assertEqual(skin.__name__, 'papo.cimarron.skins.gtk2')
     def tearDown(self):
         import gtk
         while gtk.events_pending(): gtk.main_iteration()
@@ -14,9 +14,6 @@ class abstractTestBasic(unittest.TestCase, object):
 class abstractTestWidget(abstractTestBasic):
     def testParenting(self):
         self.assertEqual(self.widget.parent, self.parent)
-
-    def testSkin (self):
-        self.assertEqual (self.widget.skin, self.app.skin)
 
 class abstractTestContainer(abstractTestBasic):
     def testChilding(self):
@@ -35,7 +32,11 @@ class abstractTestControl(abstractTestWidget):
 
     def testOnAction (self):
         self.widget.onAction= self.notify
-        self.widget._widget.activate ()
+        skin_name  = skin.__name__.split('.')[-1]
+        if skin_name == 'gtk2':
+            self.widget.defaultWidget._widget.activate ()
+        else:
+            raise NotImplementedError, 'write skin-specific test, please, mastah!'
         self.assert_(self.widget in self.messages_recieved)
 
     def notify(self, origin):

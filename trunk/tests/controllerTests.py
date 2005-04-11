@@ -1,28 +1,41 @@
 import unittest
-from papo import cimarron
+from papo.cimarron import skin
+from papo.cimarron.skins.common import Control
 from commonTests import abstractTestControl
 
 __all__ = ('TestController',
            )
 
-class FooController(cimarron.skins.common.Control):
+class BarController (Control):
+    def __init__ (self, **kw):
+        super (BarController, self).__init__ (**kw)
+
+class FooController(Control):
     def __init__(self, **kw):
         super (FooController, self).__init__ (**kw)
-        self.box= self.parent.skin.VBox (parent=self.parent)
-        h= self.parent.skin.HBox (parent=self.box)
-        self.entry= self.parent.skin.Entry (parent=h)
-        self.label= self.parent.skin.Label (parent=h, text='Nothing yet')
-        self.button= self.skin.Button (parent= self.box, label='Press me')
+        self.box= skin.VBox (parent=self.parent)
+        h= skin.HBox (parent=self.box)
+        self.entry= skin.Entry (parent=h)
+        self.label= skin.Label (parent=h, text='Nothing yet')
+        self.button= skin.Button (parent= self.box, label='Press me')
 
         # connect them
         def onButtonAction(button, *a):
+            # we put this Controller in the place of the Button
+            # so the action seems to come (and indeed does!) from the controller
             self.onAction(self, *a)
         self.button.onAction= onButtonAction
-        self.entry.onAction= self.modelChanged
-        self._widget= self.button._widget
+        self.entry.onAction= self.changeModel
+        self.defaultWidget = self.button
 
-    def modelChanged (self, *ignore):
-        self.label.text= repr (self.value.get (self.entry.value, 'Not found'))
+    def changeModel (self, *ignore):
+        key = self.entry.value
+        try:
+            (key, value)= key.split (':', 1)
+            self.value[key]= value
+        except ValueError:
+            pass
+        self.label.text= str (self.value.get (key, 'Not found'))
 
 class TestController(abstractTestControl):
     def setUp (self):
@@ -31,24 +44,23 @@ class TestController(abstractTestControl):
                           baz=3)
 
         super (TestController, self).setUp ()
-        self.parent = self.win = self.app.Window(title='Test', parent=self.app)
+        self.parent = self.win = skin.Window(title='Test', parent=self.app)
         self.widget= FooController (parent=self.win, value=self.value)
 
-#         self.setUpControl (value=self.model)
+    def testModel (self):
+        self.widget.entry.value = 'foo'
+        self.widget.entry.onAction (self.widget)
+        self.assertEqual(self.widget.label.text, '1')
 
-#     def testActivated (self):
-#         def activated (*ignore):
-#             self.activated= True
-#         self.widget.onAction= activated
-#         self.widget.button.onAction (self.widget)
-#         self.assertEqual(self.activated, True)
-#
-#     def testModel (self):
-#         self.widget.entry.value = 'foo'
-#         self.widget.entry.onAction (self.widget)
-#         self.assertEqual(self.widget.label.text, '1')
+    def testChangeModel(self):
+        self.widget.entry.value = 'quux:5'
+        self.widget.entry.onAction(self.widget)
+        self.assertEqual(self.widget.label.text, '5')
 
-#     def tearDown(self):
-#         import gtk
-#         self.app.show()
-#         gtk.main()
+    def tearDown(self):
+        import gtk
+        self.app.show()
+        gtk.main()
+
+class TestBarController (abstractTestControl):
+    pass
