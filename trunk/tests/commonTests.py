@@ -7,16 +7,16 @@ class abstractTestBasic(unittest.TestCase, object):
         super (abstractTestBasic, self).setUp ()
     def testSkinArgv(self):
         self.assertEqual(skin.__name__, 'papo.cimarron.skins.gtk2')
-    def tearDown(self):
-        import gtk
-        while gtk.events_pending(): gtk.main_iteration()
+#     def tearDown(self):
+#         import gtk
+#         while gtk.events_pending(): gtk.main_iteration()
 
 class abstractTestDelegate(abstractTestBasic):
     def setUp(self):
         super(abstractTestDelegate, self).setUp()
         class delegate_forcedNo(object):
             def foo(self, *a):
-                return -5
+                return -2
         self.delegate_forcedNo = delegate_forcedNo()
         class delegate_no(object):
             def foo(self, *a):
@@ -32,7 +32,7 @@ class abstractTestDelegate(abstractTestBasic):
         self.delegate_yes = delegate_yes()
         class delegate_forcedYes(object):
             def foo(self, *a):
-                return 5
+                return 2
         self.delegate_forcedYes = delegate_forcedYes()
         
     def testDelegate(self):
@@ -50,7 +50,9 @@ class abstractTestDelegate(abstractTestBasic):
         self.widget.delegates.append(self.delegate_yes)
         self.assertEqual(self.widget.delegate('foo'), True)
 
-class abstractTestWidget(abstractTestDelegate):
+from generated import abstractTestDelegateGenerated
+
+class abstractTestWidget(abstractTestDelegateGenerated):
     def testParenting(self):
         self.assertEqual(self.widget.parent, self.parent)
 

@@ -10,4 +10,7 @@ from boxTests import *
 from controllerTests import *
 
 if __name__ == '__main__':
-    unittest.main(argv=[sys.argv[0], '-v'])
+    argv = list(sys.argv)
+    if len(sys.argv) == 1:
+        argv.append('-v')
+    unittest.main(argv=argv)

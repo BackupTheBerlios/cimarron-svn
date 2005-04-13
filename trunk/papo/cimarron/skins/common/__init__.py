@@ -3,7 +3,7 @@ import operator
 
 def nullAction(*a, **k): pass
 
-ForcedNo, No, Unknown, Yes, ForcedYes = -5, -1, 0, 1, 5
+ForcedNo, No, Unknown, Yes, ForcedYes = -2, -1, 0, 1, 2
 
 class Widget(object):
 
