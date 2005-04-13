@@ -59,11 +59,11 @@ class Label(GtkParentableMixin, Widget):
     text = property(__get_text, __set_text)
 
 class Button(GtkParentableMixin, Control):
-    def __init__(self, label='', onAction=None, **kw):
+    def __init__(self, label='', **kw):
         self._widget = self.__button = gtk.Button()
         super(Button, self).__init__(**kw)
         self.label = label
-        self.__button.connect('activate', self._activate)
+        self.__button.connect('clicked', self._activate)
 
     def __set_label(self, label):
         self.__button.set_label(label)
@@ -78,11 +78,18 @@ class Entry(GtkParentableMixin, Control):
         self.update ()
         self.__entry.connect ('activate', self._activate)
 
+    def __get_value (self):
+        return self.__value
+    def __set_value (self, value):
+        self.__value = value
+        self.__entry.set_text(value)
+    value= property (__get_value, __set_value)
+
     def update (self):
         self.__entry.set_text (self.value)
 
     def _activate (self, *ignore):
-        self.value= self.__entry.get_text ()
+        self.__value= self.__entry.get_text ()
         super (Entry, self)._activate ()
 
 class VBox(GtkParentableMixin, Container):

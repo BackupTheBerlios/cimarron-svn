@@ -11,7 +11,46 @@ class abstractTestBasic(unittest.TestCase, object):
         import gtk
         while gtk.events_pending(): gtk.main_iteration()
 
-class abstractTestWidget(abstractTestBasic):
+class abstractTestDelegate(abstractTestBasic):
+    def setUp(self):
+        super(abstractTestDelegate, self).setUp()
+        class delegate_forcedNo(object):
+            def foo(self, *a):
+                return -5
+        self.delegate_forcedNo = delegate_forcedNo()
+        class delegate_no(object):
+            def foo(self, *a):
+                return -1
+        self.delegate_no = delegate_no()
+        class delegate_unknown(object):
+            def foo(self, *a):
+                return 0
+        self.delegate_unknown = delegate_unknown()
+        class delegate_yes(object):
+            def foo(self, *a):
+                return 1
+        self.delegate_yes = delegate_yes()
+        class delegate_forcedYes(object):
+            def foo(self, *a):
+                return 5
+        self.delegate_forcedYes = delegate_forcedYes()
+        
+    def testDelegate(self):
+        self.assertEqual(self.widget.delegate('foo'), True)
+    def testSingleDelegationFail(self):
+        self.widget.delegates.append(self.delegate_forcedNo)
+        self.assertEqual(self.widget.delegate('foo'), False)
+    def testSingleDelegationReject(self):
+        self.widget.delegates.append(self.delegate_no)
+        self.assertEqual(self.widget.delegate('foo'), False)
+    def testSingleDelegationPass(self):
+        self.widget.delegates.append(self.delegate_forcedYes)
+        self.assertEqual(self.widget.delegate('foo'), True)
+    def testSingleDelegationAccept(self):
+        self.widget.delegates.append(self.delegate_yes)
+        self.assertEqual(self.widget.delegate('foo'), True)
+
+class abstractTestWidget(abstractTestDelegate):
     def testParenting(self):
         self.assertEqual(self.widget.parent, self.parent)
 
@@ -34,7 +73,11 @@ class abstractTestControl(abstractTestWidget):
         self.widget.onAction= self.notify
         skin_name  = skin.__name__.split('.')[-1]
         if skin_name == 'gtk2':
-            self.widget.defaultWidget._widget.activate ()
+            w = self.widget._widget
+            try:
+                w.clicked()
+            except AttributeError:
+                w.activate ()
         else:
             raise NotImplementedError, 'write skin-specific test, please, mastah!'
         self.assert_(self.widget in self.messages_recieved)

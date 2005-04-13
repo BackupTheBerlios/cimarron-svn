@@ -14,5 +14,9 @@ class TestLabel(abstractTestWidget):
     def testLabel(self):
         self.assertEqual(self.label.text, 'hello')
 
+    def testSetLabel(self):
+        self.widget.text= 'This is a label'
+        self.assertEqual (self.widget.text, self.widget._widget.get_text ())
+
     def testShow(self):
         self.win.show()

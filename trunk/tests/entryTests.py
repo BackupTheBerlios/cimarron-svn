@@ -11,3 +11,7 @@ class TestEntry(abstractTestControl):
         self.parent = self.win = skin.Window(title='Test', parent=self.app)
         self.widget = self.entry = skin.Entry(parent=self.win)
         self.setUpControl()
+
+    def testSetValue (self):
+        self.widget.value= 'this is a test'
+        self.assertEqual (self.widget._widget.get_text(), self.widget.value)

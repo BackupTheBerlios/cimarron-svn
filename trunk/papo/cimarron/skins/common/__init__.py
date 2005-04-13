@@ -1,12 +1,18 @@
 from new import instancemethod
+import operator
 
 def nullAction(*a, **k): pass
 
+ForcedNo, No, Unknown, Yes, ForcedYes = -5, -1, 0, 1, 5
+
 class Widget(object):
+
     def __init__(self, parent=None, **kw):
         super (Widget, self).__init__ (**kw)
         self.parent = parent
-        self.defaultWidget= self
+        self.delegates = []
+        if kw:
+            raise RuntimeError, 'unhandled keyword arguments %s' % repr(kw)
 
     def __set_parent(self, parent):
         if parent is not None:
@@ -27,6 +33,45 @@ class Widget(object):
             self.__skin = self.parent.skin
             return self.__skin
     skin = property(__get_skin)
+
+    def delegate(self, message, comp=None, unknown=None, null=None, args=None):
+        """
+        The default delegation is with 'or', i.e. any 'Accept' is
+        enough, 'Unknown' is True, and null the same as 'Unknown'.
+
+        Parameters are:
+
+           comp     composition operator
+           unknown  value of 'Unknown'
+           null     value of empty delegation list
+           args     extra args to be passed on delegation
+
+        """
+        if comp is None:
+            comp = operator.or_
+        if null is None:
+            null = unknown
+            
+        if self.delegates:
+            res = unknown
+            for i in self.delegates:
+                if hasattr(i, message):
+                    rv = getattr(i, message)(self, args)
+                    b = rv > 0 or (rv >= 0 and unknown)
+                else:
+                    b = rv = unknown
+                if rv and abs(rv)==2:
+                    res = b
+                    break
+                if res is unknown:
+                    res = b
+                elif b is not unknown:
+                    res = comp(res, b)
+        else:
+            res = null
+        if res is None:
+            res = True
+        return res
 
 class Container(Widget):
     def __init__(self, **kw):
@@ -58,3 +103,16 @@ class Control(Widget):
     def _activate(self, *ignore):
         if self.onAction is not None:
             self.onAction()
+
+class Controller(Control):
+    def __init__(self, **kw):
+        self.__initialized = False
+        super (Controller, self).__init__ (**kw)
+        self.__initialized = True
+    def __set_value(self, value):
+        self.__value=value
+        if self.__initialized:
+            self.refresh()
+    def __get_value(self):
+        return self.__value
+    value = property(__get_value, __set_value)

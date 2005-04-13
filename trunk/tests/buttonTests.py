@@ -17,4 +17,5 @@ class TestButton(abstractTestControl):
 
     def testSetLabel (self):
         self.widget.label= "Don't click me"
-        self.assertEqual(self.widget.label, "Don't click me")
+        self.assertEqual(self.widget.label, self.widget._widget.get_label ())
+
