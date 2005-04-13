@@ -11,6 +11,6 @@ from controllerTests import *
 
 if __name__ == '__main__':
     argv = list(sys.argv)
-    if len(sys.argv) == 1:
-        argv.append('-v')
+    #if len(sys.argv) == 1:
+    #    argv.append('-v')
     unittest.main(argv=argv)

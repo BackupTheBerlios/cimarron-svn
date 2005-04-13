@@ -16,7 +16,7 @@ class abstractTestDelegate(abstractTestBasic):
         super(abstractTestDelegate, self).setUp()
         class delegate_forcedNo(object):
             def foo(self, *a):
-                return -2
+                return -5
         self.delegate_forcedNo = delegate_forcedNo()
         class delegate_no(object):
             def foo(self, *a):
@@ -32,7 +32,7 @@ class abstractTestDelegate(abstractTestBasic):
         self.delegate_yes = delegate_yes()
         class delegate_forcedYes(object):
             def foo(self, *a):
-                return 2
+                return 5
         self.delegate_forcedYes = delegate_forcedYes()
         
     def testDelegate(self):

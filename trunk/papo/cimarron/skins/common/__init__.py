@@ -3,7 +3,7 @@ import operator
 
 def nullAction(*a, **k): pass
 
-ForcedNo, No, Unknown, Yes, ForcedYes = -2, -1, 0, 1, 2
+ForcedNo, No, Unknown, Yes, ForcedYes = -5, -1, 0, 1, 5
 
 class Widget(object):
 
@@ -34,44 +34,67 @@ class Widget(object):
             return self.__skin
     skin = property(__get_skin)
 
-    def delegate(self, message, comp=None, unknown=None, null=None, args=None):
-        """
-        The default delegation is with 'or', i.e. any 'Accept' is
-        enough, 'Unknown' is True, and null the same as 'Unknown'.
-
-        Parameters are:
-
-           comp     composition operator
-           unknown  value of 'Unknown'
-           null     value of empty delegation list
-           args     extra args to be passed on delegation
-
-        """
-        if comp is None:
-            comp = operator.or_
-        if null is None:
-            null = unknown
-            
+    def delegate(self, message):
         if self.delegates:
-            res = unknown
+#             truthTable= { (0,0): Unknown, (0,1): Yes, (0,-1): No,
+#                           (1,0): Yes, (1,1): Yes, (1,-1): Yes,
+#                           (-1,0): No, (-1, 1): Yes, (-1,-1): No }
+#            truthTable = [[Unknown, Yes, No], [Yes, Yes, Yes], [No, Yes, No]]
+            truthTable = ((Unknown, Yes, No), (Yes, Yes, Yes), (No, Yes, No))
+            av= Unknown
             for i in self.delegates:
-                if hasattr(i, message):
-                    rv = getattr(i, message)(self, args)
-                    b = rv > 0 or (rv >= 0 and unknown)
-                else:
-                    b = rv = unknown
-                if rv and abs(rv)==2:
-                    res = b
+                try:
+                    rv= getattr(i, message)(self)
+                    #av= truthTable[av,rv]
+                    av= truthTable[av][rv]
+                except AttributeError:
+                    rv = Unknown
+                except IndexError:
+                    av= rv
                     break
-                if res is unknown:
-                    res = b
-                elif b is not unknown:
-                    res = comp(res, b)
-        else:
-            res = null
-        if res is None:
-            res = True
-        return res
+            return av>=0
+        return True
+
+
+
+#     def delegate(self, message, comp=None, unknown=None, null=None, args=None):
+#         """
+#         The default delegation is with 'or', i.e. any 'Accept' is
+#         enough, 'Unknown' is True, and null the same as 'Unknown'.
+#
+#         Parameters are:
+#
+#            comp     composition operator
+#            unknown  value of 'Unknown'
+#            null     value of empty delegation list
+#            args     extra args to be passed on delegation
+#
+#         """
+#         if comp is None:
+#             comp = operator.or_
+#         if null is None:
+#             null = unknown
+#            
+#         if self.delegates:
+#             res = unknown
+#             for i in self.delegates:
+#                 if hasattr(i, message):
+#                     rv = getattr(i, message)(self, args)
+#                     b = rv > 0 or (rv >= 0 and unknown)
+#                 else:
+#                     b = rv = unknown
+#                 if rv and abs(rv)==5:
+#                     res = b
+#                     break
+#                 if res is unknown:
+#                     res = b
+#                 elif b is not unknown:
+#                     res = comp(res, b)
+#         else:
+#             res = null
+#         if res is None:
+#             res = True
+#         return res
 
 class Container(Widget):
     def __init__(self, **kw):
