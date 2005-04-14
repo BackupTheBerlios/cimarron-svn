@@ -36,16 +36,11 @@ class Widget(object):
 
     def delegate(self, message):
         if self.delegates:
-#             truthTable= { (0,0): Unknown, (0,1): Yes, (0,-1): No,
-#                           (1,0): Yes, (1,1): Yes, (1,-1): Yes,
-#                           (-1,0): No, (-1, 1): Yes, (-1,-1): No }
-#            truthTable = [[Unknown, Yes, No], [Yes, Yes, Yes], [No, Yes, No]]
             truthTable = ((Unknown, Yes, No), (Yes, Yes, Yes), (No, Yes, No))
             av= Unknown
             for i in self.delegates:
                 try:
                     rv= getattr(i, message)(self)
-                    #av= truthTable[av,rv]
                     av= truthTable[av][rv]
                 except AttributeError:
                     rv = Unknown
@@ -55,47 +50,6 @@ class Widget(object):
             return av>=0
         return True
 
-
-
-#     def delegate(self, message, comp=None, unknown=None, null=None, args=None):
-#         """
-#         The default delegation is with 'or', i.e. any 'Accept' is
-#         enough, 'Unknown' is True, and null the same as 'Unknown'.
-#
-#         Parameters are:
-#
-#            comp     composition operator
-#            unknown  value of 'Unknown'
-#            null     value of empty delegation list
-#            args     extra args to be passed on delegation
-#
-#         """
-#         if comp is None:
-#             comp = operator.or_
-#         if null is None:
-#             null = unknown
-#            
-#         if self.delegates:
-#             res = unknown
-#             for i in self.delegates:
-#                 if hasattr(i, message):
-#                     rv = getattr(i, message)(self, args)
-#                     b = rv > 0 or (rv >= 0 and unknown)
-#                 else:
-#                     b = rv = unknown
-#                 if rv and abs(rv)==5:
-#                     res = b
-#                     break
-#                 if res is unknown:
-#                     res = b
-#                 elif b is not unknown:
-#                     res = comp(res, b)
-#         else:
-#             res = null
-#         if res is None:
-#             res = True
-#         return res
-
 class Container(Widget):
     def __init__(self, **kw):
         super(Container, self).__init__(**kw)
@@ -104,6 +58,10 @@ class Container(Widget):
     def show(self):
         for i in self.children:
             i.show()
+
+    def hide(self):
+        for i in self.children:
+            i.hide()
 
     def __get_children(self):
         return iter(self._children)

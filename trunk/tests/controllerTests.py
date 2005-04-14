@@ -167,4 +167,4 @@ if 0:
     def testMe (self):
         # self.app.run ()
         self.app.show ()
-        skin.run ()
+        self.app.run ()

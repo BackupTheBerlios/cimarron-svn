@@ -16,6 +16,4 @@ class TestButton(abstractTestControl):
         self.assertEqual(self.button.label, 'Click me')
 
     def testSetLabel (self):
-        self.widget.label= "Don't click me"
-        self.assertEqual(self.widget.label, self.widget._widget.get_label ())
-
+        raise NotImplementedError

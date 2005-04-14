@@ -14,8 +14,5 @@ class TestWindow(abstractTestContainer, abstractTestWidget):
     def testWindowTitle(self):
         self.assertEqual(self.win.title, 'Test')
 
-    def testShow(self):
-        self.app.show()
-
 if __name__ == '__main__':
     unittest.main()

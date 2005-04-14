@@ -1,5 +1,8 @@
 import unittest
+import sys
 from papo.cimarron import skin, App
+
+from papo.cimarron.skins.common import ForcedNo
 
 class abstractTestBasic(unittest.TestCase, object):
     def setUp(self):
@@ -7,9 +10,8 @@ class abstractTestBasic(unittest.TestCase, object):
         super (abstractTestBasic, self).setUp ()
     def testSkinArgv(self):
         self.assertEqual(skin.__name__, 'papo.cimarron.skins.gtk2')
-#     def tearDown(self):
-#         import gtk
-#         while gtk.events_pending(): gtk.main_iteration()
+    def tearDown(self):
+        self.app.hide()
 
 class abstractTestDelegate(abstractTestBasic):
     def setUp(self):
@@ -50,11 +52,34 @@ class abstractTestDelegate(abstractTestBasic):
         self.widget.delegates.append(self.delegate_yes)
         self.assertEqual(self.widget.delegate('foo'), True)
 
-from generated import abstractTestDelegateGenerated
+if 0:
+    from generated import abstractTestDelegateGenerated
+else:
+    class abstractTestDelegateGenerated(abstractTestDelegate): pass
 
 class abstractTestWidget(abstractTestDelegateGenerated):
+    def testShow(self):
+        self.app.show()
+        self.widget.hide()
+        self.widget.show()
+        self.assertEqual(self.widget.visible, True)
+
+    def testHide(self):
+        self.app.show()
+        self.widget.hide()
+        self.assertEqual(self.widget.visible, False)
+
+    def testUnableToHide(self):
+        self.widget.delegates.append(self)
+        self.app.show()
+        self.widget.hide()
+        self.assertEqual(self.widget.visible, True)
+
     def testParenting(self):
         self.assertEqual(self.widget.parent, self.parent)
+
+    def will_hide(self, target):
+        return ForcedNo
 
 class abstractTestContainer(abstractTestBasic):
     def testChilding(self):

@@ -3,7 +3,20 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
-class GtkParentableMixin(object):
+class GtkVisibilityMixin(object):
+    def __get_visible(self):
+        w = self._widget.window
+        return w is not None and w.is_visible()
+    visible = property(__get_visible)
+
+    def show(self):
+        self._widget.show_all()
+
+    def hide(self):
+        if self.delegate('will_hide'):
+            self._widget.hide_all()
+
+class GtkMixin(GtkVisibilityMixin):
     """
         Add this mixin class *before* any Widget-derived class.
     """
@@ -27,11 +40,16 @@ class GtkParentableMixin(object):
             return None
     parent = property(__get_parent, __set_parent)
 
-class Window(Container):
+class Window(GtkVisibilityMixin, Container):
     def __init__(self, title='', **kw):
         self._widget = self.__window = gtk.Window()
         super(Window, self).__init__(**kw)
-        self.__window.connect('destroy', gtk.main_quit)
+
+        def delete_callback(*a):
+            self.hide()
+            return True
+
+        self.__window.connect('delete-event', delete_callback)
         self.title = title
 
     def __set_title(self, title):
@@ -40,10 +58,7 @@ class Window(Container):
         return self.__window.get_title()
     title = property(__get_title, __set_title)
 
-    def show(self):
-        self.__window.show_all()
-
-class Label(GtkParentableMixin, Widget):
+class Label(GtkMixin, Widget):
     def __init__(self, text='', **kw):
         self._widget = self.__label = gtk.Label()
         super(Label, self).__init__(**kw)
@@ -58,7 +73,7 @@ class Label(GtkParentableMixin, Widget):
         return self.__label.get_text()
     text = property(__get_text, __set_text)
 
-class Button(GtkParentableMixin, Control):
+class Button(GtkMixin, Control):
     def __init__(self, label='', **kw):
         self._widget = self.__button = gtk.Button()
         super(Button, self).__init__(**kw)
@@ -71,7 +86,7 @@ class Button(GtkParentableMixin, Control):
         return self.__button.get_label()
     label = property(__get_label, __set_label)
 
-class Entry(GtkParentableMixin, Control):
+class Entry(GtkMixin, Control):
     def __init__(self, **kw):
         self._widget= self.__entry= gtk.Entry ()
         super(Entry, self).__init__(**kw)
@@ -92,15 +107,15 @@ class Entry(GtkParentableMixin, Control):
         self.__value= self.__entry.get_text ()
         super (Entry, self)._activate ()
 
-class VBox(GtkParentableMixin, Container):
+class VBox(GtkMixin, Container):
     def __init__ (self, **kw):
         self._widget= self.__vbox = gtk.VBox()
         super (VBox, self).__init__ (**kw)
 
-class HBox(GtkParentableMixin, Container):
+class HBox(GtkMixin, Container):
     def __init__ (self, **kw):
         self._widget= self.__vbox = gtk.HBox()
         super (HBox, self).__init__ (**kw)
 
-def run():
+def _run():
     gtk.main()

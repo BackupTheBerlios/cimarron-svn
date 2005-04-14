@@ -13,5 +13,5 @@ class TestEntry(abstractTestControl):
         self.setUpControl()
 
     def testSetValue (self):
-        self.widget.value= 'this is a test'
-        self.assertEqual (self.widget._widget.get_text(), self.widget.value)
+        raise NotImplementedError, 'you should subclass testEntry'
+
