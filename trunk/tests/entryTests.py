@@ -8,8 +8,9 @@ __all__ = ('TestEntry',
 class TestEntry(abstractTestControl):
     def setUp(self):
         super(TestEntry, self).setUp()
-        self.parent = self.win = skin.Window(title='Test', parent=self.app)
-        self.widget = self.entry = skin.Entry(parent=self.win)
+        self.win = skin.Window(title='Test', parent=self.app)
+        self.parent = skin.VBox (parent= self.win)
+        self.widget = self.entry = skin.Entry(parent=self.parent)
         self.setUpControl()
 
     def testSetValue (self):

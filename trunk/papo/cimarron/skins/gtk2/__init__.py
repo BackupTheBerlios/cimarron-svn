@@ -17,7 +17,7 @@ class GtkVisibilityMixin(object):
         if self.delegate('will_hide'):
             self._widget.hide_all()
 
-class GtkMixin(object):
+class GtkParentizableMixin(object):
     """
         Takes care of the parenting issues under gtk2.
         Add this mixin class *before* any Widget-derived class.
@@ -92,7 +92,7 @@ class Window(GtkVisibilityMixin, Container):
         return self.__window.get_title()
     title = property(__get_title, __set_title)
 
-class Label(GtkMixin, Widget):
+class Label(GtkParentizableMixin, Widget):
     def __init__(self, text='', **kw):
         self._widget = self.__label = gtk.Label()
         super(Label, self).__init__(**kw)
@@ -107,7 +107,7 @@ class Label(GtkMixin, Widget):
         return self.__label.get_text()
     text = property(__get_text, __set_text)
 
-class Button(GtkMixin, Control):
+class Button(GtkParentizableMixin, Control):
     def __init__(self, label='', **kw):
         self._widget = self.__button = gtk.Button()
         super(Button, self).__init__(**kw)
@@ -120,7 +120,7 @@ class Button(GtkMixin, Control):
         return self.__button.get_label()
     label = property(__get_label, __set_label)
 
-class Entry(Control):
+class Entry(GtkParentizableMixin, GtkFocusableMixin, Control):
     def __init__(self, **kw):
         self._widget= self.__entry= gtk.Entry ()
         super(Entry, self).__init__(**kw)
@@ -141,12 +141,12 @@ class Entry(Control):
         self.__value= self.__entry.get_text ()
         super (Entry, self)._activate ()
 
-class VBox(GtkMixin, Container):
+class VBox(GtkParentizableMixin, Container):
     def __init__ (self, **kw):
         self._widget= self.__vbox = gtk.VBox()
         super (VBox, self).__init__ (**kw)
 
-class HBox(GtkMixin, Container):
+class HBox(GtkParentizableMixin, Container):
     def __init__ (self, **kw):
         self._widget= self.__vbox = gtk.HBox()
         super (HBox, self).__init__ (**kw)
