@@ -17,7 +17,7 @@ class GtkVisibilityMixin(object):
         if self.delegate('will_hide'):
             self._widget.hide_all()
 
-class GtkMixin(GtkVisibilityMixin):
+class GtkMixin(object):
     """
         Takes care of the parenting issues under gtk2.
         Add this mixin class *before* any Widget-derived class.
@@ -42,7 +42,7 @@ class GtkMixin(GtkVisibilityMixin):
             return None
     parent = property(__get_parent, __set_parent)
 
-class GtkFocusableMixin (GtkMixin):
+class GtkFocusableMixin(object):
     """
     """
     def __init__ (self, onFocusIn=None, onFocusOut=None, **kw):
@@ -120,7 +120,7 @@ class Button(GtkMixin, Control):
         return self.__button.get_label()
     label = property(__get_label, __set_label)
 
-class Entry(GtkFocusableMixin, Control):
+class Entry(Control):
     def __init__(self, **kw):
         self._widget= self.__entry= gtk.Entry ()
         super(Entry, self).__init__(**kw)

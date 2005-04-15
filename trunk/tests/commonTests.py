@@ -58,6 +58,10 @@ else:
     class abstractTestDelegateGenerated(abstractTestDelegate): pass
 
 class abstractTestWidget(abstractTestDelegateGenerated):
+    def testParenting(self):
+        self.assertEqual(self.widget.parent, self.parent)
+
+class abstractTestVisibility(unittest.TestCase):
     def testShow(self):
         self.app.show()
         self.widget.hide()
@@ -74,9 +78,6 @@ class abstractTestWidget(abstractTestDelegateGenerated):
         self.app.show()
         self.widget.hide()
         self.assertEqual(self.widget.visible, True)
-
-    def testParenting(self):
-        self.assertEqual(self.widget.parent, self.parent)
 
     def will_hide(self, target):
         return ForcedNo
