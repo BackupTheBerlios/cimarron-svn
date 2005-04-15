@@ -1,8 +1,7 @@
 import unittest
 from papo import cimarron
 from commonTests import abstractTestControl
-from papo.cimarron.controllers import App
-from papo.cimarron.skins.common import Controller
+from papo.cimarron.controllers import App, Controller
 
 __all__= ('TestGrid', )
 

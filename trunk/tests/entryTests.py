@@ -15,4 +15,3 @@ class TestEntry(abstractTestControl):
 
     def testSetValue (self):
         raise NotImplementedError, 'you should subclass testEntry'
-

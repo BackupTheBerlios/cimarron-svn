@@ -1,7 +1,7 @@
 import unittest
 from pprint import pformat
 from papo import cimarron
-from papo.cimarron.skins.common import Controller
+from papo.cimarron.controllers import Controller
 from commonTests import abstractTestControl
 
 __all__ = ('TestController',

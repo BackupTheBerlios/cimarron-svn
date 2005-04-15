@@ -84,16 +84,3 @@ class Control(Widget):
     def _activate(self, *ignore):
         if self.onAction is not None:
             self.onAction()
-
-class Controller(Control):
-    def __init__(self, **kw):
-        self.__initialized = False
-        super (Controller, self).__init__ (**kw)
-        self.__initialized = True
-    def __set_value(self, value):
-        self.__value=value
-        if self.__initialized:
-            self.refresh()
-    def __get_value(self):
-        return self.__value
-    value = property(__get_value, __set_value)
