@@ -1,6 +1,6 @@
 import unittest
 from pprint import pformat
-from papo.cimarron import skin, App
+from papo import cimarron
 from papo.cimarron.skins.common import Controller
 from commonTests import abstractTestControl
 
@@ -11,12 +11,12 @@ __all__ = ('TestController',
 class FooController(Controller):
     def __init__(self, **kw):
         super (FooController, self).__init__ (**kw)
-        self.box= skin.VBox (parent=self.parent)
-        h= skin.HBox (parent=self.box)
-        self.entry= skin.Entry (parent=h)
-        self.label= skin.Label (parent=h, text='Nothing yet')
-        self.button= skin.Button (parent=self.box, label='Press me')
-        self.daLabel= skin.Label (parent=self.box)
+        self.box= cimarron.skin.VBox (parent=self.parent)
+        h= cimarron.skin.HBox (parent=self.box)
+        self.entry= cimarron.skin.Entry (parent=h)
+        self.label= cimarron.skin.Label (parent=h, text='Nothing yet')
+        self.button= cimarron.skin.Button (parent=self.box, label='Press me')
+        self.daLabel= cimarron.skin.Label (parent=self.box)
 
         # this is to let the gtk2 version pass
         self._widget= self.button._widget
@@ -53,7 +53,7 @@ class TestController(abstractTestControl):
                           baz=3)
 
         super (TestController, self).setUp ()
-        self.parent = self.win = skin.Window(title='Test', parent=self.app)
+        self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
         self.widget= FooController (parent=self.win, value=self.value)
 
     def testModel (self):
@@ -82,10 +82,10 @@ class TestController(abstractTestControl):
 class BarController (Controller):
     def __init__ (self, **kw):
         super (BarController, self).__init__ (**kw)
-        v= skin.VBox (parent=self.parent)
-        h= skin.HBox (parent= v)
-        self.prev= skin.Button (parent= h, label='<<', value=-1)
-        self.next= skin.Button (parent= h, label='>>', value=1)
+        v= cimarron.skin.VBox (parent=self.parent)
+        h= cimarron.skin.HBox (parent= v)
+        self.prev= cimarron.skin.Button (parent= h, label='<<', value=-1)
+        self.next= cimarron.skin.Button (parent= h, label='>>', value=1)
         self.index= 0
 
         def onFooAction(foo, *a):
@@ -95,7 +95,7 @@ class BarController (Controller):
         def onOkAction(ok, *a):
             print 'here'
             self.onAction (self.foo.value)
-        self.ok= skin.Button (parent= v, label='Ok', onAction=onOkAction)
+        self.ok= cimarron.skin.Button (parent= v, label='Ok', onAction=onOkAction)
 
         def roll(button, *a):
             try:
@@ -118,7 +118,7 @@ class TestBarController (abstractTestControl):
                            bar=2,
                            baz=3), dict (a=1, b= 2, c= 3))
         super (TestBarController, self).setUp ()
-        self.parent = self.win = skin.Window(title='Test 2', parent=self.app)
+        self.parent = self.win = cimarron.skin.Window(title='Test 2', parent=self.app)
         def here (*a):
             print 'here!'
         self.widget= BarController (parent=self.win, value=self.value, onAction=here)
@@ -136,19 +136,19 @@ if 0:
 class BazController (Controller):
     def __init__ (self, **kw):
         super (BazController, self).__init__ (**kw)
-        self.win= skin.Window (parent=self.parent, title='Baz me the foo with the bar!')
-        v= skin.VBox (parent= self.win)
+        self.win= cimarron.skin.Window (parent=self.parent, title='Baz me the foo with the bar!')
+        v= cimarron.skin.VBox (parent= self.win)
 
         def showResult (bar, value, *a):
             self.label.text= pformat (value)
 
         def doSearch (button, *a):
             print 'searching'
-            w= skin.Window (parent= self.parent, title='Select one please')
+            w= cimarron.skin.Window (parent= self.parent, title='Select one please')
             BarController (parent=w, value= (dict (a=1, b=2, c=3), dict (x=24, y=25, z=26)), onAction=showResult)
             w.show ()
-        b= skin.Button (parent=v, label='Search!', onAction=doSearch)
-        self.label= skin.Label (parent=v, text='None yet!')
+        b= cimarron.skin.Button (parent=v, label='Search!', onAction=doSearch)
+        self.label= cimarron.skin.Label (parent=v, text='None yet!')
         
         self.refresh ()
 
@@ -160,7 +160,7 @@ class BazController (Controller):
 
 class TestBazController (unittest.TestCase):
     def setUp (self):
-        self.app= App ()
+        self.app= cimarron.App ()
         self.baz= BazController (parent=self.app)
 
 if 0:

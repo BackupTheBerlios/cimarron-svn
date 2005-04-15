@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from papo.cimarron import skin
+from papo import cimarron
 
 from commonTests import abstractTestWidget, abstractTestVisibility
 from windowTests import TestWindow
@@ -41,7 +41,7 @@ class testGtkVisibility(abstractTestVisibility):
 
 class testGtkFocusable(TestCase):
     def testOnFocusIn (self):
-        other= skin.Entry (parent=self.parent)
+        other= cimarron.skin.Entry (parent=self.parent)
         self.widget.onFocusIn= self.focusOk
         other._widget.grab_focus ()
         self.widget._widget.grab_focus ()

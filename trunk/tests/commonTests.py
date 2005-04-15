@@ -1,15 +1,17 @@
 import unittest
 import sys
-from papo.cimarron import skin, App
+from papo import cimarron
 
 from papo.cimarron.skins.common import ForcedNo
+from papo.cimarron.controllers import App
 
 class abstractTestBasic(unittest.TestCase, object):
     def setUp(self):
+        cimarron.config()
         self.app = App()
         super (abstractTestBasic, self).setUp ()
     def testSkinArgv(self):
-        self.assertEqual(skin.__name__, 'papo.cimarron.skins.gtk2')
+        self.assertEqual(cimarron.skin.__name__, 'papo.cimarron.skins.gtk2')
     def tearDown(self):
         self.app.hide()
 
@@ -99,7 +101,7 @@ class abstractTestControl(abstractTestWidget):
 
     def testOnAction (self):
         self.widget.onAction= self.notify
-        skin_name  = skin.__name__.split('.')[-1]
+        skin_name  = cimarron.skin.__name__.split('.')[-1]
         if skin_name == 'gtk2':
             w = self.widget._widget
             try:

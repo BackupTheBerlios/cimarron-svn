@@ -1,5 +1,5 @@
 import unittest
-from papo.cimarron import skin
+from papo import cimarron
 from commonTests import abstractTestControl
 
 __all__ = ('TestEntry',
@@ -8,9 +8,9 @@ __all__ = ('TestEntry',
 class TestEntry(abstractTestControl):
     def setUp(self):
         super(TestEntry, self).setUp()
-        self.win = skin.Window(title='Test', parent=self.app)
-        self.parent = skin.VBox (parent= self.win)
-        self.widget = self.entry = skin.Entry(parent=self.parent)
+        self.win = cimarron.skin.Window(title='Test', parent=self.app)
+        self.parent = cimarron.skin.VBox (parent= self.win)
+        self.widget = self.entry = cimarron.skin.Entry(parent=self.parent)
         self.setUpControl()
 
     def testSetValue (self):

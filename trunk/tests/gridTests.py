@@ -1,6 +1,7 @@
 import unittest
-from papo.cimarron import skin, App
+from papo import cimarron
 from commonTests import abstractTestControl
+from papo.cimarron.controllers import App
 from papo.cimarron.skins.common import Controller
 
 __all__= ('TestGrid', )
@@ -17,7 +18,7 @@ class Grid (Controller):
         self.data= data
 
         super (Grid, self).__init__ (**kw)
-        self.widget= v= skin.VBox (parent=self.parent)
+        self.widget= v= cimarron.skin.VBox (parent=self.parent)
         self.__initialized= True
 
         # and then another update :(
@@ -39,13 +40,13 @@ class Grid (Controller):
         for i in xrange (len (self.data)):
             if len (self.buttons)<=i:
                 # the row does not exist, so we add it
-                h= skin.HBox (parent=self.widget)
-                self.buttons.append (skin.Button (parent=h, label=' '))
+                h= cimarron.skin.HBox (parent=self.widget)
+                self.buttons.append (cimarron.skin.Button (parent=h, label=' '))
             for j in xrange (len (self.columns)):
                 if self.entries.has_key ((i, j)):
                     self.entries[i, j].value= self.columns[j]['read'](self.data[i])
                 else:
-                    self.entries[i, j]= skin.Entry (
+                    self.entries[i, j]= cimarron.skin.Entry (
                         parent= h,
                         value= self.columns[j]['read'](self.data[i]),
                         onFocusIn= self.updateCursor,
@@ -102,7 +103,7 @@ class TestGrid (abstractTestControl):
             dict (name='Apellido', read=Person.getSurname, write=Person.setSurname, search=None),
             )
 
-        self.parent = self.win = skin.Window(title='Test', parent=self.app)
+        self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
         self.widget= self.grid= Grid (
             parent= self.parent,
             columns= columns,
