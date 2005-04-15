@@ -6,6 +6,7 @@ __all__ = ('TestHelloWorld',)
 
 class TestHelloWorld(unittest.TestCase):
     def setUp(self):
+        cimarron.config()
         self.app = App()
     def testSkinArgv(self):
         self.assertEqual(cimarron.skin.__name__, 'papo.cimarron.skins.gtk2')

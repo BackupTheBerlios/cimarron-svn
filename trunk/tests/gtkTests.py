@@ -41,14 +41,37 @@ class testGtkVisibility(abstractTestVisibility):
 
 class testGtkFocusable(TestCase):
     def testOnFocusIn (self):
+        import gtk
+
         other= cimarron.skin.Entry (parent=self.parent)
         self.widget.onFocusIn= self.focusOk
+        self.app.show ()
         other._widget.grab_focus ()
+        while gtk.events_pending ():
+            gtk.main_iteration ()
         self.widget._widget.grab_focus ()
+        while gtk.events_pending ():
+            gtk.main_iteration ()
         self.assert_ (self.passed)
 
-    def focusOk (self):
-        print 'here'
+    def testOnFocusOut (self):
+        import gtk
+        import gobject
+
+        other= cimarron.skin.Entry (parent=self.parent)
+        self.widget.onFocusOut= self.focusOk
+
+        self.app.show ()
+        self.widget._widget.grab_focus ()
+        while gtk.events_pending ():
+            gtk.main_iteration ()
+        other._widget.grab_focus ()
+        while gtk.events_pending ():
+            gtk.main_iteration ()
+        self.assert_ (self.passed)
+
+    def focusOk (self, *i):
+        print 'ok'
         self.passed= True
 
 class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
@@ -71,4 +94,3 @@ class TestGtkButton(testGtkParenting, TestButton):
 
 class TestGtkBoxes(testGtkParenting, TestBoxes):
     pass
-
