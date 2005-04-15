@@ -11,8 +11,10 @@ class Widget(object):
         super (Widget, self).__init__ (**kw)
         self.parent = parent
         self.delegates = []
-        if kw:
-            raise RuntimeError, 'unhandled keyword arguments %s' % repr(kw)
+#         if kw:
+#             raise RuntimeError, 'unhandled keyword arguments %s' % repr(kw)
+        for k, v in kw.items ():
+            setattr (self, k, v)
 
     def __set_parent(self, parent):
         if parent is not None:

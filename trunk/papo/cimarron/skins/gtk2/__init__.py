@@ -1,4 +1,5 @@
-from papo.cimarron.skins.common import Widget, Container, Control
+from new import instancemethod
+from papo.cimarron.skins.common import Widget, Container, Control, nullAction
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -18,6 +19,7 @@ class GtkVisibilityMixin(object):
 
 class GtkMixin(GtkVisibilityMixin):
     """
+        Takes care of the parenting issues under gtk2.
         Add this mixin class *before* any Widget-derived class.
     """
     def __set_parent(self, parent):
@@ -39,6 +41,38 @@ class GtkMixin(GtkVisibilityMixin):
             # only happens during init
             return None
     parent = property(__get_parent, __set_parent)
+
+class GtkFocusableMixin (GtkMixin):
+    """
+    """
+    def __init__ (self, onFocusIn=None, onFocusOut=None, **kw):
+        super (GtkFocusableMixin, self).__init__ (**kw)
+        self.onFocusIn= onFocusIn
+        self.onFocusOut= onFocusOut
+        self._widget.connect ('focus-in-event', self._focusIn)
+        self._widget.connect ('focus-out-event', self._focusOut)
+
+    def __get_on_focus_in (self):
+        return self.__on_focus_in
+    def __set_on_focus_in (self, onFocusIn):
+        if onFocusIn is None:
+            onFocusIn = nullAction
+        self.__on_focus_in= instancemethod (onFocusIn, self, Control)
+    onFocusIn= property (__get_on_focus_in, __set_on_focus_in)
+    def _focusIn (self, *ignore):
+        if self.onFocusIn is not None:
+            self.onFocusIn ()
+
+    def __get_on_focus_out (self):
+        return self.__on_focus_out
+    def __set_on_focus_out (self, onFocusOut):
+        if onFocusOut is None:
+            onFocusOut = nullAction
+        self.__on_focus_out= instancemethod (onFocusOut, self, Control)
+    onFocusOut= property (__get_on_focus_out, __set_on_focus_out)
+    def _focusOut (self, *ignore):
+        if self.onFocusOut is not None:
+            self.onFocusOut ()
 
 class Window(GtkVisibilityMixin, Container):
     def __init__(self, title='', **kw):
@@ -86,7 +120,7 @@ class Button(GtkMixin, Control):
         return self.__button.get_label()
     label = property(__get_label, __set_label)
 
-class Entry(GtkMixin, Control):
+class Entry(GtkFocusableMixin, Control):
     def __init__(self, **kw):
         self._widget= self.__entry= gtk.Entry ()
         super(Entry, self).__init__(**kw)
