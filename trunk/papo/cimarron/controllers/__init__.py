@@ -1,3 +1,4 @@
+from papo import cimarron
 from papo.cimarron.skins.common import Control, Container
 
 class Controller(Control):
@@ -19,4 +20,4 @@ class App(Controller, Container):
         super(App, self).__init__(**kw)
 
     def run(self):
-        skin._run()
+        cimarron.skin._run()
