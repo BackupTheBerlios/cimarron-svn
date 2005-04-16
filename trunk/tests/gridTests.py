@@ -49,8 +49,13 @@ class Grid (Controller):
                         parent= h,
                         value= self.columns[j]['read'](self.data[i]),
                         onFocusIn= self.updateCursor,
+                        onAction= self.updateData,
+                        column= j,
                         row= i,
                         )
+
+    def updateData (self, entry, *i):
+        self.columns[entry.column]['write'](self.data[entry.row], entry.value)
 
     def __set_index (self, index):
         if self.__initialized and self.index is not None:
@@ -80,14 +85,16 @@ class Person (object):
         self.setSurname (surname)
 
     def getName (self):
-        return self.name
+        return self.__name
     def setName (self, name):
-        self.name= name
+        self.__name= name
+    name= property (getName, setName)
 
     def getSurname (self):
-        return self.surname
+        return self.__surname
     def setSurname (self, sn):
-        self.surname= sn
+        self.__surname= sn
+    surname= property (getSurname, setSurname)
 
 class TestGrid (abstractTestControl):
     def setUp (self):
@@ -133,7 +140,16 @@ class TestGrid (abstractTestControl):
         self.widget.value= None
         self.assertEqual (self.widget.value, None)
 
+    def testWrite (self):
+        self.testData ()
+        # self.widget.entries[0, 0]._widget.set_text ('juan')
+        self.widget.entries[0, 0].value= 'juan'
+        self.widget.entries[0, 0].onAction ()
+        self.widget.index= 0
+        self.assertEqual (self.widget.value.name, 'juan')
+
 if 0:
     def testLive(self):
+        self.testData ()
         self.app.show()
         self.app.run ()

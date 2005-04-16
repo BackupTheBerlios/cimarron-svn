@@ -71,7 +71,6 @@ class testGtkFocusable(TestCase):
         self.assert_ (self.passed)
 
     def focusOk (self, *i):
-        print 'ok'
         self.passed= True
 
 class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
