@@ -23,14 +23,16 @@ class testGtkParenting (abstractTestWidget):
         self.assertEqual (self.widget._widget.parent, self.parent._widget)
 
     def testGtkChildInChildren (self):
-        self.assert_ (self.widget._widget in self.parent._widget.get_children ())
+        self.assert_ (self.widget._widget
+                      in self.parent._widget.get_children ())
 
 class testGtkVisibility(abstractTestVisibility):
     def testGtkShow(self):
         self.app.show()
         self.widget.hide()
         self.widget.show()
-        self.assert_(self.widget._widget.window is not None and self.widget._widget.window.is_visible())
+        self.assert_(self.widget._widget.window is not None
+                     and self.widget._widget.window.is_visible())
 
     def testGtkHide(self):
         self.app.show()

@@ -1,12 +1,13 @@
 import unittest
 from pprint import pformat
 from papo import cimarron
-from papo.cimarron.controllers import Controller
+from papo.cimarron.controllers import Controller, App
 from commonTests import abstractTestControl
 
 __all__ = ('TestController',
            'TestBarController',
-           'TestBazController')
+           'TestApp',
+           )
 
 class FooController(Controller):
     def __init__(self, **kw):
@@ -24,7 +25,7 @@ class FooController(Controller):
         # connect them
         def onButtonAction(button, *a):
             # we put this Controller in the place of the Button
-            # so the action seems to come (and indeed does!) from the controller
+            # so the action seems to come (as it does!) from the controller
             self.onAction(*a)
         self.button.onAction= onButtonAction
         self.entry.onAction= self.changeModel
@@ -53,7 +54,8 @@ class TestController(abstractTestControl):
                           baz=3)
 
         super (TestController, self).setUp ()
-        self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
+        self.parent = self.win = cimarron.skin.Window(title='Test',
+                                                      parent=self.app)
         self.widget= FooController (parent=self.win, value=self.value)
 
     def testModel (self):
@@ -64,8 +66,10 @@ class TestController(abstractTestControl):
     def testChangeModel(self):
         self.widget.entry.value = 'quux:5'
         self.widget.entry.onAction(self.widget)
-        self.assertEqual(self.widget.label.text, '5', 'Label was not updated')
-        self.assertEqual(self.widget.entry.value, 'quux', 'Entry was not updated')
+        self.assertEqual(self.widget.label.text, '5',
+                         'Label was not updated')
+        self.assertEqual(self.widget.entry.value, 'quux',
+                         'Entry was not updated')
 
     def testRefresh(self):
         self.value['foo'] = '7'
@@ -90,12 +94,14 @@ class BarController (Controller):
 
         def onFooAction(foo, *a):
             self.onAction(*a)
-        self.foo= FooController (parent=v, value=self.value[self.index], onAction=onFooAction)
+        self.foo= FooController (parent=v, value=self.value[self.index],
+                                 onAction=onFooAction)
 
         def onOkAction(ok, *a):
             print 'here'
             self.onAction (self.foo.value)
-        self.ok= cimarron.skin.Button (parent= v, label='Ok', onAction=onOkAction)
+        self.ok= cimarron.skin.Button (parent= v, label='Ok',
+                                       onAction=onOkAction)
 
         def roll(button, *a):
             try:
@@ -118,53 +124,40 @@ class TestBarController (abstractTestControl):
                            bar=2,
                            baz=3), dict (a=1, b= 2, c= 3))
         super (TestBarController, self).setUp ()
-        self.parent = self.win = cimarron.skin.Window(title='Test 2', parent=self.app)
+        self.parent = self.win = cimarron.skin.Window(title='Test 2',
+                                                      parent=self.app)
         def here (*a):
             print 'here!'
-        self.widget= BarController (parent=self.win, value=self.value, onAction=here)
+        self.widget= BarController (parent=self.win, value=self.value,
+                                    onAction=here)
 
 
     def testRoll (self):
         self.widget.next.onAction()
 
-if 0:
-    def tearDown(self):
-        import gtk
+class TestApp(unittest.TestCase):
+    def setUp(self):
+        cimarron.config()
+        self.app = App()
+        self.win1 = cimarron.skin.Window(parent=self.app)
+        self.win2 = cimarron.skin.Window(parent=self.app)
         self.app.show()
-        gtk.main()
-
-class BazController (Controller):
-    def __init__ (self, **kw):
-        super (BazController, self).__init__ (**kw)
-        self.win= cimarron.skin.Window (parent=self.parent, title='Baz me the foo with the bar!')
-        v= cimarron.skin.VBox (parent= self.win)
-
-        def showResult (bar, value, *a):
-            self.label.text= pformat (value)
-
-        def doSearch (button, *a):
-            print 'searching'
-            w= cimarron.skin.Window (parent= self.parent, title='Select one please')
-            BarController (parent=w, value= (dict (a=1, b=2, c=3), dict (x=24, y=25, z=26)), onAction=showResult)
-            w.show ()
-        b= cimarron.skin.Button (parent=v, label='Search!', onAction=doSearch)
-        self.label= cimarron.skin.Label (parent=v, text='None yet!')
-        
-        self.refresh ()
-
-    def refresh (self):
-        pass
-
-    def show (self):
-        self.win.show ()
-
-class TestBazController (unittest.TestCase):
-    def setUp (self):
-        self.app= cimarron.App ()
-        self.baz= BazController (parent=self.app)
-
-if 0:
-    def testMe (self):
-        # self.app.run ()
-        self.app.show ()
-        self.app.run ()
+    def testAppContinuesAfterWindowCloseIfMoreWindowsRemain(self):
+        self.win1.hide()
+        self.assert_(self.win2.visible)
+    def testAppFinishesAfterLastWindowCloses(self):
+        def cb(*a):
+            self.win1.hide()
+            self.win2.hide()
+            self.dunnit = True
+        self.app.schedule(100, cb)
+        self.app.run()
+        self.assert_(self.dunnit, 'got here!')
+    
+    def testScheduledEventsRun(self):
+        def cb(*a):
+            self.dunnit = True
+            self.app.quit()
+        self.app.schedule(100, cb)
+        self.app.run()
+        self.assert_(self.dunnit)

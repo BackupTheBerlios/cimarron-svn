@@ -9,8 +9,8 @@ class Widget(object):
 
     def __init__(self, parent=None, **kw):
         super (Widget, self).__init__ (**kw)
-        self.parent = parent
         self.delegates = []
+        self.parent = parent
         for k, v in kw.items ():
             setattr (self, k, v)
 
@@ -34,13 +34,13 @@ class Widget(object):
             return self.__skin
     skin = property(__get_skin)
 
-    def delegate(self, message):
+    def delegate(self, message, *args):
         if self.delegates:
             truthTable = ((Unknown, Yes, No), (Yes, Yes, Yes), (No, Yes, No))
             av= Unknown
             for i in self.delegates:
                 try:
-                    rv= getattr(i, message)(self)
+                    rv= getattr(i, message)(self, *args)
                     av= truthTable[av][rv]
                 except AttributeError:
                     rv = Unknown
@@ -61,7 +61,8 @@ class Container(Widget):
 
     def hide(self):
         for i in self.children:
-            i.hide()
+            if i.delegate('will_hide'):
+                i.hide()
 
     def __get_children(self):
         return iter(self._children)

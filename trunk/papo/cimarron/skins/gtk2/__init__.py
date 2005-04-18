@@ -2,7 +2,7 @@ from new import instancemethod
 from papo.cimarron.skins.common import Widget, Container, Control, nullAction
 import pygtk
 pygtk.require('2.0')
-import gtk
+import gtk, gobject
 
 class GtkVisibilityMixin(object):
     def __get_visible(self):
@@ -153,3 +153,16 @@ class HBox(GtkParentizableMixin, Container):
 
 def _run():
     gtk.main()
+
+def _quit():
+    if gtk.main_level():
+        gtk.main_quit()
+
+def _schedule(timeout, callback, repeat=False):
+    def cb():
+        gobject.timeout_add(timeout, callback)
+        if repeat:
+            cb()
+    cb()
+
+            

@@ -41,6 +41,8 @@ class abstractTestDelegate(abstractTestBasic):
         
     def testDelegate(self):
         self.assertEqual(self.widget.delegate('foo'), True)
+    def testDelegateArgs(self):
+        self.assertEqual(self.widget.delegate('foo', self), True)
     def testSingleDelegationFail(self):
         self.widget.delegates.append(self.delegate_forcedNo)
         self.assertEqual(self.widget.delegate('foo'), False)
@@ -78,8 +80,11 @@ class abstractTestVisibility(unittest.TestCase):
     def testUnableToHide(self):
         self.widget.delegates.append(self)
         self.app.show()
+        self.assertEqual(self.widget.visible, True,
+                         'widget visible before hiding')
         self.widget.hide()
-        self.assertEqual(self.widget.visible, True)
+        self.assertEqual(self.widget.visible, True,
+                         'widget not visible after attempted hiding')
 
     def will_hide(self, target):
         return ForcedNo
@@ -109,7 +114,8 @@ class abstractTestControl(abstractTestWidget):
             except AttributeError:
                 w.activate ()
         else:
-            raise NotImplementedError, 'write skin-specific test, please, mastah!'
+            raise NotImplementedError, \
+                  'write skin-specific test, please, mastah!'
         self.assert_(self.widget in self.messages_recieved)
 
     def notify(self, origin):
