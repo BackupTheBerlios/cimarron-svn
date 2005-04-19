@@ -43,3 +43,77 @@ class App(Controller, Container):
 
     def schedule(self, timeout, callback, repeat=False):
         return cimarron.skin._schedule(timeout, callback, repeat)
+
+class Grid (Controller):
+    def __init__ (self, data=[], columns=None, **kw):
+        self.__initialized= False
+        self.columns= columns
+        self.buttons= []
+        self.entries= {}
+
+        # these two update the view :(
+        self.index= None
+        self.data= data
+
+        super (Grid, self).__init__ (**kw)
+        self.widget= v= cimarron.skin.VBox (parent=self.parent)
+        self.__initialized= True
+
+        # and then another update :(
+        #self.update ()
+
+    def updateCursor (self, entry, *ignore):
+        self.index= entry.row
+
+    def __set_data (self, data):
+        self.__data= data
+        self.update ()
+        if len (data)>0:
+            self.index= 0
+    def __get_data (self):
+        return self.__data
+    data= property (__get_data, __set_data)
+
+    def update (self):
+        for i in xrange (len (self.data)):
+            if len (self.buttons)<=i:
+                # the row does not exist, so we add it
+                h= cimarron.skin.HBox (parent=self.widget)
+                self.buttons.append (cimarron.skin.Button (parent=h, label=' '))
+            for j in xrange (len (self.columns)):
+                if self.entries.has_key ((i, j)):
+                    self.entries[i, j].value= self.columns[j]['read'](self.data[i])
+                else:
+                    self.entries[i, j]= cimarron.skin.Entry (
+                        parent= h,
+                        value= self.columns[j]['read'](self.data[i]),
+                        onFocusIn= self.updateCursor,
+                        onAction= self.updateData,
+                        column= j,
+                        row= i,
+                        )
+
+    def updateData (self, entry, *i):
+        self.columns[entry.column]['write'](self.data[entry.row], entry.value)
+
+    def __set_index (self, index):
+        if self.__initialized and self.index is not None:
+            self.buttons[self.index].label= ' '
+            self.buttons[index].label= '>'
+        self.__index= index
+    def __get_index (self):
+        return self.__index
+    index= property (__get_index, __set_index)
+
+    def __get_value (self):
+        ans= None
+        if self.index is not None:
+            ans= self.data[self.index]
+        return ans
+    def __set_value (self, value):
+        try:
+            index= self.data.index (value)
+        except ValueError:
+            index= None
+        self.index= index
+    value= property (__get_value, __set_value)
