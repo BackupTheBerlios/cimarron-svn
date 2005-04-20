@@ -56,8 +56,10 @@ class GtkFocusableMixin(object):
         return self.__on_focus_in
     def __set_on_focus_in (self, onFocusIn):
         if onFocusIn is None:
-            onFocusIn = nullAction
-        self.__on_focus_in= instancemethod (onFocusIn, self, Control)
+#             onFocusIn = nullAction
+            self.__on_focus_in= None
+        else:
+            self.__on_focus_in= instancemethod (onFocusIn, self, Control)
     onFocusIn= property (__get_on_focus_in, __set_on_focus_in)
     def _focusIn (self, *ignore):
         if self.onFocusIn is not None:
@@ -67,12 +69,17 @@ class GtkFocusableMixin(object):
         return self.__on_focus_out
     def __set_on_focus_out (self, onFocusOut):
         if onFocusOut is None:
-            onFocusOut = nullAction
-        self.__on_focus_out= instancemethod (onFocusOut, self, Control)
+#             onFocusOut = nullAction
+            self.__on_focus_out= None
+        else:
+            self.__on_focus_out= instancemethod (onFocusOut, self, Control)
     onFocusOut= property (__get_on_focus_out, __set_on_focus_out)
     def _focusOut (self, *ignore):
         if self.onFocusOut is not None:
             self.onFocusOut ()
+
+    def focus (self):
+        self._widget.grab_focus ()
 
 class Window(GtkVisibilityMixin, Container):
     def __init__(self, title='', **kw):
@@ -107,7 +114,7 @@ class Label(GtkParentizableMixin, Widget):
         return self.__label.get_text()
     text = property(__get_text, __set_text)
 
-class Button(GtkParentizableMixin, Control):
+class Button(GtkParentizableMixin, GtkFocusableMixin, Control):
     def __init__(self, label='', **kw):
         self._widget = self.__button = gtk.Button()
         super(Button, self).__init__(**kw)
@@ -164,5 +171,3 @@ def _schedule(timeout, callback, repeat=False):
         if repeat:
             cb()
     cb()
-
-            

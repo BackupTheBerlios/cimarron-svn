@@ -44,36 +44,57 @@ class testGtkVisibility(abstractTestVisibility):
 class testGtkFocusable(TestCase):
     def testOnFocusIn (self):
         import gtk
+        import gobject
 
         other= cimarron.skin.Entry (parent=self.parent)
         self.widget.onFocusIn= self.focusOk
-        self.app.show ()
         other._widget.grab_focus ()
-        while gtk.events_pending ():
-            gtk.main_iteration ()
-        self.widget._widget.grab_focus ()
-        while gtk.events_pending ():
-            gtk.main_iteration ()
+
+        self.app.show ()
+        gobject.timeout_add (100, self.doTestFocusIn)
+        gobject.timeout_add (500, gtk.main_quit)
+        self.app.run ()
         self.assert_ (self.passed)
+
+    def doTestFocusIn (self, *ignore):
+        self.widget._widget.grab_focus ()
 
     def testOnFocusOut (self):
         import gtk
         import gobject
 
-        other= cimarron.skin.Entry (parent=self.parent)
+        self.other= cimarron.skin.Entry (parent=self.parent)
         self.widget.onFocusOut= self.focusOk
+        self.widget._widget.grab_focus ()
 
         self.app.show ()
-        self.widget._widget.grab_focus ()
-        while gtk.events_pending ():
-            gtk.main_iteration ()
-        other._widget.grab_focus ()
-        while gtk.events_pending ():
-            gtk.main_iteration ()
+        gobject.timeout_add (100, self.doTestFocusOut)
+        gobject.timeout_add (500, gtk.main_quit)
+        self.app.run ()
         self.assert_ (self.passed)
+
+    def doTestFocusOut (self, *ignore):
+        self.other._widget.grab_focus ()
 
     def focusOk (self, *i):
         self.passed= True
+
+    def testFocus (self):
+        import gtk
+        import gobject
+
+        self.widget.onFocusIn= self.focusOk
+        other= cimarron.skin.Entry (parent=self.parent)
+        other._widget.grab_focus ()
+
+        self.app.show ()
+        gobject.timeout_add (100, self.doTestFocus)
+        gobject.timeout_add (500, gtk.main_quit)
+        self.app.run ()
+        self.assert_ (self.passed)
+
+    def doTestFocus (self, *ignore):
+        self.widget.focus ()
 
 class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
     def testSetValue (self):
@@ -88,7 +109,7 @@ class TestGtkLabel(testGtkParenting, TestLabel):
         self.widget.text= 'This is a label'
         self.assertEqual (self.widget.text, self.widget._widget.get_text ())
 
-class TestGtkButton(testGtkParenting, TestButton):
+class TestGtkButton(testGtkFocusable, testGtkParenting, TestButton):
     def testSetLabel (self):
         self.widget.label= "Don't click me"
         self.assertEqual(self.widget.label, self.widget._widget.get_label ())
