@@ -21,7 +21,7 @@ class WindowContainer(list):
     def append(self, window):
         super(WindowContainer, self).append(window)
         window.delegates.append(self.__controller)
-        
+
 
 class App(Controller, Container):
     def __init__(self, **kw):
@@ -51,16 +51,12 @@ class Grid (Controller):
         self.buttons= []
         self.entries= {}
 
-        # these two update the view :(
         self.index= None
         self.data= data
 
         super (Grid, self).__init__ (**kw)
         self.widget= v= cimarron.skin.VBox (parent=self.parent)
         self.__initialized= True
-
-        # and then another update :(
-        #self.update ()
 
     def updateCursor (self, entry, *ignore):
         self.index= entry.row
@@ -79,7 +75,10 @@ class Grid (Controller):
             if len (self.buttons)<=i:
                 # the row does not exist, so we add it
                 h= cimarron.skin.HBox (parent=self.widget)
-                self.buttons.append (cimarron.skin.Button (parent=h, label=' '))
+                self.buttons.append (cimarron.skin.Button (
+                    parent= h,
+                    label= ' ',
+                    ))
             for j in xrange (len (self.columns)):
                 if self.entries.has_key ((i, j)):
                     self.entries[i, j].value= self.columns[j]['read'](self.data[i])
@@ -117,3 +116,31 @@ class Grid (Controller):
             index= None
         self.index= index
     value= property (__get_value, __set_value)
+
+class Search (Controller):
+    def __init__ (self, search= None, entries= [], **kw):
+        super (Search, self).__init__ (**kw)
+        self.search= search
+        box= HBox (
+            parent= self.parent,
+            )
+
+        self.entries= []
+        for e in entries:
+            e.parent= box
+            e.onAction= self.doSearch
+            self.entries.append (e)
+
+    def doSearch (self, *ignore):
+        data= []
+        for e in self.entries:
+            data.append (e.value)
+
+        ans= self.search (data)
+        if len (ans)==0:
+            self.value= None
+        elif len (ans)==1:
+            self.value= ans[0]
+        else:
+            # select
+            self.value= ans[-1]
