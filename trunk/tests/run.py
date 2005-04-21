@@ -13,6 +13,7 @@ from hello import *
 from gtkTests import *
 from controllerTests import *
 from gridTests import *
+from searchTests import *
 
 if __name__ == '__main__':
     argv = list(sys.argv)

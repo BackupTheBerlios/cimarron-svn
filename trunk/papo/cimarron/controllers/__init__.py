@@ -118,18 +118,29 @@ class Grid (Controller):
     value= property (__get_value, __set_value)
 
 class Search (Controller):
-    def __init__ (self, search= None, entries= [], **kw):
+    def __init__ (self, **kw):
         super (Search, self).__init__ (**kw)
-        self.search= search
-        box= HBox (
+        self.entries= []
+        self.value= None
+
+        self.box= cimarron.skin.HBox (
             parent= self.parent,
             )
-
-        self.entries= []
-        for e in entries:
-            e.parent= box
+        self.buildEntries ()
+        for e in self.entries:
             e.onAction= self.doSearch
-            self.entries.append (e)
+
+        b= cimarron.skin.Button (
+            parent= self.box,
+            label= 'Search!',
+            onAction= self.doSearch,
+            )
+        
+        # socking tests
+        self._widget= b._widget
+        
+    def buildEntries (self):
+        raise NotImplementedError
 
     def doSearch (self, *ignore):
         data= []
@@ -144,3 +155,11 @@ class Search (Controller):
         else:
             # select
             self.value= ans[-1]
+        self.onAction ()
+    
+    def search (self, *data):
+        raise NotImplementedError
+    
+    def refresh (self):
+        raise NotImplementedError
+    

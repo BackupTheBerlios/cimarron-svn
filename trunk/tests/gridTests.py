@@ -3,7 +3,7 @@ from papo import cimarron
 from commonTests import abstractTestControl
 from papo.cimarron.controllers import App, Grid
 
-__all__= ('TestGrid', )
+__all__= ('TestGrid', 'Person')
 
 
 class Person (object):

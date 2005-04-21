@@ -59,7 +59,7 @@ class GtkFocusableMixin(object):
 #             onFocusIn = nullAction
             self.__on_focus_in= None
         else:
-            self.__on_focus_in= instancemethod (onFocusIn, self, Control)
+            self.__on_focus_in= instancemethod (onFocusIn, self, type (self))
     onFocusIn= property (__get_on_focus_in, __set_on_focus_in)
     def _focusIn (self, *ignore):
         if self.onFocusIn is not None:
@@ -72,7 +72,7 @@ class GtkFocusableMixin(object):
 #             onFocusOut = nullAction
             self.__on_focus_out= None
         else:
-            self.__on_focus_out= instancemethod (onFocusOut, self, Control)
+            self.__on_focus_out= instancemethod (onFocusOut, self, type (self))
     onFocusOut= property (__get_on_focus_out, __set_on_focus_out)
     def _focusOut (self, *ignore):
         if self.onFocusOut is not None:
@@ -133,6 +133,7 @@ class Entry(GtkParentizableMixin, GtkFocusableMixin, Control):
         super(Entry, self).__init__(**kw)
         self.update ()
         self.__entry.connect ('activate', self._activate)
+        self.onFocusOut= self.__copyValue
 
     def __get_value (self):
         return self.__value
@@ -143,6 +144,8 @@ class Entry(GtkParentizableMixin, GtkFocusableMixin, Control):
 
     def update (self):
         self.__entry.set_text (self.value)
+    def __copyValue (self, *ignore):
+        self.__value= self.__entry.get_text ()
 
     def _activate (self, *ignore):
         self.__value= self.__entry.get_text ()
