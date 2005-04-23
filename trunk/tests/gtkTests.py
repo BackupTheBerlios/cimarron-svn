@@ -1,4 +1,8 @@
 from unittest import TestCase
+import pygtk
+pygtk.require ('2.0')
+import gtk
+import gobject
 
 from papo import cimarron
 
@@ -42,13 +46,13 @@ class testGtkVisibility(abstractTestVisibility):
                      "calling hide on the widget didn't actually hide it")
 
 class testGtkFocusable(TestCase):
-    def testOnFocusIn (self):
-        import gtk
-        import gobject
+    def setUp (self):
+        super (testGtkFocusable, self).setUp ()
+        self.other= cimarron.skin.Entry (parent=self.parent)
+        self.widget.delegates.append (self)
 
-        other= cimarron.skin.Entry (parent=self.parent)
-        self.widget.onFocusIn= self.focusOk
-        other._widget.grab_focus ()
+    def testOnFocusIn (self):
+        self.other._widget.grab_focus ()
 
         self.app.show ()
         gobject.timeout_add (100, self.doTestFocusIn)
@@ -60,11 +64,6 @@ class testGtkFocusable(TestCase):
         self.widget._widget.grab_focus ()
 
     def testOnFocusOut (self):
-        import gtk
-        import gobject
-
-        self.other= cimarron.skin.Entry (parent=self.parent)
-        self.widget.onFocusOut= self.focusOk
         self.widget._widget.grab_focus ()
 
         self.app.show ()
@@ -78,20 +77,17 @@ class testGtkFocusable(TestCase):
 
     def focusOk (self, *i):
         self.passed= True
+    will_focus_in= focusOk
+    will_focus_out= focusOk
 
     def testFocus (self):
-        import gtk
-        import gobject
-
-        self.widget.onFocusIn= self.focusOk
-        other= cimarron.skin.Entry (parent=self.parent)
-        other._widget.grab_focus ()
+        self.other._widget.grab_focus ()
 
         self.app.show ()
         gobject.timeout_add (100, self.doTestFocus)
         gobject.timeout_add (500, gtk.main_quit)
         self.app.run ()
-        self.assert_ (self.passed)
+        self.assert_ (self.widget._widget.is_focus ())
 
     def doTestFocus (self, *ignore):
         self.widget.focus ()

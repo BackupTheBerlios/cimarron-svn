@@ -1,8 +1,9 @@
 from new import instancemethod
-from papo.cimarron.skins.common import Widget, Container, Control, nullAction
 import pygtk
 pygtk.require('2.0')
 import gtk, gobject
+
+from papo.cimarron.skins.common import Widget, Container, Control, nullAction, Unknown
 
 class GtkVisibilityMixin(object):
     def __get_visible(self):
@@ -52,31 +53,13 @@ class GtkFocusableMixin(object):
         self._widget.connect ('focus-in-event', self._focusIn)
         self._widget.connect ('focus-out-event', self._focusOut)
 
-    def __get_on_focus_in (self):
-        return self.__on_focus_in
-    def __set_on_focus_in (self, onFocusIn):
-        if onFocusIn is None:
-#             onFocusIn = nullAction
-            self.__on_focus_in= None
-        else:
-            self.__on_focus_in= instancemethod (onFocusIn, self, type (self))
-    onFocusIn= property (__get_on_focus_in, __set_on_focus_in)
     def _focusIn (self, *ignore):
-        if self.onFocusIn is not None:
-            self.onFocusIn ()
+        # print "I'm in!", self
+        return not self.delegate ('will_focus_in')
 
-    def __get_on_focus_out (self):
-        return self.__on_focus_out
-    def __set_on_focus_out (self, onFocusOut):
-        if onFocusOut is None:
-#             onFocusOut = nullAction
-            self.__on_focus_out= None
-        else:
-            self.__on_focus_out= instancemethod (onFocusOut, self, type (self))
-    onFocusOut= property (__get_on_focus_out, __set_on_focus_out)
     def _focusOut (self, *ignore):
-        if self.onFocusOut is not None:
-            self.onFocusOut ()
+        # print "I'm out!", self
+        return not self.delegate ('will_focus_out')
 
     def focus (self):
         self._widget.grab_focus ()
@@ -133,7 +116,7 @@ class Entry(GtkParentizableMixin, GtkFocusableMixin, Control):
         super(Entry, self).__init__(**kw)
         self.update ()
         self.__entry.connect ('activate', self._activate)
-        self.onFocusOut= self.__copyValue
+        self.delegates.append (self)
 
     def __get_value (self):
         return self.__value
@@ -144,8 +127,9 @@ class Entry(GtkParentizableMixin, GtkFocusableMixin, Control):
 
     def update (self):
         self.__entry.set_text (self.value)
-    def __copyValue (self, *ignore):
+    def will_focus_out (self, *ignore):
         self.__value= self.__entry.get_text ()
+        return Unknown
 
     def _activate (self, *ignore):
         self.__value= self.__entry.get_text ()
