@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, re
 import unittest
 
 try:
@@ -6,19 +6,25 @@ try:
 except ImportError:
     sys.path.append(os.path.abspath('..'))
 
-#if __name__ == '__main__':
-#    all = sys.argv.count('-a')
+moduleNames = ['controllerTests', 'gridTests']
 
-from hello import *
-from gtkTests import *
-from controllerTests import *
-from gridTests import *
+argv = list(sys.argv)
+skin = 'gtk2'
+for i, v in enumerate(sys.argv):
+    if v in ('-v', '-q'):
+        # these are for for unittest.main
+        sys.argv.pop(i)
+    elif v == '-a':
+        # '-a' is for commonTests.abstractTestDelegateGenerated
+        argv.pop(i)
+    elif v.startswith('--skin='):
+        # '--skin=foo' is for importing skin-specific tests
+        argv.pop(i)
+        skin = re.match('--skin=(.*)', v).group(1).strip()
+moduleNames.append(skin+'Tests')
 from searchTests import *
 
-if __name__ == '__main__':
-    argv = list(sys.argv)
-    while sys.argv.count('-v'):
-        sys.argv.remove('-v')
-    #while sys.argv.count('-a'):
-    #    sys.argv.remove('-a')
-    unittest.main(argv=argv)
+for i in moduleNames:
+    exec 'from %s import *' % i
+
+unittest.main(argv=argv)

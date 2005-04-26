@@ -14,6 +14,7 @@ class abstractTestBasic(unittest.TestCase, object):
         self.assertEqual(cimarron.skin.__name__, 'papo.cimarron.skins.gtk2')
     def tearDown(self):
         self.app.hide()
+        self.app.quit()
 
 class abstractTestDelegate(abstractTestBasic):
     def setUp(self):
@@ -56,7 +57,7 @@ class abstractTestDelegate(abstractTestBasic):
         self.widget.delegates.append(self.delegate_yes)
         self.assertEqual(self.widget.delegate('foo'), True)
 
-if 0:
+if sys.argv.count('-a'):
     from generated import abstractTestDelegateGenerated
 else:
     class abstractTestDelegateGenerated(abstractTestDelegate): pass
@@ -85,6 +86,7 @@ class abstractTestVisibility(unittest.TestCase):
         self.widget.hide()
         self.assertEqual(self.widget.visible, True,
                          'widget not visible after attempted hiding')
+        self.widget.delegates.remove(self)
 
     def will_hide(self, target):
         return ForcedNo

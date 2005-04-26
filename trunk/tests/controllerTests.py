@@ -161,3 +161,6 @@ class TestApp(unittest.TestCase):
         self.app.schedule(100, cb)
         self.app.run()
         self.assert_(self.dunnit)
+    def tearDown(self):
+        self.app.hide()
+        self.app.quit()
