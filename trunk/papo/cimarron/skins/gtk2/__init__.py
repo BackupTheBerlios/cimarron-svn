@@ -32,8 +32,8 @@ class GtkParentizableMixin(object):
             else:
                 raise NotImplementedError, 'Cannot reparent'
         if parent is not None:
-            parent._children.append(self)
             parent._widget.add(self._widget)
+            parent._children.append(self)
             self.__parent = parent
     def __get_parent(self):
         try:
@@ -116,6 +116,7 @@ class Entry(GtkParentizableMixin, GtkFocusableMixin, Control):
         super(Entry, self).__init__(**kw)
         self.update ()
         self.__entry.connect ('activate', self._activate)
+        self.__entry.connect ('key-press-event', self._keypressed)
         self.delegates.append (self)
 
     def __get_value (self):
@@ -134,6 +135,11 @@ class Entry(GtkParentizableMixin, GtkFocusableMixin, Control):
     def _activate (self, *ignore):
         self.__value= self.__entry.get_text ()
         super (Entry, self)._activate ()
+    def _keypressed (self, widget, key_event, *ignore):
+        # gotta find the symbolics of these
+        if key_event.keyval==gtk.keysyms.Escape:
+            # esc; `reset' the value
+            self.update ()
 
 class VBox(GtkParentizableMixin, Container):
     def __init__ (self, **kw):
@@ -144,6 +150,21 @@ class HBox(GtkParentizableMixin, Container):
     def __init__ (self, **kw):
         self._widget= self.__vbox = gtk.HBox()
         super (HBox, self).__init__ (**kw)
+
+class NotebookChildren (list):
+    def __init__ (self, notebook):
+        self.notebook= notebook
+    def append (self, other):
+        label= gtk.Label()
+        label.set_text (other.label)
+        self.notebook._widget.set_tab_label (other._widget, label)
+        super (NotebookChildren, self).append (other)
+            
+class Notebook (GtkParentizableMixin, Container):
+    def __init__ (self, **kw):
+        self._widget= self.__notebook= gtk.Notebook ()
+        super (Notebook, self).__init__ (**kw)
+        self._children= NotebookChildren (self)
 
 def _run():
     gtk.main()

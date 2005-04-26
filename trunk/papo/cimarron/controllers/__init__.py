@@ -147,7 +147,7 @@ class SelectionWindow (Controller):
             parent= v,
             columns= columns
         )
-        h= cimarron.skin.VBox (parent=v)
+        h= cimarron.skin.HBox (parent=v)
         self.ok= cimarron.skin.Button (
             parent= h,
             label= 'Ok',
@@ -204,8 +204,6 @@ class Search (Controller):
 
         # build the selection window
         self.selwin= SelectionWindow (
-            # we need to reach the app, or not setting a parent is ok?
-            # parent= ,
             columns= self.columns,
             onAction= self.selected,
             )

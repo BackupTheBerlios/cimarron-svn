@@ -1,6 +1,11 @@
 from unittest import TestCase
+import pygtk
+pygtk.require ('2.0')
+import gtk
+import gobject
 
 from papo import cimarron
+from papo.cimarron.skins.common import Unknown
 
 from commonTests import abstractTestWidget, abstractTestVisibility
 from windowTests import TestWindow
@@ -42,38 +47,55 @@ class testGtkVisibility(abstractTestVisibility):
                      "calling hide on the widget didn't actually hide it")
 
 class testGtkFocusable(TestCase):
-    def testOnFocusIn (self):
-        import gtk
+    def setUp (self):
+        super (testGtkFocusable, self).setUp ()
+        self.other= cimarron.skin.Entry (parent=self.parent)
+        self.widget.delegates.append (self)
 
-        other= cimarron.skin.Entry (parent=self.parent)
-        self.widget.onFocusIn= self.focusOk
-        self.app.show ()
-        other._widget.grab_focus ()
-        while gtk.events_pending ():
-            gtk.main_iteration ()
-        self.widget._widget.grab_focus ()
-        while gtk.events_pending ():
-            gtk.main_iteration ()
-        self.assert_ (self.passed)
+#     def testOnFocusIn (self):
+#         import gtk
 
-    def testOnFocusOut (self):
-        import gtk
-        import gobject
+#         other= cimarron.skin.Entry (parent=self.parent)
+#         self.widget.onFocusIn= self.focusOk
+#         self.app.show ()
+#         other._widget.grab_focus ()
+#         while gtk.events_pending ():
+#             gtk.main_iteration ()
+#         self.widget._widget.grab_focus ()
+#         while gtk.events_pending ():
+#             gtk.main_iteration ()
+#         self.assert_ (self.passed)
 
-        other= cimarron.skin.Entry (parent=self.parent)
-        self.widget.onFocusOut= self.focusOk
+#     def testOnFocusOut (self):
+#         import gtk
+#         import gobject
 
-        self.app.show ()
-        self.widget._widget.grab_focus ()
-        while gtk.events_pending ():
-            gtk.main_iteration ()
-        other._widget.grab_focus ()
-        while gtk.events_pending ():
-            gtk.main_iteration ()
-        self.assert_ (self.passed)
+#         other= cimarron.skin.Entry (parent=self.parent)
+#         self.widget.onFocusOut= self.focusOk
+
+#         self.app.show ()
+#         self.widget._widget.grab_focus ()
+#         while gtk.events_pending ():
+#             gtk.main_iteration ()
+#         other._widget.grab_focus ()
+#         while gtk.events_pending ():
+#             gtk.main_iteration ()
+#         self.assert_ (self.passed)
 
     def focusOk (self, *i):
         self.passed= True
+
+    def testFocus (self):
+        self.other._widget.grab_focus ()
+
+        self.app.show ()
+        gobject.timeout_add (100, self.doTestFocus)
+        gobject.timeout_add (500, gtk.main_quit)
+        self.app.run ()
+        self.assert_ (self.widget._widget.is_focus ())
+
+    def doTestFocus (self, *ignore):
+        self.widget.focus ()
 
 class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
     def testSetValue (self):
@@ -88,7 +110,7 @@ class TestGtkLabel(testGtkParenting, TestLabel):
         self.widget.text= 'This is a label'
         self.assertEqual (self.widget.text, self.widget._widget.get_text ())
 
-class TestGtkButton(testGtkParenting, TestButton):
+class TestGtkButton(testGtkFocusable, testGtkParenting, TestButton):
     def testSetLabel (self):
         self.widget.label= "Don't click me"
         self.assertEqual(self.widget.label, self.widget._widget.get_label ())

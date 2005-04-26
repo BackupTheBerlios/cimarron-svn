@@ -80,23 +80,6 @@ class TestSearch (abstractTestControl):
             self.widget.doSearch ()
             self.assertEqual (self.widget.value, self.data[i/2])
 
-    def testSomeFound (self):
-        self.widget.data= self.data
-        searchingValues= (
-            ('jo', '', self.data[2]),
-            ('', 'd',  self.data[3]),
-            )
-        for i in xrange (len (searchingValues)):
-            for j in xrange (2):
-                self.widget.entries[j].value= searchingValues[i][j]
-            self.widget.doSearch ()
-            self.assertEqual (self.widget.value, searchingValues[i][2])
-
     def testOnAction (self):
         self.widget.data= self.data
         super (TestSearch, self).testOnAction ()
-
-    def testVisual (self):
-        self.widget.data= self.data
-        self.app.show ()
-        self.app.run ()

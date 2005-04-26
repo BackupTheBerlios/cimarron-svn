@@ -40,6 +40,7 @@ class TestGrid (abstractTestControl):
         self.widget= self.grid= Grid (
             parent= self.parent,
             columns= columns,
+            rows= 5,
             )
 
         # so testValue passes
@@ -71,9 +72,3 @@ class TestGrid (abstractTestControl):
         self.widget.entries[0, 0].onAction ()
         self.widget.index= 0
         self.assertEqual (self.widget.value.name, 'juan')
-
-if 0:
-    def testLive(self):
-        self.testData ()
-        self.app.show()
-        self.app.run ()
