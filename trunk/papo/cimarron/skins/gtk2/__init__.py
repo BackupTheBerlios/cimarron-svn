@@ -159,12 +159,22 @@ class NotebookChildren (list):
         label.set_text (other.label)
         self.notebook._widget.set_tab_label (other._widget, label)
         super (NotebookChildren, self).append (other)
-            
+
 class Notebook (GtkParentizableMixin, Container):
     def __init__ (self, **kw):
         self._widget= self.__notebook= gtk.Notebook ()
         super (Notebook, self).__init__ (**kw)
         self._children= NotebookChildren (self)
+
+    def activate (self, other):
+        if type (other)==int:
+            # assume it's the page no
+            pageNo= other
+        else:
+            # assume it's a child
+            pageNo= self._children.index (other)
+        if 0<=pageNo and pageNo<len (self._children):
+            self._widget.set_current_page (pageNo)
 
 def _run():
     gtk.main()

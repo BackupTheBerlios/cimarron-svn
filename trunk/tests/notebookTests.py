@@ -16,8 +16,3 @@ class TestNotebook (abstractTestContainer):
         self.other.parent= self.widget
 
         self.assertEqual (True, True)
-
-    def testVisual (self):
-        self.testAddChild ()
-        self.app.show ()
-        self.app.run ()

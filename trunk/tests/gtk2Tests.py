@@ -13,6 +13,7 @@ from labelTests import TestLabel
 from buttonTests import TestButton
 from entryTests import TestEntry
 from boxTests import TestBoxes
+from notebookTests import TestNotebook
 
 
 __all__ = ('TestGtkEntry',
@@ -21,6 +22,7 @@ __all__ = ('TestGtkEntry',
            'TestGtkButton',
            'TestGtkEntry',
            'TestGtkBoxes',
+           'TestGtkNotebook',
            )
 
 class testGtkParenting (abstractTestWidget):
@@ -117,3 +119,22 @@ class TestGtkButton(testGtkFocusable, testGtkParenting, TestButton):
 
 class TestGtkBoxes(testGtkParenting, TestBoxes):
     pass
+
+class TestGtkNotebook (testGtkParenting, TestNotebook):
+    def testActivate (self):
+        for i in xrange (10):
+            other= cimarron.skin.Entry ()
+            other.label= "label"+str (i)
+            other.parent= self.widget
+        self.app.show ()
+
+        for i in xrange (10):
+            self.widget.activate (i)
+            while gtk.events_pending (): gtk.main_iteration ()
+            self.assertEqual (i, self.widget._widget.get_current_page ())
+            
+        for i in xrange (10):
+            self.widget.activate (self.widget._children[i])
+            while gtk.events_pending (): gtk.main_iteration ()
+            self.assertEqual (i, self.widget._widget.get_current_page ())
+

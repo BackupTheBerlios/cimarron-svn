@@ -23,7 +23,6 @@ for i, v in enumerate(sys.argv):
         skin = re.match('--skin=(.*)', v).group(1).strip()
 moduleNames.append(skin+'Tests')
 from searchTests import *
-from notebookTests import *
 
 for i in moduleNames:
     exec 'from %s import *' % i
