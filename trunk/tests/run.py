@@ -14,7 +14,7 @@ for i, v in enumerate(sys.argv):
     if v in ('-v', '-q'):
         # these are for for unittest.main
         sys.argv.pop(i)
-    elif v == '-a':
+    elif v in ('-a', '--sync'):
         # '-a' is for commonTests.abstractTestDelegateGenerated
         argv.pop(i)
     elif v.startswith('--skin='):
