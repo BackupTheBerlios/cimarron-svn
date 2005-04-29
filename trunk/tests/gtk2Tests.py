@@ -4,6 +4,8 @@ pygtk.require ('2.0')
 import gtk
 import gobject
 
+from run import test_options
+
 from papo import cimarron
 from papo.cimarron.skins.common import Unknown
 
@@ -54,38 +56,50 @@ class testGtkFocusable(TestCase):
         self.other= cimarron.skin.Entry (parent=self.parent)
         self.widget.delegates.append (self)
 
-#     def testOnFocusIn (self):
-#         import gtk
+    if test_options.focus_events:
+	def testOnFocusIn (self):
+	    import gtk
 
-#         other= cimarron.skin.Entry (parent=self.parent)
-#         self.widget.onFocusIn= self.focusOk
-#         self.app.show ()
-#         other._widget.grab_focus ()
-#         while gtk.events_pending ():
-#             gtk.main_iteration ()
-#         self.widget._widget.grab_focus ()
-#         while gtk.events_pending ():
-#             gtk.main_iteration ()
-#         self.assert_ (self.passed)
+	    self.app.show ()
+	    while gtk.events_pending():
+		gtk.main_iteration ()
+	    self.passed = 0
+	    self.other._widget.grab_focus ()
+	    while not self.other._widget.is_focus():
+		gtk.main_iteration()
+	    self.widget._widget.grab_focus ()
+	    while not self.widget._widget.is_focus():
+		gtk.main_iteration ()
+	    while not self.passed is 'in':
+		gtk.main_iteration ()
+	    self.assertEqual(self.passed, 'in')
 
-#     def testOnFocusOut (self):
-#         import gtk
-#         import gobject
+	def testOnFocusOut (self):
+	    import gtk
 
-#         other= cimarron.skin.Entry (parent=self.parent)
-#         self.widget.onFocusOut= self.focusOk
+	    self.app.show ()
+	    while gtk.events_pending():
+		gtk.main_iteration ()
+	    self.passed = 0
+	    self.widget._widget.grab_focus ()
+	    while not self.widget._widget.is_focus():
+		gtk.main_iteration()
+	    while not self.passed is 'in':
+		gtk.main_iteration ()
+	    self.other._widget.grab_focus ()
+	    while not self.other._widget.is_focus():
+		gtk.main_iteration ()
+	    while not self.passed is 'out':
+		gtk.main_iteration ()
+	    self.assertEqual(self.passed, 'out')
 
-#         self.app.show ()
-#         self.widget._widget.grab_focus ()
-#         while gtk.events_pending ():
-#             gtk.main_iteration ()
-#         other._widget.grab_focus ()
-#         while gtk.events_pending ():
-#             gtk.main_iteration ()
-#         self.assert_ (self.passed)
+	def will_focus_in (self, widget):
+	    self.passed = 'in'
+	    return 0
 
-    def focusOk (self, *i):
-        self.passed= True
+	def will_focus_out(self, widget):
+	    self.passed = 'out'
+	    return 0
 
     def testFocus (self):
         self.other._widget.grab_focus ()

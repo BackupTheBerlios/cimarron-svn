@@ -1,30 +1,49 @@
 import os, sys, re
 import unittest
+from optparse import OptionParser
 
-try:
-    import papo
-except ImportError:
-    sys.path.append(os.path.abspath('..'))
+if __name__ == '__main__':
+    moduleNames = ['controllerTests', 'gridTests', 'searchTests']
 
-moduleNames = ['controllerTests', 'gridTests']
+    testnames = ('focus-events', 'delegations')
 
-argv = list(sys.argv)
-skin = 'gtk2'
-for i, v in enumerate(sys.argv):
-    if v in ('-v', '-q'):
-        # these are for for unittest.main
-        sys.argv.pop(i)
-    elif v in ('-a', '--sync'):
-        # '-a' is for commonTests.abstractTestDelegateGenerated
-        argv.pop(i)
-    elif v.startswith('--skin='):
-        # '--skin=foo' is for importing skin-specific tests
-        argv.pop(i)
-        skin = re.match('--skin=(.*)', v).group(1).strip()
-moduleNames.append(skin+'Tests')
-from searchTests import *
+    parser = OptionParser()
+    parser.add_option('-v', '--verbose', help="be verbose",
+		      action="store_true", default=False)
+    parser.add_option('-q', '--quiet', help="be quiet",
+		      action="store_true", default=False)
+    parser.add_option('-s', '--sync', help="make X calls synchronous",
+		      action="store_true", default=False)
+    parser.add_option('-S', '--skin', help="use specified skin", default='gtk2')
+    parser.add_option('-M', '--module', help="test this module (may be specified multiple times)", action="append")
+    parser.add_option('-a', '--test-all', action="store_true", default=False)
+    for testname in testnames:
+	optname = testname.replace('-','_')
+	parser.add_option('--test-'+testname, action="store_true", dest=optname)
+	parser.add_option('--no-test-'+testname, action="store_false", dest=optname)
 
-for i in moduleNames:
-    exec 'from %s import *' % i
+    test_options, args = parser.parse_args()
+    all = test_options.test_all
+    for testname in testnames:
+	optname = testname.replace('-', '_')
+	if getattr(test_options, optname) is None:
+	    setattr(test_options, optname, all)
 
-unittest.main(argv=argv)
+    argv = sys.argv[:1]
+    if test_options.verbose:
+	argv.append('-v')
+    if test_options.quiet:
+	argv.append('-q')
+
+    if test_options.module is None:
+	moduleNames.append(test_options.skin+'Tests')
+    else:
+	moduleNmaes = test_options.module
+
+    import run
+    run.test_options = test_options
+
+    for i in moduleNames:
+	exec 'from %s import *' % i
+
+    unittest.main(argv=argv)

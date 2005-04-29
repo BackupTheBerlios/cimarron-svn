@@ -1,5 +1,5 @@
 import unittest
-import sys
+from run import test_options
 from papo import cimarron
 
 from papo.cimarron.skins.common import ForcedNo
@@ -57,7 +57,7 @@ class abstractTestDelegate(abstractTestBasic):
         self.widget.delegates.append(self.delegate_yes)
         self.assertEqual(self.widget.delegate('foo'), True)
 
-if sys.argv.count('-a'):
+if test_options.delegations:
     from generated import abstractTestDelegateGenerated
 else:
     class abstractTestDelegateGenerated(abstractTestDelegate): pass
@@ -122,6 +122,3 @@ class abstractTestControl(abstractTestWidget):
 
     def notify(self, origin):
         self.messages_recieved.append(origin)
-
-if __name__ == '__main__':
-    unittest.main()
