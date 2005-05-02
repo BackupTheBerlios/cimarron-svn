@@ -18,31 +18,6 @@ class GtkVisibilityMixin(object):
         if self.delegate('will_hide'):
             self._widget.hide_all()
 
-class GtkParentizableMixin(object):
-    """
-        Takes care of the parenting issues under gtk2.
-        Add this mixin class *before* any Widget-derived class.
-    """
-    def __set_parent(self, parent):
-        if parent is not None and self.parent is parent:
-            raise ValueError, 'Child already in parent'
-        if self.parent is not None:
-            if parent is None:
-                raise NotImplementedError, 'Cannot deparent'
-            else:
-                raise NotImplementedError, 'Cannot reparent'
-        if parent is not None:
-            parent._widget.add(self._widget)
-            parent._children.append(self)
-            self.__parent = parent
-    def __get_parent(self):
-        try:
-            return self.__parent
-        except AttributeError:
-            # only happens during init
-            return None
-    parent = property(__get_parent, __set_parent)
-
 class GtkFocusableMixin(object):
     """
     """
@@ -82,7 +57,8 @@ class Window(GtkVisibilityMixin, Container):
         return self.__window.get_title()
     title = property(__get_title, __set_title)
 
-class Label(GtkParentizableMixin, Widget):
+
+class Label(Widget):
     def __init__(self, text='', **kw):
         self._widget = self.__label = gtk.Label()
         super(Label, self).__init__(**kw)
@@ -97,7 +73,7 @@ class Label(GtkParentizableMixin, Widget):
         return self.__label.get_text()
     text = property(__get_text, __set_text)
 
-class Button(GtkParentizableMixin, GtkFocusableMixin, Control):
+class Button(GtkFocusableMixin, Control):
     def __init__(self, label='', **kw):
         self._widget = self.__button = gtk.Button()
         super(Button, self).__init__(**kw)
@@ -110,7 +86,7 @@ class Button(GtkParentizableMixin, GtkFocusableMixin, Control):
         return self.__button.get_label()
     label = property(__get_label, __set_label)
 
-class Entry(GtkParentizableMixin, GtkFocusableMixin, Control):
+class Entry(GtkFocusableMixin, Control):
     def __init__(self, **kw):
         self._widget= self.__entry= gtk.Entry ()
         super(Entry, self).__init__(**kw)
@@ -141,12 +117,12 @@ class Entry(GtkParentizableMixin, GtkFocusableMixin, Control):
             # esc; `reset' the value
             self.update ()
 
-class VBox(GtkParentizableMixin, Container):
+class VBox(Container):
     def __init__ (self, **kw):
         self._widget= self.__vbox = gtk.VBox()
         super (VBox, self).__init__ (**kw)
 
-class HBox(GtkParentizableMixin, Container):
+class HBox(Container):
     def __init__ (self, **kw):
         self._widget= self.__vbox = gtk.HBox()
         super (HBox, self).__init__ (**kw)
@@ -160,7 +136,7 @@ class NotebookChildren (list):
         self.notebook._widget.set_tab_label (other._widget, label)
         super (NotebookChildren, self).append (other)
 
-class Notebook (GtkParentizableMixin, Container):
+class Notebook (Container):
     def __init__ (self, **kw):
         self._widget= self.__notebook= gtk.Notebook ()
         super (Notebook, self).__init__ (**kw)
@@ -189,3 +165,7 @@ def _schedule(timeout, callback, repeat=False):
         if repeat:
             cb()
     cb()
+
+def concreteParenter(parent, child):
+    if '_widget' in parent.__dict__ and '_widget' in child.__dict__:
+	parent._widget.add(child._widget)

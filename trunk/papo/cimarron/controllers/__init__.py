@@ -1,7 +1,7 @@
 from papo import cimarron
 from papo.cimarron.skins.common import Control, Container, ForcedYes, Unknown
 
-class Controller(Control):
+class Controller(Control, Container):
     def __init__(self, **kw):
         self.__initialized = False
         super (Controller, self).__init__ (**kw)
@@ -23,7 +23,7 @@ class WindowContainer(list):
         window.delegates.append(self.__controller)
 
 
-class App(Controller, Container):
+class App(Controller):
     def __init__(self, **kw):
         assert 'parent' not in kw, 'App should have no parent'
         super(App, self).__init__(**kw)

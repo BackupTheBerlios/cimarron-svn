@@ -9,18 +9,26 @@ __all__ = ('TestController',
            'TestApp',
            )
 
+def visualTest():
+    app = App()
+    cimarron.config()
+    win = cimarron.skin.Window(parent=app)
+    foo = FooController(parent=win, value=dict(foo=1,bar=2,baz=3))
+    app.show()
+    app.run()
+
 class FooController(Controller):
     def __init__(self, **kw):
         super (FooController, self).__init__ (**kw)
-        self.box= cimarron.skin.VBox (parent=self.parent)
+        self.box= cimarron.skin.VBox (parent=self)
         h= cimarron.skin.HBox (parent=self.box)
         self.entry= cimarron.skin.Entry (parent=h)
         self.label= cimarron.skin.Label (parent=h, text='Nothing yet')
         self.button= cimarron.skin.Button (parent=self.box, label='Press me')
         self.daLabel= cimarron.skin.Label (parent=self.box)
 
-        # this is to let the gtk2 version pass
-        self._widget= self.button._widget
+	cimarron.skin.concreteParenter(parent=self.parent,
+				       child=self.box)
 
         # connect them
         def onButtonAction(button, *a):
@@ -86,7 +94,7 @@ class TestController(abstractTestControl):
 class BarController (Controller):
     def __init__ (self, **kw):
         super (BarController, self).__init__ (**kw)
-        v= cimarron.skin.VBox (parent=self.parent)
+        v= cimarron.skin.VBox (parent=self)
         h= cimarron.skin.HBox (parent= v)
         self.prev= cimarron.skin.Button (parent= h, label='<<', value=-1)
         self.next= cimarron.skin.Button (parent= h, label='>>', value=1)
@@ -112,7 +120,7 @@ class BarController (Controller):
 
         self.prev.onAction= roll
         self.next.onAction= roll
-        self._widget = self.foo._widget
+        #self._widget = self.foo._widget
         self.refresh ()
 
     def refresh (self):

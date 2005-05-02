@@ -15,7 +15,15 @@ class Widget(object):
             setattr (self, k, v)
 
     def __set_parent(self, parent):
+        if parent is not None and self.parent is parent:
+            raise ValueError, 'Child already in parent'
+        if self.parent is not None:
+            if parent is None:
+                raise NotImplementedError, 'Cannot deparent'
+            else:
+                raise NotImplementedError, 'Cannot reparent'
         if parent is not None:
+	    self.skin.concreteParenter(parent, self)
             parent._children.append(self)
             self.__parent = parent
     def __get_parent(self):
@@ -26,12 +34,16 @@ class Widget(object):
             return None
     parent = property(__get_parent, __set_parent)
 
+
+
+
     def __get_skin (self):
         try:
             return self.__skin
         except AttributeError:
-            self.__skin = self.parent.skin
-            return self.__skin
+	    from papo.cimarron import skin
+            self.__skin = skin
+            return skin
     skin = property(__get_skin)
 
     def delegate(self, message, *args):
@@ -67,6 +79,7 @@ class Container(Widget):
     def __get_children(self):
         return iter(self._children)
     children = property(__get_children)
+
 
 class Control(Widget):
     def __init__(self, onAction=None, value='', **kw):

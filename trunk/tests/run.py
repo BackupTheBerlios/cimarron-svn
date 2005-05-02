@@ -2,7 +2,7 @@ import os, sys, re
 import unittest
 from optparse import OptionParser
 
-if __name__ == '__main__':
+if 1:
     moduleNames = ['controllerTests', 'gridTests', 'searchTests']
 
     testnames = ('focus-events', 'delegations')
@@ -46,4 +46,5 @@ if __name__ == '__main__':
     for i in moduleNames:
 	exec 'from %s import *' % i
 
+if __name__ == '__main__':
     unittest.main(argv=argv)
