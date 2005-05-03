@@ -6,10 +6,10 @@ import gtk, gobject
 from papo.cimarron.skins.common import Widget, Container, Control, nullAction, Unknown
 
 class GtkVisibilityMixin(object):
-    def __get_visible(self):
+    def _get_visible(self):
         w = self._widget.window
         return w is not None and w.is_visible()
-    visible = property(__get_visible)
+    visible = property(_get_visible)
 
     def show(self):
         self._widget.show_all()
@@ -47,11 +47,11 @@ class Window(GtkVisibilityMixin, Container):
         self.__window.connect('delete-event', delete_callback)
         self.title = title
 
-    def __set_title(self, title):
+    def _set_title(self, title):
         self.__window.set_title(title)
-    def __get_title(self):
+    def _get_title(self):
         return self.__window.get_title()
-    title = property(__get_title, __set_title)
+    title = property(_get_title, _set_title)
 
 
 class Label(Widget):
@@ -63,11 +63,11 @@ class Label(Widget):
     def show(self):
         self.__label.show()
 
-    def __set_text(self, text):
+    def _set_text(self, text):
         self.__label.set_text(text)
-    def __get_text(self):
+    def _get_text(self):
         return self.__label.get_text()
-    text = property(__get_text, __set_text)
+    text = property(_get_text, _set_text)
 
 class Button(GtkFocusableMixin, Control):
     def __init__(self, label='', **kw):
@@ -76,11 +76,11 @@ class Button(GtkFocusableMixin, Control):
         self.label = label
         self.__button.connect('clicked', self._activate)
 
-    def __set_label(self, label):
+    def _set_label(self, label):
         self.__button.set_label(label)
-    def __get_label(self):
+    def _get_label(self):
         return self.__button.get_label()
-    label = property(__get_label, __set_label)
+    label = property(_get_label, _set_label)
 
 class Entry(GtkFocusableMixin, Control):
     def __init__(self, **kw):
@@ -91,12 +91,12 @@ class Entry(GtkFocusableMixin, Control):
         self.__entry.connect ('key-press-event', self._keypressed)
         self.delegates.append (self)
 
-    def __get_value (self):
+    def _get_value (self):
         return self.__value
-    def __set_value (self, value):
+    def _set_value (self, value):
         self.__value = value
         self.__entry.set_text(value)
-    value= property (__get_value, __set_value)
+    value= property (_get_value, _set_value)
 
     def update (self):
         self.__entry.set_text (self.value)

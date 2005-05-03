@@ -16,7 +16,7 @@ class Widget(object):
         for k, v in kw.items ():
             setattr (self, k, v)
 
-    def __set_parent(self, parent):
+    def _set_parent(self, parent):
         if parent is not None and self.parent is parent:
             raise ValueError, 'Child already in parent'
         if self.parent is not None:
@@ -28,22 +28,22 @@ class Widget(object):
             parent.concreteParenter(self)
             parent._children.append(self)
             self.__parent = parent
-    def __get_parent(self):
+    def _get_parent(self):
         try:
             return self.__parent
         except AttributeError:
             # only happens during init
             return None
-    parent = property(__get_parent, __set_parent)
+    parent = property(_get_parent, _set_parent)
 
-    def __get_skin (self):
+    def _get_skin (self):
         try:
             return self.__skin
         except AttributeError:
             from papo.cimarron import skin
             self.__skin = skin
             return skin
-    skin = property(__get_skin)
+    skin = property(_get_skin)
 
     def delegate(self, message, *args):
         if self.delegates:
@@ -75,9 +75,9 @@ class Container(Widget):
         for i in self.children:
             i.hide()
 
-    def __get_children(self):
+    def _get_children(self):
         return iter(self._children)
-    children = property(__get_children)
+    children = property(_get_children)
 
 
 class Control(Widget):
@@ -86,13 +86,13 @@ class Control(Widget):
         self.value = value
         self.onAction= onAction
 
-    def __get_on_action (self):
+    def _get_on_action (self):
         return self.__on_action
-    def __set_on_action (self, onAction):
+    def _set_on_action (self, onAction):
         if onAction is None:
             onAction = nullAction
         self.__on_action= instancemethod (onAction, self, Control)
-    onAction= property (__get_on_action, __set_on_action)
+    onAction= property (_get_on_action, _set_on_action)
 
     def _activate(self, *ignore):
         if self.onAction is not None:

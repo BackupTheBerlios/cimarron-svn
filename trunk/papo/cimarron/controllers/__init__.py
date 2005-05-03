@@ -9,13 +9,13 @@ class Controller(Control, Container):
         self.__initialized = False
         super (Controller, self).__init__ (**kw)
         self.__initialized = True
-    def __set_value(self, value):
+    def _set_value(self, value):
         self.__value=value
         if self.__initialized:
             self.refresh()
-    def __get_value(self):
+    def _get_value(self):
         return self.__value
-    value = property(__get_value, __set_value)
+    value = property(_get_value, _set_value)
 
 class WindowContainer(list):
     def __init__(self, controller):
@@ -78,14 +78,14 @@ class Grid (Controller):
         return self.entries[self.index,0]
     mainWidget = property(mainWidget)
 
-    def __set_data (self, data):
+    def _set_data (self, data):
         self.__data= data
         self.refresh ()
         if len (data)>0:
             self.index= 0
-    def __get_data (self):
+    def _get_data (self):
         return self.__data
-    data= property (__get_data, __set_data)
+    data= property (_get_data, _set_data)
     def updateData (self, entry, *i):
         if self.columns[entry.column].write is not None:
             self.columns[entry.column].write (self.data[entry.row], entry.value)
@@ -122,28 +122,28 @@ class Grid (Controller):
         self.index= entry.row
         return Unknown
 
-    def __set_index (self, index):
+    def _set_index (self, index):
         if self.__initialized and self.index is not None:
             self.labels[self.index].text= ' '
             if index is not None:
                 self.labels[index].text= '>'
         self.__index= index
-    def __get_index (self):
+    def _get_index (self):
         return self.__index
-    index= property (__get_index, __set_index)
+    index= property (_get_index, _set_index)
 
-    def __get_value (self):
+    def _get_value (self):
         ans= None
         if self.index is not None:
             ans= self.data[self.index]
         return ans
-    def __set_value (self, value):
+    def _set_value (self, value):
         try:
             index= self.data.index (value)
         except ValueError:
             index= None
         self.index= index
-    value= property (__get_value, __set_value)
+    value= property (_get_value, _set_value)
 
 class SelectionWindow (Controller):
     def __init__ (self, columns=[], **kw):
@@ -272,6 +272,6 @@ class WindowController (Controller):
     def hide (self):
         self.win.hide ()
 
-    def __get_visible (self):
+    def _get_visible (self):
         return len(self.visibleChildren ())>0
-    visible= property (__get_visible)
+    visible= property (_get_visible)
