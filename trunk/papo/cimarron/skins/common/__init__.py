@@ -52,10 +52,8 @@ class Widget(object):
             av= Unknown
             for i in self.delegates:
                 try:
-                    rv= getattr(i, message)(self, *args)
+                    rv= getattr(i, message, lambda *a: Unknown)(self, *args)
                     av= truthTable[av][rv]
-                except AttributeError:
-                    rv = Unknown
                 except IndexError:
                     av= rv
                     break

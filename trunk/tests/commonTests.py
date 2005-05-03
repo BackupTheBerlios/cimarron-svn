@@ -39,6 +39,10 @@ class abstractTestDelegate(abstractTestBasic):
             def foo(self, *a):
                 return 5
         self.delegate_forcedYes = delegate_forcedYes()
+	class delegate_broken(object):
+	    def foo(*a):
+		raise AttributeError
+	self.delegate_broken = delegate_broken()
         
     def testDelegate(self):
         self.assertEqual(self.widget.delegate('foo'), True)
@@ -56,6 +60,9 @@ class abstractTestDelegate(abstractTestBasic):
     def testSingleDelegationAccept(self):
         self.widget.delegates.append(self.delegate_yes)
         self.assertEqual(self.widget.delegate('foo'), True)
+    def testBrokenDelegateRaisesException(self):
+	self.widget.delegates.append(self.delegate_broken)
+	self.assertRaises(AttributeError, lambda *a: self.widget.delegate('foo'))
 
 if test_options.delegations:
     from generated import abstractTestDelegateGenerated
