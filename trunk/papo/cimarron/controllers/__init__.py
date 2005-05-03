@@ -25,7 +25,6 @@ class WindowContainer(list):
         super(WindowContainer, self).append(window)
         window.delegates.append(self.__controller)
 
-
 class App(Controller):
     def __init__(self, **kw):
         assert 'parent' not in kw, 'App should have no parent'
@@ -47,13 +46,16 @@ class App(Controller):
     def schedule(self, timeout, callback, repeat=False):
         return cimarron.skin._schedule(timeout, callback, repeat)
 
+    def concreteParenter (self, child):
+        pass
+
 class Column (object):
     def __init__ (self, name='', read=None, write=None, entry=None):
         self.name= name
         if not callable (read):
             raise ValueError, 'read parameter must be callable'
         self.read= read
-        if not callable (write):
+        if write is not None and not callable (write):
             raise ValueError, 'write parameter must be callable'
         self.write= write
         self.entry= entry
@@ -249,3 +251,27 @@ class Search (Controller):
         else:
             for i in xrange (len (self.entries)):
                 self.entries[i].value= ''
+
+class WindowController (Controller):
+    def __init__ (self, **kw):
+        super (WindowController, self).__init__ (**kw)
+        self.win= cimarron.skin.Window (parent= self)
+        self.win.delegates.append (self)
+
+    def visibleChildren (self):
+        return [i for i in self._children if getattr (i, 'visible', False) and i.visible]
+
+    def will_hide (self, *ignore):
+        if len(self.visibleChildren ())==1:
+            self.delegate ('will_hide')
+        return Unknown
+
+    def show (self):
+        self.win.show ()
+
+    def hide (self):
+        self.win.hide ()
+
+    def __get_visible (self):
+        return len(self.visibleChildren ())>0
+    visible= property (__get_visible)

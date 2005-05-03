@@ -15,25 +15,21 @@ class GtkVisibilityMixin(object):
         self._widget.show_all()
 
     def hide(self):
-        if self.delegate('will_hide'):
+        if self.delegate ('will_hide'):
             self._widget.hide_all()
 
 class GtkFocusableMixin(object):
     """
     """
-    def __init__ (self, onFocusIn=None, onFocusOut=None, **kw):
+    def __init__ (self, **kw):
         super (GtkFocusableMixin, self).__init__ (**kw)
-        self.onFocusIn= onFocusIn
-        self.onFocusOut= onFocusOut
         self._widget.connect ('focus-in-event', self._focusIn)
         self._widget.connect ('focus-out-event', self._focusOut)
 
     def _focusIn (self, *ignore):
-        # print "I'm in!", self
         return not self.delegate ('will_focus_in')
 
     def _focusOut (self, *ignore):
-        # print "I'm out!", self
         return not self.delegate ('will_focus_out')
 
     def focus (self):
@@ -127,20 +123,10 @@ class HBox(Container):
         self._widget= self.__vbox = gtk.HBox()
         super (HBox, self).__init__ (**kw)
 
-class NotebookChildren (list):
-    def __init__ (self, notebook):
-        self.notebook= notebook
-    def append (self, other):
-        label= gtk.Label()
-        label.set_text (other.label)
-        self.notebook._widget.set_tab_label (other._widget, label)
-        super (NotebookChildren, self).append (other)
-
 class Notebook (Container):
     def __init__ (self, **kw):
         self._widget= self.__notebook= gtk.Notebook ()
         super (Notebook, self).__init__ (**kw)
-        self._children= NotebookChildren (self)
 
     def activate (self, other):
         if type (other)==int:
@@ -151,6 +137,14 @@ class Notebook (Container):
             pageNo= self._children.index (other)
         if 0<=pageNo and pageNo<len (self._children):
             self._widget.set_current_page (pageNo)
+
+    def concreteParenter (self, child):
+        super (Notebook, self).concreteParenter (child)
+        if getattr (child, '_widget', None):
+            label= gtk.Label()
+            label.set_text (child.label)
+            self._widget.set_tab_label (child._widget, label)
+        
 
 def _run():
     gtk.main()
@@ -167,5 +161,8 @@ def _schedule(timeout, callback, repeat=False):
     cb()
 
 def concreteParenter(parent, child):
-    if '_widget' in parent.__dict__ and '_widget' in child.__dict__:
-        parent._widget.add(child._widget)
+    if '_widget' in child.__dict__:
+        if '_widget' in parent.__dict__:
+            parent._widget.add(child._widget)
+        else:
+            parent.parent.concreteParenter (child)

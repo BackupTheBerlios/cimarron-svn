@@ -73,6 +73,9 @@ class testGtkFocusable(TestCase):
             while not self.passed is 'in':
                 gtk.main_iteration ()
             self.assertEqual(self.passed, 'in')
+	def will_focus_in (self, widget):
+	    self.passed = 'in'
+	    return 0
 
         def testOnFocusOut (self):
             import gtk
@@ -92,11 +95,6 @@ class testGtkFocusable(TestCase):
             while not self.passed is 'out':
                 gtk.main_iteration ()
             self.assertEqual(self.passed, 'out')
-
-        def will_focus_in (self, widget):
-            self.passed = 'in'
-            return 0
-
         def will_focus_out(self, widget):
             self.passed = 'out'
             return 0
@@ -151,4 +149,3 @@ class TestGtkNotebook (testGtkParenting, TestNotebook):
             self.widget.activate (self.widget._children[i])
             while gtk.events_pending (): gtk.main_iteration ()
             self.assertEqual (i, self.widget._widget.get_current_page ())
-

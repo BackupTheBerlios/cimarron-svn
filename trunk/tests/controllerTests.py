@@ -1,6 +1,7 @@
 import unittest
 from pprint import pformat
 from papo import cimarron
+# from papo.cimarron.controllers import Controller, App, WindowController
 from papo.cimarron.controllers import Controller, App
 from commonTests import abstractTestControl
 
@@ -27,8 +28,6 @@ class FooController(Controller):
         self.button= cimarron.skin.Button (parent=self.box, label='Press me')
         self.daLabel= cimarron.skin.Label (parent=self.box)
 
-        cimarron.skin.concreteParenter(parent=self.parent,
-                                       child=self.box)
         self.mainWidget = self.button
 
         # connect them
@@ -173,3 +172,21 @@ class TestApp(unittest.TestCase):
     def tearDown(self):
         self.app.hide()
         self.app.quit()
+
+# class WC (WindowController):
+#     def __init__ (self, **kw):
+#         super (WC, self).__init__ (**kw)
+#         self.win= cimarron.skin.Window (
+#             parent= self,
+#             title= 'Había una vez...',
+#             )
+
+# class TestWindowController (unittest.TestCase):
+#     def setUp (self):
+#         self.controller= WC (parent= self.app)
+
+#     def testShow (self):
+#         self.controller.show ()
+
+#     def testIsVisible (self):
+#         self.assertEqual (self.controller.win.isvisible, self.controller.win.isvisible)

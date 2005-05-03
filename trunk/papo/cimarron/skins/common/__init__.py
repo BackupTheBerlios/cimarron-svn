@@ -5,6 +5,8 @@ def nullAction(*a, **k): pass
 
 ForcedNo, No, Unknown, Yes, ForcedYes = -5, -1, 0, 1, 5
 
+from papo import cimarron
+
 class Widget(object):
 
     def __init__(self, parent=None, **kw):
@@ -23,7 +25,7 @@ class Widget(object):
             else:
                 raise NotImplementedError, 'Cannot reparent'
         if parent is not None:
-            self.skin.concreteParenter(parent, self)
+            parent.concreteParenter(self)
             parent._children.append(self)
             self.__parent = parent
     def __get_parent(self):
@@ -33,9 +35,6 @@ class Widget(object):
             # only happens during init
             return None
     parent = property(__get_parent, __set_parent)
-
-
-
 
     def __get_skin (self):
         try:
@@ -60,6 +59,9 @@ class Widget(object):
             return av>=0
         return True
 
+    def concreteParenter (self, child):
+        cimarron.skin.concreteParenter (self, child)
+
 class Container(Widget):
     def __init__(self, **kw):
         super(Container, self).__init__(**kw)
@@ -71,8 +73,7 @@ class Container(Widget):
 
     def hide(self):
         for i in self.children:
-            if i.delegate('will_hide'):
-                i.hide()
+            i.hide()
 
     def __get_children(self):
         return iter(self._children)
