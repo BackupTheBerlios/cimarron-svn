@@ -57,49 +57,49 @@ class testGtkFocusable(TestCase):
         self.widget.delegates.append (self)
 
     if test_options.focus_events:
-	def testOnFocusIn (self):
-	    import gtk
+        def testOnFocusIn (self):
+            import gtk
 
-	    self.app.show ()
-	    while gtk.events_pending():
-		gtk.main_iteration ()
-	    self.passed = 0
-	    self.other._widget.grab_focus ()
-	    while not self.other._widget.is_focus():
-		gtk.main_iteration()
-	    self.widget._widget.grab_focus ()
-	    while not self.widget._widget.is_focus():
-		gtk.main_iteration ()
-	    while not self.passed is 'in':
-		gtk.main_iteration ()
-	    self.assertEqual(self.passed, 'in')
+            self.app.show ()
+            while gtk.events_pending():
+                gtk.main_iteration ()
+            self.passed = 0
+            self.other._widget.grab_focus ()
+            while not self.other._widget.is_focus():
+                gtk.main_iteration()
+            self.widget._widget.grab_focus ()
+            while not self.widget._widget.is_focus():
+                gtk.main_iteration ()
+            while not self.passed is 'in':
+                gtk.main_iteration ()
+            self.assertEqual(self.passed, 'in')
 
-	def testOnFocusOut (self):
-	    import gtk
+        def testOnFocusOut (self):
+            import gtk
 
-	    self.app.show ()
-	    while gtk.events_pending():
-		gtk.main_iteration ()
-	    self.passed = 0
-	    self.widget._widget.grab_focus ()
-	    while not self.widget._widget.is_focus():
-		gtk.main_iteration()
-	    while not self.passed is 'in':
-		gtk.main_iteration ()
-	    self.other._widget.grab_focus ()
-	    while not self.other._widget.is_focus():
-		gtk.main_iteration ()
-	    while not self.passed is 'out':
-		gtk.main_iteration ()
-	    self.assertEqual(self.passed, 'out')
+            self.app.show ()
+            while gtk.events_pending():
+                gtk.main_iteration ()
+            self.passed = 0
+            self.widget._widget.grab_focus ()
+            while not self.widget._widget.is_focus():
+                gtk.main_iteration()
+            while not self.passed is 'in':
+                gtk.main_iteration ()
+            self.other._widget.grab_focus ()
+            while not self.other._widget.is_focus():
+                gtk.main_iteration ()
+            while not self.passed is 'out':
+                gtk.main_iteration ()
+            self.assertEqual(self.passed, 'out')
 
-	def will_focus_in (self, widget):
-	    self.passed = 'in'
-	    return 0
+        def will_focus_in (self, widget):
+            self.passed = 'in'
+            return 0
 
-	def will_focus_out(self, widget):
-	    self.passed = 'out'
-	    return 0
+        def will_focus_out(self, widget):
+            self.passed = 'out'
+            return 0
 
     def testFocus (self):
         self.other._widget.grab_focus ()

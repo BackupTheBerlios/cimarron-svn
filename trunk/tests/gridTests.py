@@ -45,28 +45,24 @@ class TestGrid (abstractTestControl):
 
         # so testValue passes
         self.value= None
-
-    def testData (self):
         self.widget.data= self.model
 
     def testIndex (self):
-        self.testData ()
         for i in xrange (len (self.model)):
             self.widget.index= i
             self.assertEqual (self.model[i], self.widget.value)
 
     def testValue (self):
-        self.testData ()
         for i in xrange (len (self.model)):
             self.widget.value= self.model[i]
             self.assertEqual (self.model[i], self.widget.value)
 
     def testNoValue (self):
+        self.widget.data = []
         self.widget.value= None
         self.assertEqual (self.widget.value, None)
 
     def testWrite (self):
-        self.testData ()
         # self.widget.entries[0, 0]._widget.set_text ('juan')
         self.widget.entries[0, 0].value= 'juan'
         self.widget.entries[0, 0].onAction ()

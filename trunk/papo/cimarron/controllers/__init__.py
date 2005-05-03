@@ -2,6 +2,9 @@ from papo import cimarron
 from papo.cimarron.skins.common import Control, Container, ForcedYes, Unknown
 
 class Controller(Control, Container):
+    mainWidget = None # mainWidget is the "default" Control of the
+                      # Controller, that which fires when you press
+                      # enter.
     def __init__(self, **kw):
         self.__initialized = False
         super (Controller, self).__init__ (**kw)
@@ -69,6 +72,10 @@ class Grid (Controller):
         self.widget= v= cimarron.skin.VBox (parent=self.parent)
         self.__initialized= True
 
+    def mainWidget(self):
+        return self.entries[self.index,0]
+    mainWidget = property(mainWidget)
+
     def __set_data (self, data):
         self.__data= data
         self.refresh ()
@@ -116,7 +123,8 @@ class Grid (Controller):
     def __set_index (self, index):
         if self.__initialized and self.index is not None:
             self.labels[self.index].text= ' '
-            self.labels[index].text= '>'
+            if index is not None:
+                self.labels[index].text= '>'
         self.__index= index
     def __get_index (self):
         return self.__index
@@ -208,8 +216,7 @@ class Search (Controller):
             onAction= self.selected,
             )
 
-        # socking tests
-        self._widget= b._widget
+        self.mainWidget = b
 
     def doSearch (self, *ignore):
         data= []

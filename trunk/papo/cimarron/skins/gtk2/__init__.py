@@ -168,4 +168,4 @@ def _schedule(timeout, callback, repeat=False):
 
 def concreteParenter(parent, child):
     if '_widget' in parent.__dict__ and '_widget' in child.__dict__:
-	parent._widget.add(child._widget)
+        parent._widget.add(child._widget)

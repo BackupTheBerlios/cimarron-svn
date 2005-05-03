@@ -27,8 +27,9 @@ class FooController(Controller):
         self.button= cimarron.skin.Button (parent=self.box, label='Press me')
         self.daLabel= cimarron.skin.Label (parent=self.box)
 
-	cimarron.skin.concreteParenter(parent=self.parent,
-				       child=self.box)
+        cimarron.skin.concreteParenter(parent=self.parent,
+                                       child=self.box)
+        self.mainWidget = self.button
 
         # connect them
         def onButtonAction(button, *a):
@@ -120,7 +121,7 @@ class BarController (Controller):
 
         self.prev.onAction= roll
         self.next.onAction= roll
-        #self._widget = self.foo._widget
+        self.mainWidget = self.foo
         self.refresh ()
 
     def refresh (self):

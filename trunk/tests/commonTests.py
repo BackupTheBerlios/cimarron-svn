@@ -39,10 +39,10 @@ class abstractTestDelegate(abstractTestBasic):
             def foo(self, *a):
                 return 5
         self.delegate_forcedYes = delegate_forcedYes()
-	class delegate_broken(object):
-	    def foo(*a):
-		raise AttributeError
-	self.delegate_broken = delegate_broken()
+        class delegate_broken(object):
+            def foo(*a):
+                raise AttributeError
+        self.delegate_broken = delegate_broken()
         
     def testDelegate(self):
         self.assertEqual(self.widget.delegate('foo'), True)
@@ -61,8 +61,8 @@ class abstractTestDelegate(abstractTestBasic):
         self.widget.delegates.append(self.delegate_yes)
         self.assertEqual(self.widget.delegate('foo'), True)
     def testBrokenDelegateRaisesException(self):
-	self.widget.delegates.append(self.delegate_broken)
-	self.assertRaises(AttributeError, lambda *a: self.widget.delegate('foo'))
+        self.widget.delegates.append(self.delegate_broken)
+        self.assertRaises(AttributeError, lambda *a: self.widget.delegate('foo'))
 
 if test_options.delegations:
     from generated import abstractTestDelegateGenerated
@@ -117,11 +117,18 @@ class abstractTestControl(abstractTestWidget):
         self.widget.onAction= self.notify
         skin_name  = cimarron.skin.__name__.split('.')[-1]
         if skin_name == 'gtk2':
-            w = self.widget._widget
+            w = self.widget
             try:
-                w.clicked()
+                while True:
+                    w = w.mainWidget
             except AttributeError:
-                w.activate ()
+                pass
+            w = w._widget
+            try:
+                c=w.clicked
+            except AttributeError:
+                c=w.activate
+            c()
         else:
             raise NotImplementedError, \
                   'write skin-specific test, please, mastah!'

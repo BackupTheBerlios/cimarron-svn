@@ -23,7 +23,7 @@ class Widget(object):
             else:
                 raise NotImplementedError, 'Cannot reparent'
         if parent is not None:
-	    self.skin.concreteParenter(parent, self)
+            self.skin.concreteParenter(parent, self)
             parent._children.append(self)
             self.__parent = parent
     def __get_parent(self):
@@ -41,7 +41,7 @@ class Widget(object):
         try:
             return self.__skin
         except AttributeError:
-	    from papo.cimarron import skin
+            from papo.cimarron import skin
             self.__skin = skin
             return skin
     skin = property(__get_skin)
