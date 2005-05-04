@@ -94,7 +94,7 @@ class Container(Widget):
             i.hide()
 
     def _get_children(self):
-        return iter(self._children)
+        return tuple(self._children)
     children = property(_get_children)
 
     def skeleton(self, parentstr='', position=None):
