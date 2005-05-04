@@ -87,7 +87,7 @@ class Button(GtkFocusableMixin, Control):
 
     def skelargs(self):
         skelargs = super(Button, self).skelargs()
-        skelargs.append('label=%s' % repr(self.label))
+        skelargs['label'] = self.label
         return skelargs
 
 class Entry(GtkFocusableMixin, Control):

@@ -51,6 +51,9 @@ class App(Controller):
     def concreteParenter (self, child):
         pass
 
+    def refresh(self):
+        pass
+
 class Column (object):
     def __init__ (self, name='', read=None, write=None, entry=None):
         self.name= name

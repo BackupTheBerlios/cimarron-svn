@@ -1,5 +1,6 @@
 from new import instancemethod
 import operator
+import libxml2
 
 __all__ = ('Widget', 'Container', 'Control',
            'ForcedNo', 'No', 'Unknown', 'Yes', 'ForcedYes',)
@@ -21,18 +22,16 @@ class Widget(object):
         for k, v in kw.items ():
             setattr (self, k, v)
 
-    def skeleton(self, parentstr='', position=None):
-        skelargs = self.skelargs()
-        if not parentstr:
-            skel = 'skel = '
-        else:
-            skelargs.append('parent=' + parentstr)
-            skel = ''
-        return [ skel + 'skin.%s(%s)' % (self.__class__.__name__,
-                                         ', '.join(skelargs)) ]
-
     def skelargs(self):
-        return []
+        return {}
+
+    def skeleton(self, parent=None):
+        if parent is None:
+            parent = libxml2.newDoc("1.0")
+        this = parent.newChild(None, self.__class__.__name__, None)
+        for prop, value in self.skelargs().items():
+            this.setProp(prop, repr(value))
+        return this
 
     def _set_parent(self, parent):
         if parent is not None and self.parent is parent:
@@ -97,16 +96,11 @@ class Container(Widget):
         return tuple(self._children)
     children = property(_get_children)
 
-    def skeleton(self, parentstr='', position=None):
-        skels = super(Container, self).skeleton(parentstr)
-        if position is None:
-            parentstr = 'skel'
-        else:
-            parentstr = parentstr + '.children[%d]' % position
-        for index, child in enumerate(self.children):
-            skels.extend(child.skeleton(parentstr, index))
-                
-        return skels
+    def skeleton(self, parent=None):
+        skel = super(Container, self).skeleton(parent)
+        for child in self.children:
+            child.skeleton(skel)
+        return skel
 
 class Control(Widget):
     def __init__(self, onAction=None, value='', **kw):
@@ -130,5 +124,5 @@ class Control(Widget):
         skelargs = super(Control, self).skelargs()
         value = self.value
         if is_simple(value):
-            skelargs.append('value=%s' % repr(value))
+            skelargs['value'] = value
         return skelargs
