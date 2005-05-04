@@ -3,7 +3,7 @@ import unittest
 from optparse import OptionParser
 
 if 1:
-    moduleNames = ['controllerTests', 'gridTests', 'searchTests']
+    moduleNames = ['controllerTests', 'gridTests', 'searchTests', 'skeletonTests']
 
     testnames = ('focus-events', 'delegations')
 

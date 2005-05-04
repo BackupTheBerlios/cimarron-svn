@@ -1,6 +1,8 @@
 from new import instancemethod
 import operator
 
+from papo.cimarron.tools import is_simple
+
 def nullAction(*a, **k): pass
 
 ForcedNo, No, Unknown, Yes, ForcedYes = -5, -1, 0, 1, 5
@@ -15,6 +17,19 @@ class Widget(object):
         self.parent = parent
         for k, v in kw.items ():
             setattr (self, k, v)
+
+    def skeleton(self, parentstr='', position=None):
+        skelargs = self.skelargs()
+        if not parentstr:
+            skel = 'skel = '
+        else:
+            skelargs.append('parent=' + parentstr)
+            skel = ''
+        return [ skel + 'skin.%s(%s)' % (self.__class__.__name__,
+                                         ', '.join(skelargs)) ]
+
+    def skelargs(self):
+        return []
 
     def _set_parent(self, parent):
         if parent is not None and self.parent is parent:
@@ -79,6 +94,16 @@ class Container(Widget):
         return iter(self._children)
     children = property(_get_children)
 
+    def skeleton(self, parentstr='', position=None):
+        skels = super(Container, self).skeleton(parentstr)
+        if position is None:
+            parentstr = 'skel'
+        else:
+            parentstr = parentstr + '.children[%d]' % position
+        for index, child in enumerate(self.children):
+            skels.extend(child.skeleton(parentstr, index))
+                
+        return skels
 
 class Control(Widget):
     def __init__(self, onAction=None, value='', **kw):
@@ -97,3 +122,10 @@ class Control(Widget):
     def _activate(self, *ignore):
         if self.onAction is not None:
             self.onAction()
+
+    def skelargs(self):
+        skelargs = super(Control, self).skelargs()
+        value = self.value
+        if is_simple(value):
+            skelargs.append('value=%s' % repr(value))
+        return skelargs

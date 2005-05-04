@@ -82,6 +82,11 @@ class Button(GtkFocusableMixin, Control):
         return self.__button.get_label()
     label = property(_get_label, _set_label)
 
+    def skelargs(self):
+        skelargs = super(Button, self).skelargs()
+        skelargs.append('label=%s' % repr(self.label))
+        return skelargs
+
 class Entry(GtkFocusableMixin, Control):
     def __init__(self, **kw):
         self._widget= self.__entry= gtk.Entry ()
