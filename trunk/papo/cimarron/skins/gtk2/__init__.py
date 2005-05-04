@@ -3,7 +3,10 @@ import pygtk
 pygtk.require('2.0')
 import gtk, gobject
 
-from papo.cimarron.skins.common import Widget, Container, Control, nullAction, Unknown
+# clients of cimarron won't want to worry where their stuff is coming
+# from
+from papo.cimarron.skins.common import *
+from papo.cimarron.controllers import *
 
 class GtkVisibilityMixin(object):
     def _get_visible(self):

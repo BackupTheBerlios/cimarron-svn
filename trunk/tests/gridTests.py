@@ -1,7 +1,6 @@
 import unittest
 from papo import cimarron
 from commonTests import abstractTestControl
-from papo.cimarron.controllers import App, Grid, Column
 
 __all__= ('TestGrid', 'Person')
 
@@ -32,12 +31,12 @@ class TestGrid (abstractTestControl):
             Person ('john', 'lenton'),
             ]
         columns= (
-            Column (name='Nombre', read=Person.getName, write=Person.setName),
-            Column (name='Apellido', read=Person.getSurname, write=Person.setSurname),
+            cimarron.skin.Column (name='Nombre', read=Person.getName, write=Person.setName),
+            cimarron.skin.Column (name='Apellido', read=Person.getSurname, write=Person.setSurname),
             )
 
         self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
-        self.widget= self.grid= Grid (
+        self.widget= self.grid= cimarron.skin.Grid (
             parent= self.parent,
             columns= columns,
             rows= 5,

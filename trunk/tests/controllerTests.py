@@ -1,8 +1,7 @@
 import unittest
 from pprint import pformat
 from papo import cimarron
-# from papo.cimarron.controllers import Controller, App, WindowController
-from papo.cimarron.controllers import Controller, App
+from papo.cimarron.controllers import Controller
 from commonTests import abstractTestControl
 
 __all__ = ('TestController',
@@ -11,7 +10,7 @@ __all__ = ('TestController',
            )
 
 def visualTest():
-    app = App()
+    app = cimarron.skin.App()
     cimarron.config()
     win = cimarron.skin.Window(parent=app)
     foo = FooController(parent=win, value=dict(foo=1,bar=2,baz=3))
@@ -146,7 +145,7 @@ class TestBarController (abstractTestControl):
 class TestApp(unittest.TestCase):
     def setUp(self):
         cimarron.config()
-        self.app = App()
+        self.app = cimarron.skin.App()
         self.win1 = cimarron.skin.Window(parent=self.app)
         self.win2 = cimarron.skin.Window(parent=self.app)
         self.app.show()
@@ -178,7 +177,7 @@ class TestApp(unittest.TestCase):
 #         super (WC, self).__init__ (**kw)
 #         self.win= cimarron.skin.Window (
 #             parent= self,
-#             title= 'Había una vez...',
+#             title= 'HabÃ­a una vez...',
 #             )
 
 # class TestWindowController (unittest.TestCase):

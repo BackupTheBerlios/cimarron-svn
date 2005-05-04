@@ -1,6 +1,8 @@
 from papo import cimarron
 from papo.cimarron.skins.common import Control, Container, ForcedYes, Unknown
 
+__all__ = ('Controller', 'App', 'Grid', 'Column', 'Search', 'WindowController')
+
 class Controller(Control, Container):
     mainWidget = None # mainWidget is the "default" Control of the
                       # Controller, that which fires when you press

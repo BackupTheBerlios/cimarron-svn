@@ -2,13 +2,10 @@ import unittest
 from run import test_options
 from papo import cimarron
 
-from papo.cimarron.skins.common import ForcedNo
-from papo.cimarron.controllers import App
-
 class abstractTestBasic(unittest.TestCase, object):
     def setUp(self):
         cimarron.config()
-        self.app = App()
+        self.app = cimarron.skin.App()
         super (abstractTestBasic, self).setUp ()
     def testSkinArgv(self):
         self.assertEqual(cimarron.skin.__name__, 'papo.cimarron.skins.gtk2')
@@ -21,23 +18,23 @@ class abstractTestDelegate(abstractTestBasic):
         super(abstractTestDelegate, self).setUp()
         class delegate_forcedNo(object):
             def foo(self, *a):
-                return -5
+                return cimarron.skin.ForcedNo
         self.delegate_forcedNo = delegate_forcedNo()
         class delegate_no(object):
             def foo(self, *a):
-                return -1
+                return cimarron.skin.No
         self.delegate_no = delegate_no()
         class delegate_unknown(object):
             def foo(self, *a):
-                return 0
+                return cimarron.skin.Unknown
         self.delegate_unknown = delegate_unknown()
         class delegate_yes(object):
             def foo(self, *a):
-                return 1
+                return cimarron.skin.Yes
         self.delegate_yes = delegate_yes()
         class delegate_forcedYes(object):
             def foo(self, *a):
-                return 5
+                return cimarron.skin.ForcedYes
         self.delegate_forcedYes = delegate_forcedYes()
         class delegate_broken(object):
             def foo(*a):
@@ -96,7 +93,7 @@ class abstractTestVisibility(unittest.TestCase):
         self.widget.delegates.remove(self)
 
     def will_hide(self, target):
-        return ForcedNo
+        return cimarron.skin.ForcedNo
 
 class abstractTestContainer(abstractTestBasic):
     def testChilding(self):

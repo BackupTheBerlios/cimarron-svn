@@ -27,8 +27,8 @@ class TestSearch (abstractTestControl):
         super (TestSearch, self).setUp ()
         self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
         columns= (
-            cimarron.controllers.Column (name='Nombre', read=Person.getName, write=Person.setName),
-            cimarron.controllers.Column (name='Apellido', read=Person.getSurname, write=Person.setSurname),
+            cimarron.skin.Column (name='Nombre', read=Person.getName, write=Person.setName),
+            cimarron.skin.Column (name='Apellido', read=Person.getSurname, write=Person.setSurname),
             )
         self.widget= PersonSearch (
             parent= self.parent,

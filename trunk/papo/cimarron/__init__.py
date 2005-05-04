@@ -1,6 +1,5 @@
 import new
 
-
 DEFAULT_SKIN_NAME = 'gtk2'
 
 class config(object):
