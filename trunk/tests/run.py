@@ -38,7 +38,7 @@ if 1:
     if test_options.module is None:
         moduleNames.append(test_options.skin+'Tests')
     else:
-        moduleNmaes = test_options.module
+        moduleNames = test_options.module
 
     import run
     run.test_options = test_options
