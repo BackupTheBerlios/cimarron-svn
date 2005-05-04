@@ -232,11 +232,12 @@ class Search (Controller):
             self.value= None
         elif len (ans)==1:
             self.value= ans[0]
-        else:
+        if len (ans)>1:
             # select
             self.selwin.grid.data= ans
             self.selwin.show ()
-        self.onAction ()
+        else:
+            self.onAction ()
 
     def selected (self, *ignore):
         self.value= self.selwin.value

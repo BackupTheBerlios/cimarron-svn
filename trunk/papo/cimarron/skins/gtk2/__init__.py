@@ -135,6 +135,7 @@ class Notebook (Container):
     def __init__ (self, **kw):
         self._widget= self.__notebook= gtk.Notebook ()
         super (Notebook, self).__init__ (**kw)
+        self._widget.connect ('change-current-page', self.__change_page)
 
     def activate (self, other):
         if type (other)==int:
@@ -143,7 +144,7 @@ class Notebook (Container):
         else:
             # assume it's a child
             pageNo= self._children.index (other)
-        if 0<=pageNo and pageNo<len (self._children):
+        if 0<=pageNo and pageNo<len (self._children) and self.delegate ('will_change_page'):
             self._widget.set_current_page (pageNo)
 
     def concreteParenter (self, child):
@@ -152,6 +153,12 @@ class Notebook (Container):
             label= gtk.Label()
             label.set_text (child.label)
             self._widget.set_tab_label (child._widget, label)
+
+    def __change_page (self, *ignore):
+        ans= False
+        if self.delegate ('will_change_page'):
+            ans= True
+        return ans
         
 
 def _run():
