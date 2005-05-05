@@ -18,12 +18,12 @@ class TestSkeleton(unittest.TestCase):
 
     def testLeafSkeleton(self):
         skel = self.button.skeleton()
-        self.assertEqual(str(skel), 
+        self.assertEqual(skel.serialize(), 
                          '<Button value="5" label="\'click my clicker\'"/>')
 
     def testInteriorNodeSkeleton(self):
         skel = self.vbox.skeleton()
-        self.assertEqual(str(skel),
+        self.assertEqual(skel.serialize(),
                          '<VBox>'
                            '<Button value="5" label="\'click my clicker\'"/>'
                            '<Entry value="\'\'"/>'
@@ -31,7 +31,7 @@ class TestSkeleton(unittest.TestCase):
 
     def testWindowSkeleton(self):
         skel = self.window.skeleton()
-        self.assertEqual(str(skel),
+        self.assertEqual(skel.serialize(),
                          '<Window>'
                            '<VBox>'
                              '<Button value="5" label="\'click my clicker\'"/>'
@@ -41,7 +41,7 @@ class TestSkeleton(unittest.TestCase):
 
     def testAppSkeleton(self):
         skel = self.app.skeleton()
-        self.assertEqual(str(skel),
+        self.assertEqual(skel.serialize(),
                          '<App value="\'\'">'
                            '<Window>'
                              '<VBox>'
