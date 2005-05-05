@@ -1,5 +1,5 @@
 from papo import cimarron
-from papo.cimarron.skins.common import Control, Container, ForcedYes, Unknown
+from papo.cimarron.skins.common import Control, Container, ForcedYes
 
 __all__ = ('Controller', 'App', 'Grid', 'Column', 'Search', 'WindowController')
 
@@ -94,6 +94,7 @@ class Grid (Controller):
     def updateData (self, entry, *i):
         if self.columns[entry.column].write is not None:
             self.columns[entry.column].write (self.data[entry.row], entry.value)
+        self.onAction ()
 
     def refresh (self):
         for i in xrange (len (self.data)):
@@ -125,7 +126,8 @@ class Grid (Controller):
 
     def will_focus_in (self, entry, *ignore):
         self.index= entry.row
-        return Unknown
+    def will_focus_out (self, entry, *ignore):
+        entry.onAction ()
 
     def _set_index (self, index):
         if self.__initialized and self.index is not None:
@@ -160,7 +162,8 @@ class SelectionWindow (Controller):
         v= cimarron.skin.VBox (parent=self.win)
         self.grid= Grid (
             parent= v,
-            columns= columns
+            columns= columns,
+            onAction= self.onOk,
         )
         h= cimarron.skin.HBox (parent=v)
         self.ok= cimarron.skin.Button (
