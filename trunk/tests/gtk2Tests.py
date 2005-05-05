@@ -7,7 +7,7 @@ import gobject
 from run import test_options
 
 from papo import cimarron
-from papo.cimarron.skins.common import Unknown
+from papo.cimarron.skins.common import Unknown, ForcedNo
 
 from commonTests import abstractTestWidget, abstractTestVisibility
 from windowTests import TestWindow
@@ -73,9 +73,9 @@ class testGtkFocusable(TestCase):
             while not self.passed is 'in':
                 gtk.main_iteration ()
             self.assertEqual(self.passed, 'in')
-	def will_focus_in (self, widget):
-	    self.passed = 'in'
-	    return 0
+        def will_focus_in (self, widget):
+            self.passed = 'in'
+            return 0
 
         def testOnFocusOut (self):
             import gtk
@@ -149,3 +149,13 @@ class TestGtkNotebook (testGtkParenting, TestNotebook):
             self.widget.activate (self.widget._children[i])
             while gtk.events_pending (): gtk.main_iteration ()
             self.assertEqual (i, self.widget._widget.get_current_page ())
+
+    def testPreventPageChange (self):
+        self.testActivate ()
+        self.widget.activate (0)
+        self.widget.delegates.append (self)
+        self.widget.activate (1)
+        self.assertEqual (self.widget._widget.get_current_page (), 0)
+
+    def will_change_page (self, *ignore):
+        return ForcedNo
