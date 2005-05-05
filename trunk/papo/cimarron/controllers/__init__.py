@@ -1,5 +1,5 @@
 from papo import cimarron
-from papo.cimarron.skins.common import Control, Container, ForcedYes
+from papo.cimarron.skins.common import Control, Container, ForcedYes, Unknown
 
 __all__ = ('Controller', 'App', 'Grid', 'Column', 'Search', 'WindowController')
 
@@ -94,6 +94,9 @@ class Grid (Controller):
     def updateData (self, entry, *i):
         if self.columns[entry.column].write is not None:
             self.columns[entry.column].write (self.data[entry.row], entry.value)
+
+    def selected (self, entry, *ignore):
+        self.updateData (entry)
         self.onAction ()
 
     def refresh (self):
@@ -115,7 +118,7 @@ class Grid (Controller):
                     self.entries[i, j]= entryConstr (
                         parent= h,
                         value= self.columns[j].read (self.data[i]),
-                        onAction= self.updateData,
+                        onAction= self.selected,
                         column= j,
                         row= i,
                         )
@@ -127,7 +130,7 @@ class Grid (Controller):
     def will_focus_in (self, entry, *ignore):
         self.index= entry.row
     def will_focus_out (self, entry, *ignore):
-        entry.onAction ()
+        self.updateData (entry)
 
     def _set_index (self, index):
         if self.__initialized and self.index is not None:
