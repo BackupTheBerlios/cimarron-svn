@@ -1,15 +1,49 @@
 from papo import cimarron
-from papo.cimarron.controllers import Controller, Column, WindowController
 
 from model.person import Person
+from model.address import Address
 
 import model.data.persons
+
 
 __all__= (
     'AMBMPerson',
     )
 
-class PersonSearch (cimarron.controllers.Search):
+class ABMPerson (cimarron.skin.WindowController):
+    def __init__ (self, **kw):
+        super (ABMPerson, self).__init__ (**kw)
+        # take in account that this is fake
+        self.data= model.data.persons.Persons
+        self.win.title= 'ABM de Person'
+        self.notebook= n= cimarron.skin.Notebook (parent= self.win)
+        self.searchPage= PersonSearchPage (
+            parent= n,
+            data= self.data,
+            onAction= self.personSelected,
+            )
+        self.editPage= PersonEditPage (
+            parent= n,
+            onAction= self.personAdded,
+            )
+        self.editAddressesPage= PersonAddressesEditPage (
+            parent= n,
+            )
+
+    def personSelected (self, *ignore):
+        self.editPage.value= self.searchPage.value
+        if self.searchPage.value is not None:
+            self.editAddressesPage.value= self.searchPage.value.addresses
+            self.notebook.activate (self.editPage)
+
+    def personAdded (self, *ignore):
+        # NOTE: this is set up like this only because I won't implement
+        # a model that can add itself to a transaction and commit
+        self.data.append (self.editPage.value)
+        print self.data
+
+
+class PersonSearch (cimarron.skin.Search):
     def __init__ (self, data=[], **kw):
         super (PersonSearch, self).__init__ (**kw)
         self.data= data
@@ -31,17 +65,18 @@ class PersonSearch (cimarron.controllers.Search):
         return ans
 
 
-class PersonSearchPage (Controller):
+class PersonSearchPage (cimarron.skin.Controller):
     def __init__ (self, data=[], **kw):
         super (PersonSearchPage, self).__init__ (**kw)
         self.data= data
         v= cimarron.skin.VBox ()
         v.label= 'Search'
-        cimarron.skin.concreteParenter (parent=self, child=v)
+        # cimarron.skin.concreteParenter (parent=self, child=v)
+        v.parent= self
 
         columns= (
-            Column (name='Nombre', read=Person.getName, write=Person.setName),
-            Column (name='Apellido', read=Person.getSurname, write=Person.setSurname),
+            cimarron.skin.Column (name='Nombre', read=Person.getName, write=Person.setName),
+            cimarron.skin.Column (name='Apellido', read=Person.getSurname, write=Person.setSurname),
             )
         self.searcher= PersonSearch (
             parent= v,
@@ -52,16 +87,17 @@ class PersonSearchPage (Controller):
 
     def personSelected (self, *ignore):
         self.value= self.searcher.value
+        self.searcher.value= None
         self.onAction ()
 
     def refresh (self, *ignore):
         pass
 
 
-class PersonEditPage (Controller):
+class PersonEditPage (cimarron.skin.Controller):
     def __init__ (self, **kw):
         super (PersonEditPage, self).__init__ (**kw)
-        h= cimarron.skin.VBox ()
+        h= cimarron.skin.HBox ()
         h.label= 'Edit'
         h.parent= self
 
@@ -76,10 +112,12 @@ class PersonEditPage (Controller):
             parent= v,
             onAction= self.editModel,
             )
+        self.name.delegates.append (self)
         self.surname= cimarron.skin.Entry (
             parent= v,
             onAction= self.editModel,
             )
+        self.surname.delegates.append (self)
 
         save= cimarron.skin.Button (
             parent= h,
@@ -87,11 +125,13 @@ class PersonEditPage (Controller):
             onAction= self.savePerson,
             )
 
+    def will_focus_out (self, *ignore):
+        self.editModel ()
+
     def newPerson (self, *ignore):
         self.value= Person ()
 
     def savePerson (self, *ignore):
-        print 'saving', self.value
         if self.value.isDirty:
             if self.value.new:
                 # NOTE: this is set up like this only because I won't implement
@@ -100,40 +140,42 @@ class PersonEditPage (Controller):
             self.value.save ()
         
     def editModel (self, *ignore):
-        self.value.name= self.name.value
-        self.value.surname= self.surname.value
-        self.value.isDirty= True
+        if self.value is not None:
+            self.value.name= self.name.value
+            self.value.surname= self.surname.value
+            self.value.isDirty= True
         
     def refresh (self, *ignore):
         if self.value is not None:
             self.name.value= self.value.name
             self.surname.value= self.value.surname
+        else:
+            self.name.value= ''
+            self.surname.value= ''
 
-
-class ABMPerson (WindowController):
+class PersonAddressesEditPage (cimarron.skin.Controller):
     def __init__ (self, **kw):
-        super (ABMPerson, self).__init__ (**kw)
-        # take in account that this is fake
-        self.data= model.data.persons.Persons
-        self.win.title= 'ABM de Person'
-        self.notebook= n= cimarron.skin.Notebook (parent= self.win)
-        self.searchPage= PersonSearchPage (
-            parent= n,
-            data= self.data,
-            onAction= self.personSelected,
+        super (PersonAddressesEditPage, self).__init__ (**kw)
+        h= cimarron.skin.VBox ()
+        h.label= 'Edit addresses'
+        h.parent= self
+
+        new= cimarron.skin.Button (
+            parent= h,
+            label= 'New',
+            onAction= self.newAddress,
             )
-        self.editPage= PersonEditPage (
-            parent= n,
-            onAction= self.personAdded,
+        self.addresses= cimarron.skin.Grid (
+            parent= h,
+            columns= (cimarron.skin.Column (read=Address.getText, write=Address.setText), ),
+            data= self.value,
             )
 
-    def personSelected (self, *ignore):
-        print self.searchPage.value
-        self.editPage.value= self.searchPage.value
-        self.notebook.activate (self.editPage)
+    def newAddress (self, *ignore):
+        self.value.append (Address ())
+        print self.value
+        self.refresh ()
 
-    def personAdded (self, *ignore):
-        # NOTE: this is set up like this only because I won't implement
-        # a model that can add itself to a transaction and commit
-        self.data.append (self.editPage.value)
-        print self.data
+    def refresh (self):
+        self.addresses.data= self.value
+        self.addresses.widget._widget.show_all ()

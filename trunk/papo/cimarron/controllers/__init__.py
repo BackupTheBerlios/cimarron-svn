@@ -126,6 +126,9 @@ class Grid (Controller):
             else:
                 for j in xrange (len (self.columns)):
                     self.entries[i, j].value= self.columns[j].read (self.data[i])
+        for i in xrange (len (self.data), len (self.labels)):
+            for j in xrange (len (self.columns)):
+                self.entries[i, j].value= ''
 
     def will_focus_in (self, entry, *ignore):
         self.index= entry.row

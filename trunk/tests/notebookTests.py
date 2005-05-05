@@ -1,5 +1,7 @@
 import unittest
+
 from papo import cimarron
+
 from commonTests import abstractTestContainer
 
 __all__= ('TestNotebook', )

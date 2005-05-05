@@ -2,11 +2,11 @@ class Address (object):
     def __init__ (self, text=''):
         self.text= text
 
-    def __get_text (self):
+    def getText (self):
         return self.__text
-    def __set_text (self, text):
+    def setText (self, text):
         self.__text= text
-    text= property (__get_text, __set_text)
+    text= property (getText, setText)
 
     def __str__ (self):
         return "Address (text='%s')" % self.text

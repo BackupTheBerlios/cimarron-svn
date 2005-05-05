@@ -1,5 +1,4 @@
 from papo import cimarron
-from papo.cimarron.controllers import WindowController
 
 from person import ABMPerson
 
@@ -7,7 +6,7 @@ __all__= (
     'Main',
     )
 
-class Main (WindowController):
+class Main (cimarron.skin.WindowController):
     def __init__ (self, **kw):
         super (Main, self).__init__ (**kw)
         self.win.title= 'Main window'

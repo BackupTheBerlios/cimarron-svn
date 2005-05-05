@@ -124,11 +124,15 @@ class Entry(GtkFocusableMixin, Control):
 class VBox(Container):
     def __init__ (self, **kw):
         self._widget= self.__vbox = gtk.VBox()
+        # self._widget.set_border_width (5)
+        self._widget.set_spacing (5)
         super (VBox, self).__init__ (**kw)
 
 class HBox(Container):
     def __init__ (self, **kw):
         self._widget= self.__vbox = gtk.HBox()
+        # self._widget.set_border_width (5)
+        self._widget.set_spacing (5)
         super (HBox, self).__init__ (**kw)
 
 class Notebook (Container):
