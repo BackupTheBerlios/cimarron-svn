@@ -40,49 +40,50 @@ class GtkFocusableMixin(object):
 
 class Window(GtkVisibilityMixin, Container):
     def __init__(self, title='', **kw):
-        self._widget = self.__window = gtk.Window()
+        self._widget = gtk.Window()
         super(Window, self).__init__(**kw)
 
         def delete_callback(*a):
             self.hide()
             return True
 
-        self.__window.connect('delete-event', delete_callback)
+        self._widget.connect('delete-event', delete_callback)
         self.title = title
 
     def _set_title(self, title):
-        self.__window.set_title(title)
+        self._widget.set_title(title)
     def _get_title(self):
-        return self.__window.get_title()
+        return self._widget.get_title()
     title = property(_get_title, _set_title)
 
 
 class Label(Widget):
     def __init__(self, text='', **kw):
-        self._widget = self.__label = gtk.Label()
+        self._widget = gtk.Label()
         super(Label, self).__init__(**kw)
         self.text = text
 
     def show(self):
-        self.__label.show()
+        self._widget.show()
 
     def _set_text(self, text):
-        self.__label.set_text(text)
+        self._widget.set_text(text)
     def _get_text(self):
-        return self.__label.get_text()
+        return self._widget.get_text()
     text = property(_get_text, _set_text)
 
 class Button(GtkFocusableMixin, Control):
     def __init__(self, label='', **kw):
-        self._widget = self.__button = gtk.Button()
+        if not '_widget' in self.__dict__:
+            self._widget = gtk.Button()
         super(Button, self).__init__(**kw)
         self.label = label
-        self.__button.connect('clicked', self._activate)
+        self._widget.connect('clicked', self._activate)
 
     def _set_label(self, label):
-        self.__button.set_label(label)
+        self._widget.set_label(label)
     def _get_label(self):
-        return self.__button.get_label()
+        return self._widget.get_label()
     label = property(_get_label, _set_label)
 
     def skelargs(self):
@@ -90,30 +91,42 @@ class Button(GtkFocusableMixin, Control):
         skelargs['label'] = self.label
         return skelargs
 
+class Checkbox(Button):
+    def __init__(self, checked=False, **kw):
+        self._widget = gtk.CheckButton()
+        super(Checkbox, self).__init__(**kw)
+        self.checked = checked
+    def _get_checked(self):
+        return self._widget.get_active()
+    def _set_checked(self, checked):
+        self._widget.set_active(checked)
+    checked = property(_get_checked, _set_checked)
+
+
 class Entry(GtkFocusableMixin, Control):
     def __init__(self, **kw):
-        self._widget= self.__entry= gtk.Entry ()
+        self._widget = gtk.Entry ()
         super(Entry, self).__init__(**kw)
         self.update ()
-        self.__entry.connect ('activate', self._activate)
-        self.__entry.connect ('key-press-event', self._keypressed)
+        self._widget.connect ('activate', self._activate)
+        self._widget.connect ('key-press-event', self._keypressed)
         self.delegates.append (self)
 
     def _get_value (self):
         return self.__value
     def _set_value (self, value):
         self.__value = value
-        self.__entry.set_text(value)
+        self._widget.set_text(value)
     value= property (_get_value, _set_value)
 
     def update (self):
-        self.__entry.set_text (self.value)
+        self._widget.set_text (self.value)
     def will_focus_out (self, *ignore):
-        self.__value= self.__entry.get_text ()
+        self.__value= self._widget.get_text ()
         return Unknown
 
     def _activate (self, *ignore):
-        self.__value= self.__entry.get_text ()
+        self.__value= self._widget.get_text ()
         super (Entry, self)._activate ()
     def _keypressed (self, widget, key_event, *ignore):
         # gotta find the symbolics of these
@@ -123,21 +136,21 @@ class Entry(GtkFocusableMixin, Control):
 
 class VBox(Container):
     def __init__ (self, **kw):
-        self._widget= self.__vbox = gtk.VBox()
+        self._widget = gtk.VBox()
         # self._widget.set_border_width (5)
         self._widget.set_spacing (5)
         super (VBox, self).__init__ (**kw)
 
 class HBox(Container):
     def __init__ (self, **kw):
-        self._widget= self.__vbox = gtk.HBox()
+        self._widget = gtk.HBox()
         # self._widget.set_border_width (5)
         self._widget.set_spacing (5)
         super (HBox, self).__init__ (**kw)
 
 class Notebook (Container):
     def __init__ (self, **kw):
-        self._widget= self.__notebook= gtk.Notebook ()
+        self._widget = gtk.Notebook ()
         super (Notebook, self).__init__ (**kw)
         self._widget.connect ('change-current-page', self.__change_page)
 

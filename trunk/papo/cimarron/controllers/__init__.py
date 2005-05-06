@@ -63,6 +63,8 @@ class Column (object):
         if write is not None and not callable (write):
             raise ValueError, 'write parameter must be callable'
         self.write= write
+        if entry is None:
+            entry = cimarron.skin.Entry
         self.entry= entry
 
 class Grid (Controller):
@@ -114,7 +116,7 @@ class Grid (Controller):
 
                 # now the entries
                 for j in xrange (len (self.columns)):
-                    entryConstr= self.columns[j].entry or cimarron.skin.Entry
+                    entryConstr= self.columns[j].entry
                     self.entries[i, j]= entryConstr (
                         parent= h,
                         value= self.columns[j].read (self.data[i]),
@@ -214,8 +216,8 @@ class Search (Controller):
             parent= self.parent,
             )
         for c in self.columns:
-            entryConstr= c.entry or cimarron.skin.Entry
-            self.entries.append (cimarron.skin.Entry (
+            entryConstr= c.entry
+            self.entries.append (entryConstr (
                 parent= h,
                 onAction= self.doSearch
                 ))

@@ -12,7 +12,7 @@ from papo.cimarron.skins.common import Unknown, ForcedNo
 from commonTests import abstractTestWidget, abstractTestVisibility
 from windowTests import TestWindow
 from labelTests import TestLabel
-from buttonTests import TestButton
+from buttonTests import TestButton, TestCheckbox
 from entryTests import TestEntry
 from boxTests import TestBoxes
 from notebookTests import TestNotebook
@@ -22,6 +22,7 @@ __all__ = ('TestGtkEntry',
            'TestGtkWindow',
            'TestGtkLabel',
            'TestGtkButton',
+           'TestGtkCheckbox',
            'TestGtkEntry',
            'TestGtkBoxes',
            'TestGtkNotebook',
@@ -128,6 +129,13 @@ class TestGtkButton(testGtkFocusable, testGtkParenting, TestButton):
     def testSetLabel (self):
         self.widget.label= "Don't click me"
         self.assertEqual(self.widget.label, self.widget._widget.get_label ())
+
+class TestGtkCheckbox(TestCheckbox, TestGtkButton):
+    def testSetChecked(self):
+        self.widget.checked = True
+        self.assertEqual(self.widget._widget.get_active(), True)
+        self.widget.checked = False
+        self.assertEqual(self.widget._widget.get_active(), False)
 
 class TestGtkBoxes(testGtkParenting, TestBoxes):
     pass
