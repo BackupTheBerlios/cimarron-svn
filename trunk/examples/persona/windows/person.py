@@ -160,10 +160,17 @@ class PersonEditPage (cimarron.skin.Controller):
             self.value.save ()
         
     def editModel (self, *ignore):
-        if self.value is not None:
+        if self.value is None:
+            value= Person ()
+            value.name= self.name.value
+            value.surname= self.surname.value
+            # we do it this way because doing `self.value= Person()´
+            # would empty the Entry's values (due to refresh())
+            self.value= value
+        else:
             self.value.name= self.name.value
             self.value.surname= self.surname.value
-            self.value.isDirty= True
+        self.value.isDirty= True
         
     def refresh (self, *ignore):
         if self.value is not None:

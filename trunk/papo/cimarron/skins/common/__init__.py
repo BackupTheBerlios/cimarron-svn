@@ -123,7 +123,7 @@ class Container(Widget):
         return skel
 
 class Control(Widget):
-    def __init__(self, onAction=None, value='', **kw):
+    def __init__(self, onAction=None, value=None, **kw):
         super(Control, self).__init__(**kw)
         self.value = value
         self.onAction= onAction

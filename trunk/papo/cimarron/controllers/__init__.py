@@ -108,7 +108,7 @@ class Grid (Controller):
     def _set_data (self, data):
         self.__data= data
         self.refresh ()
-        if len (data)>0:
+        if data is not None and len (data)>0:
             self.index= 0
     def _get_data (self):
         return self.__data
@@ -122,35 +122,43 @@ class Grid (Controller):
         self.onAction ()
 
     def refresh (self):
-        for i in xrange (len (self.data)):
-            if len (self.labels)<=i:
-                # the row does not exist, so we add it
-                h= cimarron.skin.HBox (parent=self.widget)
-                b= cimarron.skin.Label (
-                    parent= h,
-                    text= ' ',
-                    row= i
-                    )
-
-                self.labels.append (b)
-
-                # now the entries
-                for j in xrange (len (self.columns)):
-                    entryConstr= self.columns[j].entry
-                    self.entries[i, j]= entryConstr (
+        try:
+            # normal case: data is some sequence
+            for i in xrange (len (self.data)):
+                if len (self.labels)<=i:
+                    # the row does not exist, so we add it
+                    h= cimarron.skin.HBox (parent=self.widget)
+                    b= cimarron.skin.Label (
                         parent= h,
-                        value= self.columns[j].read (self.data[i]),
-                        onAction= self.selected,
-                        column= j,
-                        row= i,
+                        text= ' ',
+                        row= i
                         )
-                    self.entries[i, j].delegates.append (self)
-            else:
+
+                    self.labels.append (b)
+                    
+                    # now the entries
+                    for j in xrange (len (self.columns)):
+                        entryConstr= self.columns[j].entry or cimarron.skin.Entry
+                        self.entries[i, j]= entryConstr (
+                            parent= h,
+                            value= self.columns[j].read (self.data[i]),
+                            onAction= self.selected,
+                            column= j,
+                            row= i,
+                            )
+                        self.entries[i, j].delegates.append (self)
+                else:
+                    for j in xrange (len (self.columns)):
+                        self.entries[i, j].value= self.columns[j].read (self.data[i])
+            for i in xrange (len (self.data), len (self.labels)):
                 for j in xrange (len (self.columns)):
-                    self.entries[i, j].value= self.columns[j].read (self.data[i])
-        for i in xrange (len (self.data), len (self.labels)):
-            for j in xrange (len (self.columns)):
-                self.entries[i, j].value= ''
+                    self.entries[i, j].value= ''
+
+        except TypeError:
+            # except case: data is something else (tipically, `None´)
+            for i in xrange (len (self.labels)):
+                for j in xrange (len (self.columns)):
+                    self.entries[i, j].value= ''
 
     def will_focus_in (self, entry, *ignore):
         self.index= entry.row
@@ -175,7 +183,7 @@ class Grid (Controller):
     def _set_value (self, value):
         try:
             index= self.data.index (value)
-        except ValueError:
+        except (ValueError, AttributeError):
             index= None
         self.index= index
     value= property (_get_value, _set_value)

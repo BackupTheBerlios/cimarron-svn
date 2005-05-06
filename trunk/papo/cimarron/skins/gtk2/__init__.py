@@ -135,18 +135,26 @@ class Entry(GtkFocusableMixin, Control):
     def _get_value (self):
         return self.__value
     def _set_value (self, value):
+        # set the value only if:
+        # we haven't set any value yet OR
+        # NOT (our value is None AND the value to set is an empty string)
+        # if not hasattr (self, '__value') or not (self.__value is None and value==''):
         self.__value = value
-        self._widget.set_text(value)
+        self.update ()
     value= property (_get_value, _set_value)
 
     def update (self):
-        self._widget.set_text (self.value)
+        value= self.value
+        if value is None:
+            value= ''
+        self.__entry.set_text (value)
     def will_focus_out (self, *ignore):
-        self.__value= self._widget.get_text ()
+        # is not the same as _activate ()
+        self.value= self.__entry.get_text ()
         return Unknown
 
     def _activate (self, *ignore):
-        self.__value= self._widget.get_text ()
+        self.value= self.__entry.get_text ()
         super (Entry, self)._activate ()
     def _keypressed (self, widget, key_event, *ignore):
         # gotta find the symbolics of these
