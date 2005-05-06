@@ -27,7 +27,7 @@ distclean: clean
 	rm -rfv build dist MANIFEST
 
 test:
-	PYTHONPATH=.:$$PYTHONPATH python tests/run.py $(TESTOPTS)
+	PYTHONPATH=.:$$PYTHONPATH python test/run.py $(TESTOPTS)
 
 install:
 	python setup.py install
