@@ -25,10 +25,14 @@ setup(name='cimarron',
       version='0.2',
       description='Cimarrón GUI component framework',
       long_description='''
-Hab'ia una vez un coso.
-Blah, blah, blah.
+Cimarrón is a framework for the construction of reusable GUI
+components, using (recursive) variations of the classic (NeXT-like)
+MVC pattern. Provided are a pretty basic set of views (it is trivial to
+add more, and more will be provided as the PAPO project advances), and
+a few controllers. Also provided is a small example.
 
-Yeah, that's about it.
+The aim of Cimarrón is to be toolkit-agnostic, but we've only had time
+to implement the Gtk2 'skin' so far.
 ''',
       author='Fundación Vía Libre - PAPO team',
       author_email='cimarron-hackers@berlios.de',
