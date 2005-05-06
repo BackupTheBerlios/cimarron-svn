@@ -46,7 +46,7 @@ class TestSkeleton(unittest.TestCase):
         self.assertEqual(skel.serialize(),
                          '<VBox>'
                            '<Button value="5" label="\'click my clicker\'"/>'
-                           '<Entry value="\'\'"/>'
+                           '<Entry value="None"/>'
                          '</VBox>')
 
     def testWindowSkeleton(self):
@@ -55,18 +55,18 @@ class TestSkeleton(unittest.TestCase):
                          '<Window>'
                            '<VBox>'
                              '<Button value="5" label="\'click my clicker\'"/>'
-                             '<Entry value="\'\'"/>'
+                             '<Entry value="None"/>'
                            '</VBox>'
                          '</Window>')
 
     def testAppSkeleton(self):
         skel = self.app.skeleton()
         self.assertEqual(skel.serialize(),
-                         '<App value="\'\'">'
+                         '<App value="None">'
                            '<Window>'
                              '<VBox>'
                                '<Button value="5" label="\'click my clicker\'"/>'
-                               '<Entry value="\'\'"/>'
+                               '<Entry value="None"/>'
                              '</VBox>'
                            '</Window>'
                          '</App>')
