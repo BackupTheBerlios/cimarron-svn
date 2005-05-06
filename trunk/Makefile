@@ -31,3 +31,5 @@ test:
 
 install:
 	python setup.py install
+
+.PHONY: test
