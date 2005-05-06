@@ -24,9 +24,10 @@ clean:
 
 distclean: clean
 	find '(' -name '*.py[co]' -o -name '*~' ')' -print0 | xargs -0 -r rm -v
+	rm -rfv build dist MANIFEST
 
 test:
 	PYTHONPATH=.:$$PYTHONPATH python tests/run.py $(TESTOPTS)
 
 install:
-	
+	python setup.py install
