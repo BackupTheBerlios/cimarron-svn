@@ -1,6 +1,6 @@
 import unittest
 from papo import cimarron
-from commonTests import abstractTestControl
+from testCommon import abstractTestControl
 
 __all__ = ('TestButton',
            'TestCheckbox',

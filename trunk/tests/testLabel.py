@@ -1,6 +1,6 @@
 import unittest
 from papo import cimarron
-from commonTests import abstractTestWidget
+from testCommon import abstractTestWidget
 
 __all__ = ('TestLabel',
            )

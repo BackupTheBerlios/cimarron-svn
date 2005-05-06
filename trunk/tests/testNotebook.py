@@ -2,7 +2,7 @@ import unittest
 
 from papo import cimarron
 
-from commonTests import abstractTestContainer
+from testCommon import abstractTestContainer
 
 __all__= ('TestNotebook', )
 

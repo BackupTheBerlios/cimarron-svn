@@ -9,13 +9,13 @@ from run import test_options
 from papo import cimarron
 from papo.cimarron.skins.common import Unknown, ForcedNo
 
-from commonTests import abstractTestWidget, abstractTestVisibility
-from windowTests import TestWindow
-from labelTests import TestLabel
-from buttonTests import TestButton, TestCheckbox
-from entryTests import TestEntry
-from boxTests import TestBoxes
-from notebookTests import TestNotebook
+from testCommon import abstractTestWidget, abstractTestVisibility
+from testWindow import TestWindow
+from testLabel import TestLabel
+from testButton import TestButton, TestCheckbox
+from testEntry import TestEntry
+from testBox import TestBoxes
+from testNotebook import TestNotebook
 
 
 __all__ = ('TestGtkEntry',

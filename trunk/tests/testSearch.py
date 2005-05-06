@@ -1,7 +1,7 @@
 from papo import cimarron
 
-from commonTests import abstractTestControl
-from gridTests import Person
+from testCommon import abstractTestControl
+from testGrid import Person
 
 __all__=('TestSearch',)
 

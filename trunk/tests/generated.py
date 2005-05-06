@@ -1,4 +1,4 @@
-from commonTests import abstractTestDelegate
+from testCommon import abstractTestDelegate
 
 class abstractTestDelegateGenerated(abstractTestDelegate):
     def testChainDelegationyy(self):

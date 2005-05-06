@@ -2,7 +2,7 @@ import os, sys, re
 import unittest
 from optparse import OptionParser
 
-moduleNames = ['hello', 'controllerTests', 'gridTests', 'searchTests', 'skeletonTests']
+moduleNames = ['hello', 'testController', 'testGrid', 'testSearch', 'testSkeleton']
 
 testnames = ('focus-events', 'delegations')
 
@@ -35,7 +35,7 @@ if test_options.quiet:
     argv.append('-q')
 
 if test_options.module is None:
-    moduleNames.append(test_options.skin+'Tests')
+    moduleNames.append('test' + test_options.skin.capitalize())
 else:
     moduleNames = test_options.module
 

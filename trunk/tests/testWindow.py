@@ -1,6 +1,6 @@
 import unittest
 from papo import cimarron
-from commonTests import abstractTestWidget, abstractTestContainer
+from testCommon import abstractTestWidget, abstractTestContainer
 
 __all__ = ('TestWindow',
            )
