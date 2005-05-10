@@ -22,6 +22,7 @@ from new import instancemethod
 import pygtk
 pygtk.require('2.0')
 import gtk, gobject
+from itertools import izip, repeat
 
 # clients of cimarron won't want to worry where their stuff is coming
 # from
@@ -204,6 +205,59 @@ class Notebook (Container):
         if self.delegate ('will_change_page'):
             ans= True
         return ans
+
+
+class Grid2 (Controller):
+    def __init__ (self, data=[], columns=[], **kw):
+        self._columns= columns
+        (self._tvcolumns, self._dataspec)= izip(*izip(
+            [ gtk.TreeViewColumn (c.name) for c in columns ],
+            repeat(str)
+            ))
+        self.data= data
+        
+        # put the TreeView in a scrolled window
+        self._widget= gtk.ScrolledWindow ()
+        self._widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
+        tv= gtk.TreeView (self._tvdata)
+        self._widget.add (tv)
+        
+        # add the columns and attrs
+        for i in xrange (len (columns)):
+            c= self._tvcolumns[i]
+            crt= gtk.CellRendererText ()
+            if columns[i].write is not None:
+                # editable
+                crt.set_property ('editable', True)
+                crt.connect ('edited', self.cell_edited, (self._data, i, columns[i].write))
+            c.pack_start (crt, True)
+            c.add_attribute (crt, 'text', i)
+            tv.append_column (c)
+        
+        super (Grid2, self).__init__ (**kw)
+
+    def cell_edited (self, cell, path, text, data, *ignore):
+        (model, colNo, write)= data
+        # modify the ListStore model...
+        model[path][colNo]= text
+        # ... and our model
+        write (self.data[int (path)], text)
+        # coming soon: our model swill suport the generic TreeModel protocol
+        return False
+
+    def _set_data (self, data):
+        # the model data
+        self._data= data
+
+        if len (self._columns)>0:
+            self._tvdata= gtk.ListStore (*self._dataspec)
+        for i in data:
+            # build a ListStore w/ al the values
+            # NOTE: this forces the data to be read.
+            self._tvdata.append ([j.read (i) for j in self._columns])
+    def _get_data (self):
+        return self._data
+    data= property (_get_data, _set_data)
         
 
 def _run():
