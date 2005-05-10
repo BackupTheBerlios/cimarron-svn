@@ -83,7 +83,11 @@ class TestGrid (abstractTestControl):
 
     def testWrite (self):
         # self.widget.entries[0, 0]._widget.set_text ('juan')
-        self.widget.entries[0, 0].value= 'juan'
-        self.widget.entries[0, 0].onAction ()
+
+        # self.widget.entries[0, 0].value= 'juan'
+        # self.widget.entries[0, 0].onAction ()
+
+        # this time is different
+        self.widget._cell_edited (None, 0, 'juan', (0, Person.setName))
         self.widget.index= 0
         self.assertEqual (self.widget.value.name, 'juan')

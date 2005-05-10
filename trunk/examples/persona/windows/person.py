@@ -205,4 +205,4 @@ class PersonAddressesEditPage (cimarron.skin.Controller):
 
     def refresh (self):
         self.addresses.data= self.value
-        self.addresses.widget._widget.show_all ()
+        # self.addresses.widget._widget.show_all ()

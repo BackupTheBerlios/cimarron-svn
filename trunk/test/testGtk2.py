@@ -36,6 +36,7 @@ from testButton import TestButton, TestCheckbox
 from testEntry import TestEntry
 from testBox import TestBoxes
 from testNotebook import TestNotebook
+from testGrid import TestGrid
 
 
 __all__ = ('TestGtkEntry',
@@ -46,6 +47,7 @@ __all__ = ('TestGtkEntry',
            'TestGtkEntry',
            'TestGtkBoxes',
            'TestGtkNotebook',
+           'TestGtkGrid',
            )
 
 class testGtkParenting (abstractTestWidget):
@@ -187,3 +189,12 @@ class TestGtkNotebook (testGtkParenting, TestNotebook):
 
     def will_change_page (self, *ignore):
         return ForcedNo
+
+class TestGtkGrid (testGtkParenting, TestGrid):
+    def testOnAction (self):
+        event= gtk.gdk.Event (gtk.gdk.KEY_PRESS)
+        event.keyval= gtk.keysyms.Return
+        self.widget.onAction= self.notify
+
+        self.widget._keypressed (self.widget, event)
+        self.assert_(self.widget in self.messages_recieved)

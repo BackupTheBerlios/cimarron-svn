@@ -158,7 +158,6 @@ class Entry(GtkFocusableMixin, Control):
         self.value= self._widget.get_text ()
         super (Entry, self)._activate ()
     def _keypressed (self, widget, key_event, *ignore):
-        # gotta find the symbolics of these
         if key_event.keyval==gtk.keysyms.Escape:
             # esc; `reset' the value
             self.update ()
@@ -207,9 +206,12 @@ class Notebook (Container):
         return ans
 
 
-class Grid2 (Controller):
+class Grid (Controller):
     def __init__ (self, data=[], columns=[], **kw):
+        self._tv= gtk.TreeView ()
+
         self._columns= columns
+        # build the tv columns and the datat types tuple
         (self._tvcolumns, self._dataspec)= izip(*izip(
             [ gtk.TreeViewColumn (c.name) for c in columns ],
             repeat(str)
@@ -219,8 +221,7 @@ class Grid2 (Controller):
         # put the TreeView in a scrolled window
         self._widget= gtk.ScrolledWindow ()
         self._widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
-        tv= gtk.TreeView (self._tvdata)
-        self._widget.add (tv)
+        self._widget.add (self._tv)
         
         # add the columns and attrs
         for i in xrange (len (columns)):
@@ -229,20 +230,30 @@ class Grid2 (Controller):
             if columns[i].write is not None:
                 # editable
                 crt.set_property ('editable', True)
-                crt.connect ('edited', self.cell_edited, (self._data, i, columns[i].write))
+                crt.connect ('edited', self._cell_edited, (i, columns[i].write))
             c.pack_start (crt, True)
             c.add_attribute (crt, 'text', i)
-            tv.append_column (c)
-        
-        super (Grid2, self).__init__ (**kw)
+            self._tv.append_column (c)
 
-    def cell_edited (self, cell, path, text, data, *ignore):
-        (model, colNo, write)= data
+        self._tv.connect ('key-press-event', self._keypressed)
+        
+        super (Grid, self).__init__ (**kw)
+
+    def _cell_edited (self, cell, path, text, data, *ignore):
+        (colNo, write)= data
         # modify the ListStore model...
-        model[path][colNo]= text
+        self._tvdata[path][colNo]= text
         # ... and our model
         write (self.data[int (path)], text)
-        # coming soon: our model swill suport the generic TreeModel protocol
+        # coming soon: our models will (should) suport the generic TreeModel protocol
+        # also: if write() returns false, the entry flashes and
+        # a) rollbacks the value or
+        # b) leaves it with wrong value, so the user can edit it (preferred)
+        return False
+    def _keypressed (self, widget, key_event, *ignore):
+        if key_event.keyval==gtk.keysyms.Return:
+            self.onAction ()
+            return True
         return False
 
     def _set_data (self, data):
@@ -251,13 +262,44 @@ class Grid2 (Controller):
 
         if len (self._columns)>0:
             self._tvdata= gtk.ListStore (*self._dataspec)
-        for i in data:
-            # build a ListStore w/ al the values
-            # NOTE: this forces the data to be read.
-            self._tvdata.append ([j.read (i) for j in self._columns])
+        if data is not None:
+            for i in data:
+                # build a ListStore w/ al the values
+                # NOTE: this forces the data to be read.
+                self._tvdata.append ([j.read (i) for j in self._columns])
+        self._tv.set_model (self._tvdata)
     def _get_data (self):
         return self._data
     data= property (_get_data, _set_data)
+
+    def _set_index (self, index):
+        if index is not None:
+            self._tv.set_cursor (index)
+    def _get_index (self):
+        try:
+            # goddam get_cursor() returns path as tuple,
+            # not like the path passed to cell_edited()
+            return int (self._tv.get_cursor ()[0][0])
+        except:
+            # print self._tv.get_cursor ()
+            return None
+    index= property (_get_index, _set_index)
+
+    def _set_value (self, value):
+        try:
+            index= self.data.index (value)
+        except (ValueError, AttributeError):
+            index= None
+        self.index= index
+    def _get_value (self):
+        ans= None
+        if self.index is not None:
+            ans= self.data[self.index]
+        return ans
+    value= property (_get_value, _set_value)
+
+    def refresh (self):
+        pass
         
 
 def _run():

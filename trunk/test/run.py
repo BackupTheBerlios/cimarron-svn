@@ -22,7 +22,7 @@ import os, sys, re
 import unittest
 from optparse import OptionParser
 
-moduleNames = ['hello', 'testController', 'testGrid', 'testSearch', 'testSkeleton']
+moduleNames = ['hello', 'testController', 'testSearch', 'testSkeleton']
 
 testnames = ('focus-events', 'delegations')
 
