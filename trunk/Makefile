@@ -32,4 +32,7 @@ test:
 install:
 	python setup.py install
 
-.PHONY: test
+html:
+	epydoc --html `find papo -type f -name __init__.py -printf "%h\n"`
+
+.PHONY: test html
