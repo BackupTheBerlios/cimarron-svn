@@ -33,6 +33,6 @@ install:
 	python setup.py install
 
 html:
-	epydoc --html `find papo -type f -name __init__.py -printf "%h\n"`
+	 PYTHONPATH=/home/john/src/cvs/epydoc/epydoc/src:$$PYTHONPATH python ~/src/cvs/epydoc/epydoc/src/scripts/epydoc.py --encoding utf-8 --html `find papo -type f -name __init__.py -printf "%h\n"`
 
 .PHONY: test html

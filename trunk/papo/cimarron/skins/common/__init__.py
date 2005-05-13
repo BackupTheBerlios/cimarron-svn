@@ -18,6 +18,12 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+"""
+
+L{common} is ...
+
+"""
+
 from new import instancemethod
 import operator
 import libxml2
@@ -34,8 +40,15 @@ ForcedNo, No, Unknown, Yes, ForcedYes = -5, -1, 0, 1, 5
 from papo import cimarron
 
 class Widget(object):
+    """
+    L{Widget} is ...
+    """
 
     def __init__(self, parent=None, **kw):
+        """
+        @param parent: the parent of the widget (you don't say!)
+        @type parent: L{Widget}
+        """
         super (Widget, self).__init__ (**kw)
         self.delegates = []
         self.parent = parent
@@ -43,9 +56,18 @@ class Widget(object):
             setattr (self, k, v)
 
     def skelargs(self):
+        """
+        skelargs returns the dictionary of serialized attributes of an
+        instance of L{Widget}. No promise of completeness is made:
+        unserializable attributes can be dropped on the floor unless a
+        promise is made to the contrary.
+        """
         return {}
 
     def skeleton(self, parent=None):
+        """
+        Returns the XML representation of the L{Widget}.
+        """
         if parent is None:
             parent = libxml2.newDoc("1.0")
         this = parent.newChild(None, self.__class__.__name__, None)
@@ -71,7 +93,8 @@ class Widget(object):
         except AttributeError:
             # only happens during init
             return None
-    parent = property(_get_parent, _set_parent)
+    parent = property(_get_parent, _set_parent,
+                      doc="parent is either the containing L{Widget}, or None")
 
     def _get_skin (self):
         try:
@@ -80,9 +103,47 @@ class Widget(object):
             from papo.cimarron import skin
             self.__skin = skin
             return skin
-    skin = property(_get_skin)
+    skin = property(_get_skin,
+                    doc="the skin")
 
     def delegate(self, message, *args):
+        """
+        L{Control}s (L{Button <skins.gtk2.Button>}, L{Entry
+        <skins.gtk2.Entry>}, L{Controller <controllers.Controller>} itself,
+        etc.)  have a purpose in life, and that purpose is to react to a given
+        action when acted on. You press a button, and bam! the action is shot
+        out (for example, 'Close'). The connection is direct and unequivocal;
+        if the button is enabled the action will be carried out.
+
+        However, other kinds of interaction are possible as is the example of
+        closing a window: in these cases the manipulation is more direct,
+        while the process of deciding if the action should be carried out is
+        more subtle, and the actors involved might be spread out over the
+        L{Controller <controllers.Controller>} hierarchy. Delegation is a
+        means of permitting these concensus-like desicions processes to occur,
+        while leaving the logic for the decisions themselves next to the
+        decision makers.
+
+        Every object that delegates actions has a list of delegates. When an
+        action occurs the C{delegates} list is traversed, asking each delegate
+        what they think of the action. Based on the opinion of the delegates,
+        the action is carried out or vetoed.
+
+        The delegates that care about an action must have a method named after
+        the action (for example, if a delegate cares about 'hide' events it
+        would have a 'will_hide' method). The method will be called to querie
+        the delegate about the action, and the delegate must return one of the
+        following:
+
+          - L{ForcedNo}: halt traversal, do not perform the action
+          - L{No}: 'I vote no'; traversal continues
+          - L{Unknown}: same as not having the method: ignore this vote.
+          - L{Yes}: 'I vote yes'; traversal continues
+          - L{ForcedYes}: halt traversal, perform the action
+
+        a single 'Yes' in a chain full of 'No's is a 'Yes'.
+        
+        """
         if self.delegates:
             truthTable = ((Unknown, Yes, No), (Yes, Yes, Yes), (No, Yes, No))
             av= Unknown
