@@ -21,14 +21,18 @@ este caso, una ventana y un botón:
 Un WindowController es un Controller que maneja una ventana. Para hacer una
 ventana cualquiera, hacemos una subclase, y en el constructor agregamos los
 wigets de la ventana. El WindowController ya nos crea una ventana en el
-atributo `win´. En este caso, agregamos el botón con un texto que dice
+atributo `win´. En este caso, agregamos un Button con un texto que dice
 `Person´.
 
 Notamos también que al momento de crear un objeto de Cimarrón, es posible ya
 darle todos los valores que hacen falta como argumento por nombre al
 constructor. Un detalle a tener en cuenta es que si un nombre de parámetro no
 es uno de los nombres esperados por dicho constructor[1], de todas formas ese
-valor terminará siendo un atributo del objeto final.
+valor terminará siendo un atributo del objeto final. Es decir:
+
+>>> a= Button (foo=42)
+>>> a.foo
+42
 
 En algún otro lado, creamos una aplicación, un objeto de tipo Main con la
 aplicación como `parent´ y la lanzamos:
@@ -76,8 +80,8 @@ Corremos de nuevo... excelente! Cuando apretamos el botón, se llama el método
 imprimimos un texto inútil.
 
 
-Más ventanas, entry's y notebooks:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Más ventanas, Entrys y Notebooks:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Agregar más ventanas es un juego de niños. Creamos otra clase, subclase de
 WindowControler, y:
 
@@ -155,23 +159,23 @@ posibilidad de mostrar el cambio del valor.
 
 La acción ya la hemos visto; no es nada más y nada menos que el atributo
 `onAction´. Cada tipo de Control tiene una forma específica de disparar esta
-acción: Los Entry's cuando se aprieta <Enter>, los Button's cuando se los
+acción: Los Entrys cuando se aprieta <Enter>, los Buttons cuando se los
 presiona, etc.
 
-Ahora, los Controller's, como ya dijimos, heredan de Control, y por lo tanto
+Ahora, los Controllers, como ya dijimos, heredan de Control, y por lo tanto
 tienen estas dos caraterísticas. Esto nos permite que podamos usar un
 Controller donde se va puede usar un Control. Es responsaboilidad del
 (desarrollador del) Controller funcionar con este esquema[2]. La idea es que
 así como pusimos un Entry en el notebook, sea posible poner un Controller en
 su lugar.
 
-Los Controller's son los que se encargan de armar el View y conectar la
+Los Controllers son los que se encargan de armar el View y conectar la
 funcionalidad del View al modelo[3]. Veamos qué significa esto en la práctica.
 
-Pensemos en el primero. Vamos a hacer un simple editor de Person's. Este
-editor tendrá dos Entry's, uno para el nombre y otro para el apellido. Cuando
+Pensemos en el primero. Vamos a hacer un simple editor de Persons. Este
+editor tendrá dos Entrys, uno para el nombre y otro para el apellido. Cuando
 al Controller le dén un valor (al que llamamos Model), él deberá actualizar
-estos dos Entry's con los datos que correspondan; cuando los datos sean
+estos dos Entrys con los datos que correspondan; cuando los datos sean
 modificados, deberá modificarlos en el Model. Empecemos con la construcción de
 la interfaz:
 
@@ -194,8 +198,8 @@ la interfaz:
                 )
 
 
-Nada complicado, un VBox que hará de contenedor, donde tiramos ambos
-Entry's. Las acciones de ambos apuntan a un método que actualiza los valores
+Nada complicado: un VBox que hará de contenedor, donde tiramos ambos
+Entrys. Las acciones de éstos apuntan a un método que actualiza los valores
 en el modelo. Además, crea un modelo nuevo si no lo hay, para tener dónde
 guardar esos cambios. Debido a que refresh() (que veremos a continuación) toma
 los valores del modelo cuando se lo asignamos a `value´, no podemos hacer algo
@@ -225,12 +229,11 @@ y por completitud, editModel():
             self.value.surname= self.surname.value
 
 --
-
 [1] En realidad es un poco más complicado que esto. Por cada atributo hay un
-`getter´ y un `setter´. Éstos van a ser usados más luego.
+    `getter´ y un `setter´. Éstos van a ser usados más luego.
 [2] No es necesario que esto sea cierto *siempre*.
 [3] Es cierto, esto no es estrictamente así siempre. Fíjense que los
-dos Controller's hechos previamente no tiene un modelo asociado.
+    dos Controllers hechos previamente no tiene un modelo asociado.
 
 
 Delegación:
@@ -274,3 +277,55 @@ alguno de éstos:
 * Yes: la opinión es `por mí si, pero preguntale al resto´.
 * ForcedYes: la acción se hará ahora, entendido?
 
+Grids
+~~~~~
+Los Grids son tablas que sirven para el mostrado y edición de un
+conjunto de objetos, y también para la selección de un objeto de un
+conjunto. El método de funcionamiento es el siguiente:
+
+El conjunto de datos a mostrar es tomado del atributo `data´. Por otro
+lado, se tiene que dar un conjunto de Columns, quienes especifican
+cómo a partir de cada objeto a mostrar obtener el valor a mostrar. En
+nuestro caso, per ejemplo, podemos querer mostrar en un Grid todos los
+Persons, pero sólo el nombre y el apellido. Ahí es donde entran los
+getters y setters mencionados anteriormente. A cada objeto a mostrar,
+por cada columna, se llama al atributo `read´ de la columna, con el
+objeto como parámetro. El valor devuelto por esta llamada es lo que se
+muestra en la celda correspondiente. Típicamente, el atributo `read´
+será el método getter adecuado sin bindear.
+
+Más concretamente:
+
+
+    ...
+    g= cimarron.skin.Grid (
+       parent= ...,
+       columns= [
+           Column (name= 'nombre', read=person.getName),
+           ]
+    ...
+
+
+Similarmente, el atributo `write´ de un Column tiene que ser un método
+que toma dos parámetros: el objeto a modificar y el valor que debe
+tomar. Típicamente, el atributo `write´ será el método setter adecuado
+sin bindear.
+
+
+    ...
+    g= cimarron.skin.Grid (
+       parent= ...,
+       columns= [
+           Column (name= 'nombre', read=Person.getName, write=Person.setName),
+           ]
+    ...
+
+
+Si el atributo `write´ no está presente, la columna no es editable.
+
+Los Grids nos permiten recorrer el conjunto de datos con un especie de
+cursor de selección. En todo momento, puede haber seleccionado 0 o 1
+de los objetos mostrados. Si hay un objeto seleccionado, ése es el
+valor del Grid; sino lo hay, el valor es None.
+
+Al presionar <Enter>, se dispara la acción.

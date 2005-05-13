@@ -24,6 +24,11 @@ from papo.cimarron.skins.common import Control, Container, ForcedYes, Unknown
 __all__ = ('Controller', 'App', 'Column', 'Search', 'WindowController')
 
 class Controller(Control, Container):
+    """
+    A Controller is the glue between a View and a Model,
+    coordinating the reactions to the View's events to
+    changes in the Model.
+    """
     mainWidget = None # mainWidget is the "default" Control of the
                       # Controller, that which fires when you press
                       # enter.
@@ -37,9 +42,14 @@ class Controller(Control, Container):
             self.refresh()
     def _get_value(self):
         return self.__value
-    value = property(_get_value, _set_value)
+    value = property(_get_value, _set_value, doc="""Holds the Model for the B{Controller}.
+        Note that the name is the same that the I{value} for B{Control}.
+        That way, Controllers can act as Controls.""")
 
 class WindowContainer(list):
+    """
+    Not public. Please Ignore :)
+    """
     def __init__(self, controller):
         super(WindowContainer, self).__init__()
         self.__controller = controller
@@ -48,15 +58,29 @@ class WindowContainer(list):
         window.delegates.append(self.__controller)
 
 class App(Controller):
+    """
+    An App represents the main loop of the application.
+    It is the C{parent} for the first B{Window}s.
+    """
     def __init__(self, **kw):
         assert 'parent' not in kw, 'App should have no parent'
         super(App, self).__init__(**kw)
         self._children = WindowContainer(self)
 
     def run(self):
+        """
+        Run the App. Will actually show any shown window,
+        and keep runnuing until:
+          - all the windows are closed, or
+          - someone calls C{quit()} and no window opposes
+            to the action.
+        """
         cimarron.skin._run()
 
     def quit(self):
+        """
+        Terminates the App.
+        """
         cimarron.skin._quit()
 
     def will_hide(self, window):
@@ -66,6 +90,10 @@ class App(Controller):
         return Unknown
 
     def schedule(self, timeout, callback, repeat=False):
+        """
+        Add a new timer for the app. When the C{timeout} expires,
+        the C{callback} gets called.
+        """
         return cimarron.skin._schedule(timeout, callback, repeat)
 
     def concreteParenter (self, child):
@@ -75,7 +103,23 @@ class App(Controller):
         pass
 
 class Column (object):
+    """
+    A Column describes a field. This field can be used for both B{Search}s
+    and B{Grid}s.
+    """
     def __init__ (self, name='', read=None, write=None, entry=None):
+        """
+        @param name: A text associated with the field.
+            In the case of B{Grids}, it's the colunm header.
+
+        @param read: A callable that, given an object, returns the value
+            of that object for the field. Tipically, is an unbound getter
+            method from the object class.
+
+        @param write: A callable that, given an object and a new value,
+            modifies the object. Tipically, is an unbound setter method
+            from the object class.
+        """
         self.name= name
         if not callable (read):
             raise ValueError, 'read parameter must be callable'
@@ -88,6 +132,9 @@ class Column (object):
         self.entry= entry
 
 class SelectionWindow (Controller):
+    """
+    Not public. Please Ignore :)
+    """
     def __init__ (self, columns=[], **kw):
         super (SelectionWindow, self).__init__ (**kw)
         self.win= cimarron.skin.Window (
@@ -133,7 +180,26 @@ class SelectionWindow (Controller):
         self.grid.refresh ()
 
 class Search (Controller):
+    """
+    Abstract class for searching. Consist of a widget
+    with one Entry for each Column.
+
+    The method C{search()} must be
+    implemented in the subclass, which sould take one parameter
+    for each column and return the list of objects found to that
+    search criteria.
+
+    This class already handles the case when the amount of objets
+    found is greater that one. In that case, it presents a window
+    where the user can select from a list.
+
+    When one object is found or selected, it calls the action.
+    """
     def __init__ (self, columns=[], **kw):
+        """
+        @param columns: A list of Columns. Only the C{read} attribute
+            needs to be set.
+        """
         super (Search, self).__init__ (**kw)
         self.columns= columns
         self.entries= []
@@ -164,6 +230,10 @@ class Search (Controller):
         self.mainWidget = b
 
     def doSearch (self, *ignore):
+        """
+        Performs the abstract search, and handles the case
+        when more than one object is found.
+        """
         data= []
         for e in self.entries:
             data.append (e.value)
@@ -181,14 +251,26 @@ class Search (Controller):
             self.onAction ()
 
     def selected (self, *ignore):
+        """
+        Callback for the selection window when finally
+        one object is selected.
+        """
         self.value= self.selwin.value
         self.selwin.hide ()
         self.onAction ()
 
     def search (self, *data):
+        """
+        This abstract method is called for performing the actual search
+        with the values of the Entrys as search criteria. Must return the
+        list of objects that match that criteria.
+        """
         raise NotImplementedError
 
     def refresh (self):
+        """
+        Show the value.
+        """
         if self.value is not None:
             for i in xrange (len (self.entries)):
                 self.entries[i].value= self.columns[i].read (self.value)
@@ -197,6 +279,12 @@ class Search (Controller):
                 self.entries[i].value= ''
 
 class WindowController (Controller):
+    """
+    A WindowController just handles a Window.
+    Is typical that each Window will have an
+    associated Controller. Those Controllers must inherit
+    from this class.
+    """
     def __init__ (self, **kw):
         super (WindowController, self).__init__ (**kw)
         self.win= cimarron.skin.Window (parent= self)
