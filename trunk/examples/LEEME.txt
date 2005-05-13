@@ -301,7 +301,11 @@ Más concretamente:
     g= cimarron.skin.Grid (
        parent= ...,
        columns= [
-           Column (name= 'nombre', read=person.getName),
+           Column (
+               name= 'nombre', 
+               read=Person.getName
+               ),
+           ...
            ]
     ...
 
@@ -316,7 +320,12 @@ sin bindear.
     g= cimarron.skin.Grid (
        parent= ...,
        columns= [
-           Column (name= 'nombre', read=Person.getName, write=Person.setName),
+           Column (
+               name= 'nombre', 
+               read=Person.getName,
+               write=Person.setName
+               ),
+           ...
            ]
     ...
 
