@@ -192,6 +192,11 @@ class TestApp(unittest.TestCase):
         self.app.hide()
         self.app.quit()
 
+    def testNoWindow (self):
+        # should test that running w/ no shown win it should just quit.
+        pass
+    
+
 # class WC (WindowController):
 #     def __init__ (self, **kw):
 #         super (WC, self).__init__ (**kw)
