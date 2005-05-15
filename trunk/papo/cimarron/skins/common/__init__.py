@@ -20,7 +20,8 @@
 
 """
 
-L{common} is ...
+L{common} is a set of abstract classes that
+are the foundation of Cimarron's class hierarchy.
 
 """
 
@@ -142,7 +143,7 @@ class Widget(object):
           - L{ForcedYes}: halt traversal, perform the action
 
         a single 'Yes' in a chain full of 'No's is a 'Yes'.
-        
+
         """
         if self.delegates:
             truthTable = ((Unknown, Yes, No), (Yes, Yes, Yes), (No, Yes, No))
@@ -158,9 +159,17 @@ class Widget(object):
         return True
 
     def concreteParenter (self, child):
+        """
+        Does the skin-specific magic that `glues' a child with its parent.
+        Do not call directly.
+        """
         cimarron.skin.concreteParenter (self, child)
 
 class Container(Widget):
+    """
+    An object that can contain (a list of) other objects
+    (called its `children').
+    """
     def __init__(self, **kw):
         super(Container, self).__init__(**kw)
         self._children = []
@@ -175,7 +184,9 @@ class Container(Widget):
 
     def _get_children(self):
         return tuple(self._children)
-    children = property(_get_children)
+    children = property(_get_children, None, None,
+        """The list of children. It contains both graphical and
+        non-grafical objects.""")
 
     def skeleton(self, parent=None):
         skel = super(Container, self).skeleton(parent)
@@ -184,6 +195,9 @@ class Container(Widget):
         return skel
 
 class Control(Widget):
+    """
+    L{Control} is...
+    """
     def __init__(self, onAction=None, value=None, **kw):
         super(Control, self).__init__(**kw)
         self.value = value
@@ -195,7 +209,9 @@ class Control(Widget):
         if onAction is None:
             onAction = nullAction
         self.__on_action= instancemethod (onAction, self, Control)
-    onAction= property (_get_on_action, _set_on_action)
+    onAction= property (_get_on_action, _set_on_action, None,
+        """A callable that is called when the action (whatever that means
+        for the particluar Control) is issued.""")
 
     def _activate(self, *ignore):
         if self.onAction is not None:

@@ -299,11 +299,18 @@ class WindowController (Controller):
         return Unknown
 
     def show (self):
+        """
+        Show the window.
+        """
         self.win.show ()
 
     def hide (self):
+        """
+        Hide the window.
+        """
         self.win.hide ()
 
     def _get_visible (self):
         return len(self.visibleChildren ())>0
-    visible= property (_get_visible)
+    visible= property (_get_visible, None, None,
+        """Is the window shown?""")
