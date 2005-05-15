@@ -22,7 +22,7 @@
 from distutils.core import setup
 
 setup(name='cimarron',
-      version='0.2',
+      version='0.2.5',
       description='Cimarrón GUI component framework',
       long_description='''
 Cimarrón is a framework for the construction of reusable GUI

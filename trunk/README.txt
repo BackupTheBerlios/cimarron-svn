@@ -11,3 +11,10 @@ As there are several takes on what MVC means, we'll try to explain it here.
 
 Meanwhile, you might want to get your hands dirty with examples/LEEME.txt
 (yes, it's in spanish).
+
+The documentation can be correctly generated with a patched version of epydoc.
+You can grab the patch from here:
+
+http://sourceforge.net/mailarchive/forum.php?thread_id=7254214&forum_id=39919
+
+Or you can mofify the Makefile, and remove the --encoding parameter.
