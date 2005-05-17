@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2003 Fundación Via Libre
+# Copyright 2005 Fundación Via Libre
 #
 # This file is part of PAPO.
 #
@@ -21,6 +21,8 @@
 import os, sys, re
 import unittest
 from optparse import OptionParser
+import libxml2
+libxml2.debugMemory(1)
 
 moduleNames = ['hello', 'testController', 'testSearch', 'testSkeleton']
 
@@ -67,3 +69,11 @@ for i in moduleNames:
 
 if __name__ == '__main__':
     unittest.main(argv=argv)
+
+    #libxml2.cleanupParser()
+    if libxml2.debugMemory(1) == 0:
+        print "OK"
+    else:
+        print "Memory leak %d bytes" % (libxml2.debugMemory(1))
+        libxml2.dumpMemory()
+

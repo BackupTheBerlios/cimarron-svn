@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2003 Fundación Via Libre
+# Copyright 2005 Fundación Via Libre
 #
 # This file is part of PAPO.
 #
@@ -18,19 +18,22 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+PYTHON=python
+
 all:
 
 clean:
 
 distclean: clean
 	find '(' -name '*.py[co]' -o -name '*~' ')' -print0 | xargs -0 -r rm -v
-	rm -rfv build dist MANIFEST
+	$(PYTHON) setup.py clean
+	rm -rfv build dist html MANIFEST
 
 test:
-	PYTHONPATH=.:$$PYTHONPATH python test/run.py $(TESTOPTS)
+	PYTHONPATH=.:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS)
 
 install:
-	python setup.py install
+	$(PYTHON) setup.py install
 
 html:
 	epydoc --encoding utf-8 --html `find papo -type f -name __init__.py -printf "%h\n"`

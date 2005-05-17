@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2003 Fundación Via Libre
+# Copyright 2003, 2004, 2005 Fundación Via Libre
 #
 # This file is part of PAPO.
 #
