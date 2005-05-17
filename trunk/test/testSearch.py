@@ -25,7 +25,7 @@ from testGrid import Person
 
 __all__=('TestSearch',)
 
-class PersonSearch (cimarron.controllers.Search):
+class PersonSearch (cimarron.controllers.SearchEntry):
     def search (self, values):
         name, surname= values[:2]
         ans= []

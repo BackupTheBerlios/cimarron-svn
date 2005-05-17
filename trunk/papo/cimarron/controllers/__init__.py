@@ -21,7 +21,7 @@
 from papo import cimarron
 from papo.cimarron.skins.common import Control, Container, ForcedYes, Unknown
 
-__all__ = ('Controller', 'App', 'Column', 'Search', 'WindowController')
+__all__ = ('Controller', 'App', 'Column', 'SearchEntry', 'WindowController')
 
 class Controller(Control, Container):
     """
@@ -104,8 +104,8 @@ class App(Controller):
 
 class Column (object):
     """
-    A Column describes a field. This field can be used for both B{Search}s
-    and B{Grid}s.
+    A Column describes a field. This field can be used for both
+    B{SearchEntry}s and B{Grid}s.
     """
     def __init__ (self, name='', read=None, write=None, entry=None):
         """
@@ -280,7 +280,7 @@ class SelectionWindow (Controller):
     def refresh (self):
         self.grid.refresh ()
 
-class Search (Controller):
+class SearchEntry (Controller):
     """
     Abstract class for searching. Consist of a widget
     with one Entry for each Column.
@@ -301,7 +301,7 @@ class Search (Controller):
         @param columns: A list of Columns. Only the C{read} attribute
             needs to be set.
         """
-        super (Search, self).__init__ (**kw)
+        super (SearchEntry, self).__init__ (**kw)
         self.columns= columns
         self.entries= []
         self.value= None
