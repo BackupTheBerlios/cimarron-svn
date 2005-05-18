@@ -36,7 +36,21 @@ from papo.cimarron.tools import is_simple
 
 def nullAction(*a, **k): pass
 
-ForcedNo, No, Unknown, Yes, ForcedYes = -5, -1, 0, 1, 5
+
+class DelegationAnswer (int):
+    def __add__ (self, other):
+        return self.truthTable[self][other]
+    def __nonzero__ (self):
+        return self>=0
+
+ForcedNo  = DelegationAnswer(-5)
+No        = DelegationAnswer(-1)
+Unknown   = DelegationAnswer(0)
+Yes       = DelegationAnswer(1)
+ForcedYes = DelegationAnswer(5)
+
+DelegationAnswer.truthTable= ((Unknown, Yes, No), (Yes, Yes, Yes), (No, Yes, No))
+
 
 from papo import cimarron
 
@@ -136,26 +150,26 @@ class Widget(object):
         the delegate about the action, and the delegate must return one of the
         following:
 
-          - L{ForcedNo}: halt traversal, do not perform the action
-          - L{No}: 'I vote no'; traversal continues
+          - L{ForcedNo}: halt traversal, do not perform the action.
+          - L{No}: 'I vote no'; traversal continues.
           - L{Unknown}: same as not having the method: ignore this vote.
-          - L{Yes}: 'I vote yes'; traversal continues
-          - L{ForcedYes}: halt traversal, perform the action
+          - L{Yes}: 'I vote yes'; traversal continues.
+          - L{ForcedYes}: halt traversal, perform the action.
 
         a single 'Yes' in a chain full of 'No's is a 'Yes'.
 
         """
         if self.delegates:
-            truthTable = ((Unknown, Yes, No), (Yes, Yes, Yes), (No, Yes, No))
             av= Unknown
             for i in self.delegates:
+                rv= getattr(i, message, lambda *a: Unknown)(self, *args)
                 try:
-                    rv= getattr(i, message, lambda *a: Unknown)(self, *args) or Unknown
-                    av= truthTable[av][rv]
+                    if rv is not None:
+                        av= av+rv
                 except IndexError:
                     av= rv
                     break
-            return av>=0
+            return av
         return True
 
     def concreteParenter (self, child):

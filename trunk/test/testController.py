@@ -21,12 +21,14 @@
 import unittest
 from pprint import pformat
 from papo import cimarron
-from papo.cimarron.controllers import Controller
-from testCommon import abstractTestControl
+from papo.cimarron.controllers import Controller, WindowController, CrUDController
+from testCommon import abstractTestControl, abstractTestVisibility
 
 __all__ = ('TestController',
            'TestBarController',
            'TestApp',
+           'TestWindowController',
+           'TestCrUDController',
            )
 
 def visualTest():
@@ -197,20 +199,38 @@ class TestApp(unittest.TestCase):
         pass
     
 
-# class WC (WindowController):
-#     def __init__ (self, **kw):
-#         super (WC, self).__init__ (**kw)
-#         self.win= cimarron.skin.Window (
-#             parent= self,
-#             title= 'Había una vez...',
-#             )
+class TestWindowController (abstractTestVisibility):
+    def setUp (self):
+        super (TestWindowController, self).setUp ()
+        self.app = cimarron.skin.App()
+        self.widget= WindowController (parent= self.app)
 
-# class TestWindowController (unittest.TestCase):
-#     def setUp (self):
-#         self.controller= WC (parent= self.app)
+    def testVisible (self):
+        self.widget.show ()
+        self.assertEqual (self.widget.visible, self.widget.win.visible)
+        self.widget.hide ()
+        self.assertEqual (self.widget.visible, self.widget.win.visible)
 
-#     def testShow (self):
-#         self.controller.show ()
+    def testWindowCloseGetsProperlyDelegated (self):
+        # this way abstractTestVisibility.will_hide won't get overrided
+        # unless needed
+        self.will_hide= self.will_hide_2
+        self.widget.delegates.insert (0, self)
+        self.widget.show ()
+        self.widget.hide ()
+        self.assertEqual (self.will_hide_passed, True)
 
-#     def testIsVisible (self):
-#         self.assertEqual (self.controller.win.isvisible, self.controller.win.isvisible)
+    def will_hide_2 (self, *ignore):
+        self.will_hide_passed= True
+
+
+class TestCrUDController (TestWindowController):
+    def setUp (self):
+        super (TestCrUDController, self).setUp ()
+        self.widget= CrUDController (
+            parent= self.app,
+            file="testCrUDController.xml",
+            )
+
+    def testNew (self):
+        pass

@@ -205,7 +205,7 @@ class Entry(GtkFocusableMixin, Control):
 
     def _activate (self, *ignore):
         """
-        Called when <Enter> is hit.
+        Called when <Enter> is hit. 
         Copies the shown value to the value property.
         Do not call directly.
         """

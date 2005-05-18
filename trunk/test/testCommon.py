@@ -62,21 +62,21 @@ class abstractTestDelegate(abstractTestBasic):
         self.delegate_broken = delegate_broken()
         
     def testDelegate(self):
-        self.assertEqual(self.widget.delegate('foo'), True)
+        self.assertEqual(bool(self.widget.delegate('foo')), True)
     def testDelegateArgs(self):
-        self.assertEqual(self.widget.delegate('foo', self), True)
+        self.assertEqual(bool(self.widget.delegate('foo', self)), True)
     def testSingleDelegationFail(self):
         self.widget.delegates.append(self.delegate_forcedNo)
-        self.assertEqual(self.widget.delegate('foo'), False)
+        self.assertEqual(bool(self.widget.delegate('foo')), False)
     def testSingleDelegationReject(self):
         self.widget.delegates.append(self.delegate_no)
-        self.assertEqual(self.widget.delegate('foo'), False)
+        self.assertEqual(bool(self.widget.delegate('foo')), False)
     def testSingleDelegationPass(self):
         self.widget.delegates.append(self.delegate_forcedYes)
-        self.assertEqual(self.widget.delegate('foo'), True)
+        self.assertEqual(bool(self.widget.delegate('foo')), True)
     def testSingleDelegationAccept(self):
         self.widget.delegates.append(self.delegate_yes)
-        self.assertEqual(self.widget.delegate('foo'), True)
+        self.assertEqual(bool(self.widget.delegate('foo')), True)
     def testBrokenDelegateRaisesException(self):
         self.widget.delegates.append(self.delegate_broken)
         self.assertRaises(AttributeError, lambda *a: self.widget.delegate('foo'))
@@ -103,7 +103,7 @@ class abstractTestVisibility(unittest.TestCase):
         self.assertEqual(self.widget.visible, False)
 
     def testUnableToHide(self):
-        self.widget.delegates.append(self)
+        self.widget.delegates.insert(0, self)
         self.app.show()
         self.assertEqual(self.widget.visible, True,
                          'widget visible before hiding')

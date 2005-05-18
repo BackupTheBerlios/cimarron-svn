@@ -382,22 +382,19 @@ class SearchEntry (Controller):
 class WindowController (Controller):
     """
     A WindowController just handles a Window.
-    Is typical that each Window will have an
-    associated Controller. Those Controllers must inherit
-    from this class.
+    Is typical that each Window will have an associated Controller.
+    Those Controllers must inherit from this class.
     """
     def __init__ (self, **kw):
         super (WindowController, self).__init__ (**kw)
         self.win= cimarron.skin.Window (parent= self)
-        self.win.delegates.append (self)
+        self.win.delegates.insert (0, self)
 
     def visibleChildren (self):
         return [i for i in self._children if getattr (i, 'visible', False) and i.visible]
 
     def will_hide (self, *ignore):
-        if len(self.visibleChildren ())==1:
-            self.delegate ('will_hide')
-        return Unknown
+        return self.delegate ('will_hide')
 
     def show (self):
         """
@@ -415,3 +412,12 @@ class WindowController (Controller):
         return len(self.visibleChildren ())>0
     visible= property (_get_visible, None, None,
         """Is the window shown?""")
+
+class CrUDController (WindowController):
+    """
+    Cr(eate)U(pdate)D(elete) Controller.
+    """
+    def __init__ (self, file='', **kw):
+        super (CrUDController, self).__init__ (**kw)
+
+
