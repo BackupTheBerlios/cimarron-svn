@@ -60,6 +60,7 @@ def fromXmlObj(xmlObj, parent=None):
     if isinstance(xmlObj, libxml2.xmlDoc):
         # get at root element
         xmlObj = xmlObj.children
+            
     obj = getattr(skin, xmlObj.name)()
     prop = xmlObj.properties
     while prop:
@@ -69,7 +70,8 @@ def fromXmlObj(xmlObj, parent=None):
         obj.parent = parent
     xmlObj = xmlObj.children
     while xmlObj:
-        fromXmlObj(xmlObj, parent=obj)
+        if xmlObj.get_type ()!='text':
+            fromXmlObj(xmlObj, parent=obj)
         xmlObj = xmlObj.next
             
     return obj
