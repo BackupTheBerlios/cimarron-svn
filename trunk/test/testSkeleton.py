@@ -19,6 +19,7 @@
 # Suite 330, Boston, MA 02111-1307 USA
 
 import unittest
+import libxml2
 
 import papo.cimarron
 papo.cimarron.config()
@@ -75,3 +76,15 @@ class TestSkeleton(unittest.TestCase):
         sk = self.app.skeleton()
         app = papo.cimarron.fromXmlObj(sk.doc)
         self.assertEqual(app.skeleton().serialize(), sk.serialize())
+
+    def testSkipSpaces (self):
+        xmlRaw= """<App>
+  <Window>
+    <VBox>
+      <Button value="5" label="'click my clicker'"/>
+    </VBox>
+  </Window>
+</App>"""
+        xmlObj= libxml2.parseMemory (xmlRaw, len (xmlRaw))
+        app = papo.cimarron.fromXmlObj (xmlObj)
+        
