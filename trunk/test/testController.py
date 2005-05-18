@@ -20,8 +20,11 @@
 
 import unittest
 from pprint import pformat
+
 from papo import cimarron
 from papo.cimarron.controllers import Controller, WindowController, CrUDController
+from model.person import Person
+
 from testCommon import abstractTestControl, abstractTestVisibility
 
 __all__ = ('TestController',
@@ -233,4 +236,5 @@ class TestCrUDController (TestWindowController):
             )
 
     def testNew (self):
-        pass
+        self.widget.newModel (Person)
+        self.assert_ (isinstance (self.widget.value, Person))

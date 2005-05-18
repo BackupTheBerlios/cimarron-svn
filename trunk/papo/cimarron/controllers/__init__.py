@@ -419,5 +419,34 @@ class CrUDController (WindowController):
     """
     def __init__ (self, file='', **kw):
         super (CrUDController, self).__init__ (**kw)
+        self.note= cimarron.skin.Notebook (parent=self.win)
 
+        # first tab
+        v= cimarron.skin.VBox ()
+        v.label= 'Search'
+        v.parent= self.note
+
+        self.new= cimarron.skin.Button (
+            parent= v,
+            label= 'New',
+            onAction= self.newModel,
+            )
+
+        # second tab
+        # load the beast from xml
+        # self.modelEditor= cimarron.skin.Widget.fromXml (file)
+
+        # more tabs?
+
+    def newModel (self, klass):
+        self.value= klass ()
+        # self.modelEditor.value= self.value
+
+    def refresh (self):
+        # update all the `children'
+        for child in self.note.children:
+            try:
+                child.refresh ()
+            except AttributeError:
+                pass
 
