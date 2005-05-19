@@ -115,6 +115,9 @@ class TestController(abstractTestControl):
         self.widget.value = dict(quux='-13')
         self.assertEqual(self.widget.label.text, '-13')
 
+    def testFromXmlNonexistantFile(self):
+        self.assertRaises(OSError, self.widget.fromXmlFile, 'xyzzy')
+
 class BarController (Controller):
     def __init__ (self, **kw):
         super (BarController, self).__init__ (**kw)

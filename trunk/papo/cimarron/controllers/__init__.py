@@ -18,6 +18,7 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+import os
 import libxml2
 from papo import cimarron
 from papo.cimarron.skins.common import Control, Container, ForcedYes, Unknown
@@ -51,7 +52,10 @@ class Controller(Control, Container):
         """
         Load a Cimarrón app from an xml file.
         """
-        return klass.fromXmlObj(libxml2.parseFile(filename).children)
+        if os.path.isfile(filename):
+            return klass.fromXmlObj(libxml2.parseFile(filename).children)
+        else:
+            raise OSError, "Unable to open file: %r" % filename
     fromXmlFile = classmethod(fromXmlFile)
 
 class WindowContainer(list):
