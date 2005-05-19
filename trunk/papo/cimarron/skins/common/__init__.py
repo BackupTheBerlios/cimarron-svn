@@ -38,18 +38,35 @@ def nullAction(*a, **k): pass
 
 
 class DelegationAnswer (int):
+    truthTable = (('Unknown', 'Yes', 'No'),
+                  ('Yes', 'Yes', 'Yes'),
+                  ('No', 'Yes', 'No'))
+    def __new__(klass, name):
+        try:
+            try:
+                return klass.__instances[name]
+            except AttributeError:
+                instances = {}
+                for k, v in dict(ForcedNo=-5, No=-1,
+                                 Unknown=0, Yes=1, ForcedYes=5).items():
+                    v = super(DelegationAnswer, klass).__new__(klass, v)
+                    v.name = k
+                    instances[k] = v
+                klass.__instances = instances
+                return instances[name]
+        except KeyError:
+            raise ValueError, \
+                  'invalid literal for DelegationAnswer(): %s' % name
     def __add__ (self, other):
-        return self.truthTable[self][other]
+        return DelegationAnswer(self.truthTable[self][other])
     def __nonzero__ (self):
         return self>=0
+    def __repr__(self):
+        return "%s(%r)" % (self.__class__.__name__, self.name)
 
-ForcedNo  = DelegationAnswer(-5)
-No        = DelegationAnswer(-1)
-Unknown   = DelegationAnswer(0)
-Yes       = DelegationAnswer(1)
-ForcedYes = DelegationAnswer(5)
+ForcedNo, No, Unknown, Yes, ForcedYes = map(DelegationAnswer,
+                             ('ForcedNo', 'No', 'Unknown', 'Yes', 'ForcedYes'))
 
-DelegationAnswer.truthTable= ((Unknown, Yes, No), (Yes, Yes, Yes), (No, Yes, No))
 
 
 from papo import cimarron
@@ -69,6 +86,30 @@ class Widget(object):
         self.parent = parent
         for k, v in kw.items ():
             setattr (self, k, v)
+
+
+    def fromXmlObj(klass, xmlObj, skin):
+        """
+        Helper function for loading a Cimarrón app from an xml file. (see
+        L{Controller.fromXmlFile}).
+        """
+        self = klass()
+        self.fromXmlObjProp(xmlObj.properties)
+        xmlObj = xmlObj.children
+        while xmlObj:
+            if xmlObj.type != 'text':
+                obj = getattr(skin, xmlObj.name).fromXmlObj(xmlObj, skin)
+                obj.parent = self
+            xmlObj = xmlObj.next
+        return self
+    fromXmlObj = classmethod(fromXmlObj)
+        
+
+    def fromXmlObjProp(self, prop):
+        while prop:
+            setattr(self, prop.name, eval(prop.content))
+            prop = prop.next
+        
 
     def skelargs(self):
         """
@@ -156,7 +197,8 @@ class Widget(object):
           - L{Yes}: 'I vote yes'; traversal continues.
           - L{ForcedYes}: halt traversal, perform the action.
 
-        a single 'Yes' in a chain full of 'No's is a 'Yes'.
+        a single 'Yes' in a chain full of 'No's is a 'Yes' (in other
+        words, a list of non-forced results is ORed).
 
         """
         if self.delegates:
@@ -178,6 +220,7 @@ class Widget(object):
         Do not call directly.
         """
         cimarron.skin.concreteParenter (self, child)
+
 
 class Container(Widget):
     """

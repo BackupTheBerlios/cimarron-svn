@@ -24,7 +24,6 @@ L{cimarron} is...
 
 
 import new
-import libxml2
 
 DEFAULT_SKIN_NAME = 'gtk2'
 
@@ -51,33 +50,3 @@ def config(skin_name=DEFAULT_SKIN_NAME):
     skin = __import__('papo.cimarron.skins.' + skin_name,
                       globals(), locals(), skin_name)
 
-
-def fromXmlObj(xmlObj, parent=None):
-    """
-    Helper function for loading a Cimarrón app from an xml file. (see
-    L{fromXml}).
-    """
-    if isinstance(xmlObj, libxml2.xmlDoc):
-        # get at root element
-        xmlObj = xmlObj.children
-            
-    obj = getattr(skin, xmlObj.name)()
-    prop = xmlObj.properties
-    while prop:
-        setattr(obj, prop.name, eval(prop.content))
-        prop = prop.next
-    if parent is not None:
-        obj.parent = parent
-    xmlObj = xmlObj.children
-    while xmlObj:
-        if xmlObj.get_type ()!='text':
-            fromXmlObj(xmlObj, parent=obj)
-        xmlObj = xmlObj.next
-            
-    return obj
-
-def fromXml(filename):
-    """
-    Load a Cimarrón app from an xml file.
-    """
-    return fromXmlObj(libxml2.parseFile(filename))

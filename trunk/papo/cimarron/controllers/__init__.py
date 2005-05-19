@@ -18,6 +18,7 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+import libxml2
 from papo import cimarron
 from papo.cimarron.skins.common import Control, Container, ForcedYes, Unknown
 
@@ -45,6 +46,13 @@ class Controller(Control, Container):
     value = property(_get_value, _set_value, doc="""Holds the Model for the B{Controller}.
         Note that the name is the same that the I{value} for B{Control}.
         That way, Controllers can act as Controls.""")
+
+    def fromXmlFile(klass, filename):
+        """
+        Load a Cimarrón app from an xml file.
+        """
+        return klass.fromXmlObj(libxml2.parseFile(filename).children)
+    fromXmlFile = classmethod(fromXmlFile)
 
 class WindowContainer(list):
     """
