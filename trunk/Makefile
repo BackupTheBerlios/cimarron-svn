@@ -30,7 +30,7 @@ distclean: clean
 	rm -rfv build dist html MANIFEST
 
 test:
-	PYTHONPATH=.:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS)
+	PYTHONPATH=.:./examples/persona:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS)
 
 install:
 	$(PYTHON) setup.py install
