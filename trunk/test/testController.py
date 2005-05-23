@@ -253,7 +253,6 @@ class EditorType(type):
         code= """def %(methodName)s (self, control, *ignore):
             print control.value
             self.value.%(methodName)s(control.value)"""
-        print code
         for i in dictionary.get('_attributes_', ()):
             name =  'set'+MakeName (i)
             exec code % dict (methodName=name)
@@ -277,7 +276,6 @@ class Editor (Controller):
 class CountryEditor (Editor):
     _attributes_= ('name', 'phone', 'iso2', 'iso3', 'un')
     def __init__(self, *a, **kw):
-        print dir(CountryEditor)
         return super(CountryEditor, self).__init__(*a, **kw)
 
 class TestCrUDController (TestWindowController):
@@ -291,9 +289,9 @@ class TestCrUDController (TestWindowController):
             )
 
     def testNew (self):
-        self.widget.newModel (Country)
+        self.widget.newModel (self.widget, Country)
         self.assert_ (isinstance (self.widget.value, Country))
 
-    def testVisual (self):
-        self.win.show ()
-        self.app.run ()
+#     def testVisual (self):
+#         self.win.show ()
+#         self.app.run ()
