@@ -24,6 +24,7 @@ from pprint import pformat
 from papo import cimarron
 from papo.cimarron.controllers import Controller, WindowController, CrUDController
 from model.person import Person
+from model.country import Country
 
 from testCommon import abstractTestControl, abstractTestVisibility
 
@@ -209,7 +210,7 @@ class TestWindowController (abstractTestVisibility):
     def setUp (self):
         super (TestWindowController, self).setUp ()
         self.app = cimarron.skin.App()
-        self.widget= WindowController (parent= self.app)
+        self.win= self.widget= WindowController (parent= self.app)
 
     def testVisible (self):
         self.widget.show ()
@@ -230,14 +231,69 @@ class TestWindowController (abstractTestVisibility):
         self.will_hide_passed= True
 
 
+import re
+def makeName (name):
+    def __upper__ (letter):
+        return letter.group (1).upper ()
+    # some_thing
+    name= re.sub (r'_([a-z])', __upper__, name)
+    # someThing
+    return name
+
+def MakeName (name):
+    name= makeName (name)
+    # someThing
+    name= name[0:1].upper ()+name[1:]
+    # SomeThing
+    return name
+
+class EditorType(type):
+    def __new__(klass, name, bases, dictionary):
+        k = super(EditorType, klass).__new__(klass, name, bases, dictionary)
+        code= """def %(methodName)s (self, control, *ignore):
+            print control.value
+            self.value.%(methodName)s(control.value)"""
+        print code
+        for i in dictionary.get('_attributes_', ()):
+            name =  'set'+MakeName (i)
+            exec code % dict (methodName=name)
+            setattr(k, name, locals()[name])
+        return k
+        
+
+class Editor (Controller):
+    __metaclass__ = EditorType
+        
+    def refresh (self, *ignore):
+        pass
+
+    def save (self, *ignore):
+        print 'save', self.value
+        pass
+    def discard (self, *ignore):
+        print 'discard', self.value
+        pass
+
+class CountryEditor (Editor):
+    _attributes_= ('name', 'phone', 'iso2', 'iso3', 'un')
+    def __init__(self, *a, **kw):
+        print dir(CountryEditor)
+        return super(CountryEditor, self).__init__(*a, **kw)
+
 class TestCrUDController (TestWindowController):
     def setUp (self):
         super (TestCrUDController, self).setUp ()
         self.widget= CrUDController (
             parent= self.app,
-            file="testCrUDController.xml",
+            klass= Country,
+            editorKlass= CountryEditor,
+            filename="test/testCrUDController.xml",
             )
 
     def testNew (self):
-        self.widget.newModel (Person)
-        self.assert_ (isinstance (self.widget.value, Person))
+        self.widget.newModel (Country)
+        self.assert_ (isinstance (self.widget.value, Country))
+
+    def testVisual (self):
+        self.win.show ()
+        self.app.run ()

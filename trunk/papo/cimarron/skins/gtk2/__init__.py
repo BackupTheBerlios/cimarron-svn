@@ -373,7 +373,6 @@ class Grid (Controller):
             # not like the path passed to cell_edited()
             return int (self._tv.get_cursor ()[0][0])
         except:
-            # print self._tv.get_cursor ()
             return None
     index= property (_get_index, _set_index, None,
                      """The index of the object currently selected.
@@ -420,4 +419,10 @@ def concreteParenter(parent, child):
         if '_widget' in parent.__dict__:
             parent._widget.add(child._widget)
         else:
-            parent.parent.concreteParenter (child)
+            if parent.parent is None:
+                try:
+                    parent._childrenToParent.append (child)
+                except AttributeError:
+                    parent._childrenToParent= [child]
+            else:
+                parent.parent.concreteParenter (child)

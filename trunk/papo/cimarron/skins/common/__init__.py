@@ -30,7 +30,7 @@ import operator
 import libxml2
 
 __all__ = ('Widget', 'Container', 'Control',
-           'ForcedNo', 'No', 'Unknown', 'Yes', 'ForcedYes',)
+           'ForcedNo', 'No', 'Unknown', 'Yes', 'ForcedYes')
 
 from papo.cimarron.tools import is_simple
 
@@ -94,7 +94,7 @@ class Widget(object):
         L{Controller.fromXmlFile}).
         """
         self = klass()
-        self.fromXmlObjProp(xmlObj.properties)
+        self.fromXmlObjProps(xmlObj.properties)
         xmlObj = xmlObj.children
         while xmlObj:
             if xmlObj.type != 'text':
@@ -106,8 +106,11 @@ class Widget(object):
         
 
     def fromXmlObjProp(self, prop):
+        setattr(self, prop.name, eval(prop.content))
+
+    def fromXmlObjProps(self, prop):
         while prop:
-            setattr(self, prop.name, eval(prop.content))
+            self.fromXmlObjProp(prop)
             prop = prop.next
         
 
@@ -143,6 +146,16 @@ class Widget(object):
             parent.concreteParenter(self)
             parent._children.append(self)
             self.__parent = parent
+
+        # re-link missed parentizations
+        try:
+            for child in self._childrenToParent:
+                self.concreteParenter (child)
+            del self._childrenToParent
+        except AttributeError:
+            # no dangling children, ignore
+            pass
+            
     def _get_parent(self):
         try:
             return self.__parent
@@ -221,6 +234,13 @@ class Widget(object):
         """
         cimarron.skin.concreteParenter (self, child)
 
+    def _connectWith (self, other):
+        """
+        Connects the widget with someone else. This is used for loading
+        from XML files/objects.
+        """
+        pass
+
 
 class Container(Widget):
     """
@@ -265,7 +285,12 @@ class Control(Widget):
     def _set_on_action (self, onAction):
         if onAction is None:
             onAction = nullAction
-        self.__on_action= instancemethod (onAction, self, Control)
+        if type (onAction)==str:
+            # let the xml loader set str onAction's
+            self.__on_action= onAction
+        else:
+            # default behaviour
+            self.__on_action= instancemethod (onAction, self, Control)
     onAction= property (_get_on_action, _set_on_action, None,
         """A callable that is called when the action (whatever that means
         for the particluar Control) is issued.""")
@@ -280,3 +305,20 @@ class Control(Widget):
         if is_simple(value):
             skelargs['value'] = value
         return skelargs
+
+    def fromXmlObjProp(self, prop):
+        if prop.name=='onAction':
+            # don't eval
+            setattr(self, prop.name, prop.content)
+        else:
+            super (Control, self).fromXmlObjProp (prop)
+
+    def _connectWith (self, other):
+        if hasattr (self, 'onAction') and type (self.onAction)==str:
+            # split the path by dot
+            elems= self.onAction.split ('.')
+            # traverse each one getattr()'ing
+            obj= other
+            for e in elems:
+                obj= getattr (obj, e)
+            self.onAction= obj

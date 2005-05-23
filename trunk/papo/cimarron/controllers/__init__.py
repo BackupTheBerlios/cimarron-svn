@@ -23,7 +23,7 @@ import libxml2
 from papo import cimarron
 from papo.cimarron.skins.common import Control, Container, ForcedYes, Unknown
 
-__all__ = ('Controller', 'App', 'Column', 'SearchEntry', 'WindowController')
+__all__ = ('Controller', 'App', 'Column', 'SearchEntry', 'WindowController', 'Grid')
 
 class Controller(Control, Container):
     """
@@ -53,10 +53,21 @@ class Controller(Control, Container):
         Load a Cimarrón app from an xml file.
         """
         if os.path.isfile(filename):
-            return klass.fromXmlObj(libxml2.parseFile(filename).children)
+            net= klass.fromXmlObj(libxml2.parseFile(filename), cimarron.skin)
+            net._connectNet ([net])
+            return net
         else:
             raise OSError, "Unable to open file: %r" % filename
     fromXmlFile = classmethod(fromXmlFile)
+
+    def _connectNet (self, widgetList):
+        while widgetList:
+            w= widgetList.pop (0)
+            w._connectWith (self)
+
+            # add children
+            if hasattr (w, 'children'):
+                widgetList+= w.children
 
 class WindowContainer(list):
     """
@@ -425,11 +436,119 @@ class WindowController (Controller):
     visible= property (_get_visible, None, None,
         """Is the window shown?""")
 
+class Grid (Controller):
+    """
+    Fallback implementation of Grid.
+    """
+    def __init__ (self, data=[], columns=None, **kw):
+        self.__initialized= False
+        self.columns= columns
+        self.labels= []
+        self.entries= {}
+
+        self.index= None
+        self.widget= v= cimarron.skin.VBox (parent=self.parent)
+        self.data= data
+
+        super (Grid, self).__init__ (**kw)
+        self.__initialized= True
+
+    def mainWidget(self):
+        return self.entries[self.index,0]
+    mainWidget = property(mainWidget)
+
+    def _set_data (self, data):
+        self.__data= data
+        self.refresh ()
+        if data is not None and len (data)>0:
+            self.index= 0
+    def _get_data (self):
+        return self.__data
+    data= property (_get_data, _set_data, None,
+        """The list of objects to be shown.""")
+    def updateData (self, entry, *i):
+        if self.columns[entry.column].write is not None:
+            self.columns[entry.column].write (self.data[entry.row], entry.value)
+
+    def selected (self, entry, *ignore):
+        self.updateData (entry)
+        self.onAction ()
+
+    def refresh (self):
+        try:
+            # normal case: data is some sequence
+            for i in xrange (len (self.data)):
+                if len (self.labels)<=i:
+                    # the row does not exist, so we add it
+                    h= cimarron.skin.HBox (parent=self.widget)
+                    b= cimarron.skin.Label (
+                        parent= h,
+                        text= ' ',
+                        row= i
+                        )
+
+                    self.labels.append (b)
+
+                    # now the entries
+                    for j in xrange (len (self.columns)):
+                        entryConstr= self.columns[j].entry or cimarron.skin.Entry
+                        self.entries[i, j]= entryConstr (
+                            parent= h,
+                            value= self.columns[j].read (self.data[i]),
+                            onAction= self.selected,
+                            column= j,
+                            row= i,
+                            )
+                        self.entries[i, j].delegates.append (self)
+                else:
+                    for j in xrange (len (self.columns)):
+                        self.entries[i, j].value= self.columns[j].read (self.data[i])
+            for i in xrange (len (self.data), len (self.labels)):
+                for j in xrange (len (self.columns)):
+                    self.entries[i, j].value= ''
+
+        except TypeError:
+            # except case: data is something else (tipically, `None´)
+            for i in xrange (len (self.labels)):
+                for j in xrange (len (self.columns)):
+                    self.entries[i, j].value= ''
+
+    def will_focus_in (self, entry, *ignore):
+        self.index= entry.row
+    def will_focus_out (self, entry, *ignore):
+        self.updateData (entry)
+
+    def _set_index (self, index):
+        if self.__initialized and self.index is not None:
+            self.labels[self.index].text= ' '
+            if index is not None:
+                self.labels[index].text= '>'
+        self.__index= index
+    def _get_index (self):
+        return self.__index
+    index= property (_get_index, _set_index, None,
+                     """The index of the object currently selected.
+                     If no object is selected, it is None.""")
+
+    def _get_value (self):
+        ans= None
+        if self.index is not None:
+            ans= self.data[self.index]
+        return ans
+    def _set_value (self, value):
+        try:
+            index= self.data.index (value)
+        except (ValueError, AttributeError):
+            index= None
+        self.index= index
+    value= property (_get_value, _set_value, None,
+                     """The selected object. If no object is selected, it is None.""")
+
 class CrUDController (WindowController):
     """
     Cr(eate)U(pdate)D(elete) Controller.
     """
-    def __init__ (self, file='', **kw):
+    def __init__ (self, klass=None, editorKlass=None, filename='', **kw):
         super (CrUDController, self).__init__ (**kw)
         self.note= cimarron.skin.Notebook (parent=self.win)
 
@@ -441,18 +560,22 @@ class CrUDController (WindowController):
         self.new= cimarron.skin.Button (
             parent= v,
             label= 'New',
-            onAction= self.newModel,
+            onAction= lambda control, *ignore: self.newModel (control, klass, *ignore),
             )
 
         # second tab
         # load the beast from xml
-        # self.modelEditor= cimarron.skin.Widget.fromXml (file)
+        self.modelEditor= editorKlass.fromXmlFile (filename)
+        self.modelEditor.parent= self.note
 
         # more tabs?
 
-    def newModel (self, klass):
+    def newModel (self, control, klass, *ignore):
         self.value= klass ()
-        # self.modelEditor.value= self.value
+        self.modelEditor.value= self.value
+        self.note.activate (self.modelEditor)
+        # and this?
+        # self.editor.focus ()
 
     def refresh (self):
         # update all the `children'
@@ -461,4 +584,3 @@ class CrUDController (WindowController):
                 child.refresh ()
             except AttributeError:
                 pass
-
