@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VBox label="'Edit'">
+  <HBox>
+    <VBox>
+      <Label text="'name'"/>
+      <Label text="'phone'"/>
+      <Label text="'iso3'"/>
+      <Label text="'iso2'"/>
+      <Label text="'un'"/>
+    </VBox>
+    <VBox>
+      <Entry onAction="setName"/>
+      <Entry onAction="setPhone"/>
+      <Entry onAction="setIso3"/>
+      <Entry onAction="setIso2"/>
+      <Entry onAction="setUn"/>
+    </VBox>
+  </HBox>
+  <HBox>
+    <Button label="'Save'" onAction="save"/>
+    <Button label="'Discard'" onAction="discard"/>
+  </HBox>
+</VBox>
