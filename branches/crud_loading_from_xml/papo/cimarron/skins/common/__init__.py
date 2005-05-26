@@ -155,7 +155,7 @@ class Widget(XmlMixin):
         if parent is not None:
             parent.concreteParenter(self)
             parent._children.append(self)
-            self.__parent = parent
+        self.__parent = parent
 
         # re-link missed parentizations
         try:

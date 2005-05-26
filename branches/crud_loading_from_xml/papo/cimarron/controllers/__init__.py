@@ -53,7 +53,7 @@ class Controller(Control, Container):
         Load a Cimarrón app from an xml file.
         """
         if os.path.isfile(filename):
-            net= klass.fromXmlObj(libxml2.parseFile(filename), cimarron.skin)
+            net= klass.fromXmlObj(libxml2.parseFile(filename).getRootElement (), cimarron.skin)
             net._connectNet ([net])
             return net
         else:
@@ -380,7 +380,7 @@ class SearchEntry (Controller):
         """
         super (SearchEntry, self).__init__ (**kw)
         self.entries= []
-        self.h= cimarron.skin.HBox (parent= self.parent)
+        self.h= cimarron.skin.HBox (parent= self)
         self.columns= columns
         self.value= None
 
@@ -393,24 +393,23 @@ class SearchEntry (Controller):
                     onAction= self.doSearch
                     ))
 
-                b= cimarron.skin.Button (
-                    parent= self.h,
-                    label= 'Search!',
-                    onAction= self.doSearch,
-                    )
-
-                # build the selection window
-                self.selwin= SelectionWindow (
-                    columns= columns,
-                    onAction= self.selected,
-                    )
-        
-                self.mainWidget = b
+            b= cimarron.skin.Button (
+                parent= self.h,
+                label= 'Search!',
+                onAction= self.doSearch,
+                )
+            
+            # build the selection window
+            self.selwin= SelectionWindow (
+                columns= columns,
+                onAction= self.selected,
+                )
+            
+            self.mainWidget = b
         self.__columns= columns
     def _get_columns (self):
         return self.__columns
     columns= property (_get_columns, _set_columns)
-
 
     def doSearch (self, *ignore):
         """
@@ -474,7 +473,6 @@ class SearchEntry (Controller):
         while xmlObj:
             obj= self.childFromXmlObj (xmlObj, skin)
             if obj is not None:
-                print obj
                 columns.append (obj)
             xmlObj= xmlObj.next
         self.columns= columns
