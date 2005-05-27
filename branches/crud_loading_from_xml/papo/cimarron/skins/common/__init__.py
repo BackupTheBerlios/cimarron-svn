@@ -93,7 +93,7 @@ class XmlMixin (object):
         Load a Cimarron object child from a libxml2 xmlNode
         """
         obj= None
-        if xmlObj.type != 'text':
+        if xmlObj.type == 'element':
             obj = getattr(skin, xmlObj.name).fromXmlObj(xmlObj, skin)
         return obj
 

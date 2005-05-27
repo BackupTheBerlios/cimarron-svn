@@ -20,10 +20,15 @@
 
 import os
 import libxml2
+
 from papo import cimarron
 from papo.cimarron.skins.common import Control, Container, ForcedYes, Unknown, XmlMixin
 
-__all__ = ('Controller', 'App', 'Column', 'SearchEntry', 'Search', 'WindowController', 'Grid')
+__all__ = ('Controller', 'App',
+           'Column', 'SearchEntry', 'Search', 'Grid',
+           'WindowController', 'CrUDController',
+           )
+
 
 class Controller(Control, Container):
     """
@@ -50,15 +55,19 @@ class Controller(Control, Container):
 
     def fromXmlFile(klass, filename):
         """
-        Load a Cimarrón app from an xml file.
+        Load a Cimarrón Controller from an xml file.
         """
         if os.path.isfile(filename):
-            net= klass.fromXmlObj(libxml2.parseFile(filename).getRootElement (), cimarron.skin)
-            net._connectNet ([net])
-            return net
+            return klass.fromXmlObj(libxml2.parseFile(filename).getRootElement (),
+                                    cimarron.skin)
         else:
             raise OSError, "Unable to open file: %r" % filename
     fromXmlFile = classmethod(fromXmlFile)
+
+    def fromXmlObj (klass, xmlObj, skin):
+        net= super (Controller, klass).fromXmlObj (xmlObj, skin)
+        net._connectNet ([net])
+        return net
 
     def childFromXmlObj (self, xmlObj, skin):
         """
@@ -88,14 +97,11 @@ class Controller(Control, Container):
                 pass
             prop= prop.next
 
-        print 'importing', import_from, import_what
         if import_from is not None:
             globs= globals ()
+            globs[import_from]= __import__ (import_from, None, None, True)
             if import_what is not None:
-                globs[import_from]= __import__ (import_from, globs, locals (), import_what)
                 globs[import_what]= getattr (globs[import_from], import_what)
-            else:
-                glogs[import_from]= __import__ (import_from)
         else:
             # raise KeyError?
             pass
@@ -475,7 +481,9 @@ class SearchEntry (Controller):
             if obj is not None:
                 columns.append (obj)
             xmlObj= xmlObj.next
-        self.columns= columns
+        if columns:
+            # warn
+            self.columns= columns
 
         return self
     fromXmlObj = classmethod(fromXmlObj)
@@ -495,7 +503,9 @@ class WindowController (Controller):
         self.win.delegates.insert (0, self)
 
     def visibleChildren (self):
-        return [i for i in self._children if getattr (i, 'visible', False) and i.visible]
+        chld= self._children
+        print chld
+        return [i for i in chld if getattr (i, 'visible', False) and i.visible]
 
     def will_hide (self, *ignore):
         return self.delegate ('will_hide')
@@ -629,34 +639,54 @@ class CrUDController (WindowController):
     """
     Cr(eate)U(pdate)D(elete) Controller.
     """
-    def __init__ (self, klass=None, editorKlass=None, filename='', **kw):
+    def __init__ (self, klass=None, searchColumns=[], editorKlass=None, filename=None, **kw):
         super (CrUDController, self).__init__ (**kw)
         self.note= cimarron.skin.Notebook (parent=self.win)
 
         # first tab
-        v= cimarron.skin.VBox ()
-        v.label= 'Search'
-        v.parent= self.note
+        self.firstTab= cimarron.skin.VBox ()
+        self.firstTab.label= 'Search'
+        self.firstTab.parent= self.note
 
         self.new= cimarron.skin.Button (
-            parent= v,
+            parent= self.firstTab,
             label= 'New',
             onAction= lambda control, *ignore: self.newModel (control, klass, *ignore),
             )
 
+        if searchColumns:
+            # add the Search thing
+            self.search= cimarron.skin.Search (
+                parent= self.firstTab,
+                columns=searchColumns,
+                )
+
         # second tab
-        # load the beast from xml
-        # self.modelEditor= editorKlass.fromXmlFile (filename)
-        # self.modelEditor.parent= self.note
+        if editorKlass is not None:
+            if filename is not None:
+                self.modelEditor= editorKlass.fromXmlFile (filename)
+            else:
+                # let's hope the editorKlass knows what to do
+                self.modelEditor= editorKlass ()
+            self.modelEditor.parent= self.note
 
         # more tabs?
 
     def newModel (self, control, klass, *ignore):
-        self.value= klass ()
-        # self.modelEditor.value= self.value
-        # self.note.activate (self.modelEditor)
+        self.changeModel (control, klass ())
+
+    def changeModel (self, control, model=None):
+        if model is None:
+            self.value= self.search.value
+        else:
+            self.value= model
+        self.modelEditor.value= self.value
+        self.note.activate (self.modelEditor)
         # and this?
         # self.editor.focus ()
+
+    def save (self, *ignore):
+        pass
 
     def refresh (self):
         # update all the `children'
@@ -666,7 +696,28 @@ class CrUDController (WindowController):
             except AttributeError:
                 pass
 
+    def fromXmlObj (klass, xmlObj, skin):
+        self = klass()
+        root= xmlObj
 
+        xmlObj = xmlObj.children
+        first= True
+        while xmlObj:
+            obj= self.childFromXmlObj (xmlObj, skin)
+            if obj is not None:
+                if first:
+                    obj.parent= self.firstTab
+                    self.search= obj
+                    first= False
+                else:
+                    obj.parent= self.note
+            xmlObj= xmlObj.next
+
+        # at this time, so it has time to do the <import>s
+        self.fromXmlObjProps(root.properties)
+        return self
+    fromXmlObj = classmethod(fromXmlObj)
+        
 
 import re
 def makeName (name):
@@ -709,7 +760,37 @@ class Editor (Controller):
         print 'discard', self.value
         pass
 
-    def fromXmlObj (self, obj, skin):
-        # do something?
-        pass
+    def fromXmlObj (klass, xmlObj, skin):
+        self = klass()
+        self.fromXmlObjProps(xmlObj.properties)
+
+        vbox= cimarron.skin.VBox (parent=self)
+        hbox= cimarron.skin.HBox (parent=vbox)
+        labels= cimarron.skin.VBox (parent=hbox)
+        entries= cimarron.skin.VBox (parent=hbox)
+
+        xmlObj = xmlObj.children
+        while xmlObj:
+            obj= self.childFromXmlObj (xmlObj, skin)
+            if obj!=None:
+                if xmlObj.name=="Label":
+                    obj.parent= labels
+                else:
+                    obj.parent= entries
+            
+            xmlObj= xmlObj.next
+
+        hbox= cimarron.skin.HBox (parent=vbox)
+        save= cimarron.skin.Button (
+            parent= hbox,
+            label= 'Save',
+            onAction= self.save,
+            )
+        discard= cimarron.skin.Button (
+            parent= hbox,
+            label= 'Discard',
+            onAction= self.discard,
+            )
+
+        return self
     fromXmlObj = classmethod(fromXmlObj)
