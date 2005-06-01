@@ -23,10 +23,12 @@ import libxml2
 
 from papo import cimarron
 from papo.cimarron.skins.common import Control, Container, ForcedYes, Unknown, XmlMixin
+from papo.cimarron.tools import traverse
 
 __all__ = ('Controller', 'App',
            'Column', 'SearchEntry', 'Search', 'Grid',
            'WindowController', 'CrUDController',
+           'Editor',
            )
 
 
@@ -59,21 +61,23 @@ class Controller(Control, Container):
         """
         if os.path.isfile(filename):
             return klass.fromXmlObj(libxml2.parseFile(filename).getRootElement (),
-                                    cimarron.skin)
+                                    cimarron.skin)[0]
         else:
             raise OSError, "Unable to open file: %r" % filename
     fromXmlFile = classmethod(fromXmlFile)
 
     def fromXmlObj (klass, xmlObj, skin):
-        net= super (Controller, klass).fromXmlObj (xmlObj, skin)
-        net._connectNet ([net])
-        return net
-
+        (net, toConnect)= super (Controller, klass).fromXmlObj (xmlObj, skin)
+        toConnect= net._connect (toConnect)
+        
+        return (net, toConnect)
+    fromXmlObj = classmethod(fromXmlObj)
+    
     def childFromXmlObj (self, xmlObj, skin):
         """
         Load a Cimarron object child from a libxml2 xmlNode
         """
-        obj= None
+        obj= (None, None)
         if xmlObj.name=='import':
             self.importFromXmlObj (xmlObj)
         else:
@@ -98,22 +102,38 @@ class Controller(Control, Container):
             prop= prop.next
 
         if import_from is not None:
-            globs= globals ()
-            globs[import_from]= __import__ (import_from, None, None, True)
+            module= __import__ (import_from, None, None, True)
+            
             if import_what is not None:
-                globs[import_what]= getattr (globs[import_from], import_what)
+                setattr (self, import_what, getattr (module, import_what))
+            else:
+                setattr (self, import_from, module)
         else:
             # raise KeyError?
             pass
+        print self, import_from, import_what
         
-    def _connectNet (self, widgetList):
-        while widgetList:
-            w= widgetList.pop (0)
-            w._connectWith (self)
+    def _connect (self, toConnect):
+        stillToConnect= {}
+        for obj, attrs in toConnect.items ():
+            for attr in attrs:
+                # print 'connecting', obj, attr,
+                try:
+                    # connect
+                    path= getattr (obj, attr)
+                    # print path, ':',
+                    other= traverse (self, path)
+                    setattr (obj, attr, other)
+                    # print self, 'done'
+                except AttributeError:
+                    # I can't find it; (hopefully) it will be resolved later
+                    try:
+                        stillToConnect[obj].append (attr)
+                    except KeyError:
+                        stillToConnect[obj]= [attr]
+                    # print 'not yet'
+        return stillToConnect
 
-            # add children
-            if hasattr (w, 'children'):
-                widgetList+= w.children
 
 class WindowContainer(list):
     """
@@ -176,6 +196,11 @@ class Column (XmlMixin):
     A Column describes a field. This field can be used for both
     B{SearchEntry}s and B{Grid}s.
     """
+    def toConnect (klass):
+        toConnect= super (Column, klass).toConnect ()
+        return toConnect+['read', 'write']
+    toConnect= classmethod (toConnect)
+
     def __init__ (self, name='', read=None, write=None, entry=None):
         """
         @param name: A text associated with the field.
@@ -199,19 +224,6 @@ class Column (XmlMixin):
         if entry is None:
             entry = cimarron.skin.Entry
         self.entry= entry
-
-    def fromXmlObjProp(self, prop):
-        if prop.name in ['read', 'write']:
-            # split the path by dot
-            elems= prop.content.split ('.')
-            # traverse each one getattr()'ing
-            # 'cept the first one
-            obj= globals()[elems.pop (0)]
-            for e in elems:
-                obj= getattr (obj, e)
-            setattr(self, prop.name, obj)
-        else:
-            super (Column, self).fromXmlObjProp (prop)
 
 
 class Grid (Controller):
@@ -379,7 +391,12 @@ class SearchEntry (Controller):
 
     When one object is found or selected, it calls the action.
     """
-    def __init__ (self, columns=None, **kw):
+    def toConnect (klass):
+        toConnect= super (SearchEntry, klass).toConnect ()
+        return toConnect+['searcher']
+    toConnect= classmethod (toConnect)
+    
+    def __init__ (self, columns=None, searcher=None, **kw):
         """
         @param columns: A list of Columns. Only the C{read} attribute
             needs to be set.
@@ -389,6 +406,7 @@ class SearchEntry (Controller):
         self.h= cimarron.skin.HBox (parent= self)
         self.columns= columns
         self.value= None
+        self.searcher= searcher
 
     def _set_columns (self, columns):
         if columns is not None:
@@ -424,9 +442,14 @@ class SearchEntry (Controller):
         """
         data= []
         for e in self.entries:
-            data.append (e.value)
+            if e.value=='':
+                # '' means `don't filter by me'
+                data.append (None)
+            else:
+                data.append (e.value)
 
-        ans= self.search (data)
+        # print 'searching', self.searcher, data
+        ans= self.searcher.search (data)
         if len (ans)==0:
             self.value= None
         elif len (ans)==1:
@@ -447,13 +470,13 @@ class SearchEntry (Controller):
         self.selwin.hide ()
         self.onAction ()
 
-    def search (self, *data):
-        """
-        This abstract method is called for performing the actual search
-        with the values of the Entrys as search criteria. Must return the
-        list of objects that match that criteria.
-        """
-        raise NotImplementedError
+#     def search (self, *data):
+#         """
+#         This abstract method is called for performing the actual search
+#         with the values of the Entrys as search criteria. Must return the
+#         list of objects that match that criteria.
+#         """
+#         raise NotImplementedError
 
     def refresh (self):
         """
@@ -473,23 +496,29 @@ class SearchEntry (Controller):
         """
         self = klass()
         self.fromXmlObjProps(xmlObj.properties)
+        toConnect= {self: klass.toConnect ()}
 
         columns= []
         xmlObj = xmlObj.children
         while xmlObj:
-            obj= self.childFromXmlObj (xmlObj, skin)
+            (obj, toConnectInChild)= self.childFromXmlObj (xmlObj, skin)
             if obj is not None:
                 columns.append (obj)
+                toConnect.update (toConnectInChild)
             xmlObj= xmlObj.next
         if columns:
             # warn
             self.columns= columns
 
-        return self
+        toConnect= self._connect (toConnect)
+        
+        return (self, toConnect)
     fromXmlObj = classmethod(fromXmlObj)
+
 
 class Search (SearchEntry):
     pass
+
 
 class WindowController (Controller):
     """
@@ -504,7 +533,7 @@ class WindowController (Controller):
 
     def visibleChildren (self):
         chld= self._children
-        print chld
+        # print chld
         return [i for i in chld if getattr (i, 'visible', False) and i.visible]
 
     def will_hide (self, *ignore):
@@ -639,40 +668,57 @@ class CrUDController (WindowController):
     """
     Cr(eate)U(pdate)D(elete) Controller.
     """
+    def toConnect (klass):
+        toConnect= super (CrUDController, klass).toConnect ()
+        return toConnect+['klass']
+    toConnect= classmethod (toConnect)
+    
     def __init__ (self, klass=None, searchColumns=[], editorKlass=None, filename=None, **kw):
         super (CrUDController, self).__init__ (**kw)
         self.note= cimarron.skin.Notebook (parent=self.win)
+        self.editors= {}
 
         # first tab
-        self.firstTab= cimarron.skin.VBox ()
-        self.firstTab.label= 'Search'
+        self.firstTab= cimarron.skin.VBox (label='Search')
         self.firstTab.parent= self.note
 
         self.new= cimarron.skin.Button (
             parent= self.firstTab,
             label= 'New',
-            onAction= lambda control, *ignore: self.newModel (control, klass, *ignore),
             )
+
+        self.klass= klass
 
         if searchColumns:
             # add the Search thing
             self.search= cimarron.skin.Search (
                 parent= self.firstTab,
-                columns=searchColumns,
+                columns= searchColumns,
+                onAction= self.changeModel,
                 )
 
         # second tab
         if editorKlass is not None:
             if filename is not None:
-                self.modelEditor= editorKlass.fromXmlFile (filename)
+                modelEditor= editorKlass.fromXmlFile (filename)
             else:
                 # let's hope the editorKlass knows what to do
-                self.modelEditor= editorKlass ()
-            self.modelEditor.parent= self.note
+                modelEditor= editorKlass ()
+            modelEditor.parent= self.note
+            self.editors[modelEditor]= lambda x: x
 
         # more tabs?
 
+    def _set_klass (self, klass):
+        if klass is not None:
+            self.new.onAction= lambda control, *ignore: self.newModel (control, klass, *ignore)
+        self._klass= klass
+    def _get_klass (self):
+        return self._klass
+    klass= property (_get_klass, _set_klass)
+        
     def newModel (self, control, klass, *ignore):
+        print 'newModel'
         self.changeModel (control, klass ())
 
     def changeModel (self, control, model=None):
@@ -680,8 +726,9 @@ class CrUDController (WindowController):
             self.value= self.search.value
         else:
             self.value= model
-        self.modelEditor.value= self.value
-        self.note.activate (self.modelEditor)
+        for editor, f in self.editors.items ():
+            editor.value= f (self.value)
+        self.note.activate (1)
         # and this?
         # self.editor.focus ()
 
@@ -699,11 +746,12 @@ class CrUDController (WindowController):
     def fromXmlObj (klass, xmlObj, skin):
         self = klass()
         root= xmlObj
+        toConnect= {self: klass.toConnect ()}
 
         xmlObj = xmlObj.children
         first= True
         while xmlObj:
-            obj= self.childFromXmlObj (xmlObj, skin)
+            (obj, toConnectInChild)= self.childFromXmlObj (xmlObj, skin)
             if obj is not None:
                 if first:
                     obj.parent= self.firstTab
@@ -711,11 +759,15 @@ class CrUDController (WindowController):
                     first= False
                 else:
                     obj.parent= self.note
+                    self.editors[obj]= lambda x: x
+                toConnect.update (toConnectInChild)
             xmlObj= xmlObj.next
 
         # at this time, so it has time to do the <import>s
         self.fromXmlObjProps(root.properties)
-        return self
+        toConnect= self._connect (toConnect)
+        
+        return (self, toConnect)
     fromXmlObj = classmethod(fromXmlObj)
         
 
@@ -735,51 +787,57 @@ def MakeName (name):
     # SomeThing
     return name
 
-class EditorType(type):
-    def __new__(klass, name, bases, dictionary):
-        k = super(EditorType, klass).__new__(klass, name, bases, dictionary)
-        code= """def %(methodName)s (self, control, *ignore):
-            print control.value
-            self.value.%(methodName)s(control.value)"""
-        for i in dictionary.get('_attributes_', ()):
-            name =  'set'+MakeName (i)
-            exec code % dict (methodName=name)
-            setattr(k, name, locals()[name])
-        return k
-
 class Editor (Controller):
-    __metaclass__ = EditorType
-        
     def refresh (self, *ignore):
-        pass
+        # the _attributes_ must be in the same order
+        # than the entries :(
+        if self.value is not None:
+            for entry in self.entries.children:
+                entry.value= entry.read (self.value)
+
+    def modifyModel (self, control, *ignore):
+        control.write (self.value, control.value)
 
     def save (self, *ignore):
-        print 'save', self.value
+        # how will thi be finally done is a mistery (yet)
+        print 'save', str (self.value)
         pass
     def discard (self, *ignore):
+        # how will thi be finally done is a mistery (yet)
         print 'discard', self.value
         pass
+
+    def will_focus_out (self, control, *ignore):
+        self.modifyModel (control)
 
     def fromXmlObj (klass, xmlObj, skin):
         self = klass()
         self.fromXmlObjProps(xmlObj.properties)
 
-        vbox= cimarron.skin.VBox (parent=self)
+        # main containers
+        vbox= cimarron.skin.VBox (parent=self, label=self.label)
         hbox= cimarron.skin.HBox (parent=vbox)
         labels= cimarron.skin.VBox (parent=hbox)
-        entries= cimarron.skin.VBox (parent=hbox)
+        self.entries= cimarron.skin.VBox (parent=hbox)
 
+        # load children
+        toConnect= {self: klass.toConnect ()}
         xmlObj = xmlObj.children
         while xmlObj:
-            obj= self.childFromXmlObj (xmlObj, skin)
+            (obj, toConnectInChild)= self.childFromXmlObj (xmlObj, skin)
             if obj!=None:
                 if xmlObj.name=="Label":
                     obj.parent= labels
                 else:
-                    obj.parent= entries
+                    obj.parent= self.entries
+                    obj.onAction= self.modifyModel
+                    obj.delegates.append (self)
+                    toConnectInChild[obj]+= ['read', 'write']
+                toConnect.update (toConnectInChild)
             
             xmlObj= xmlObj.next
 
+        # save/discard buttons
         hbox= cimarron.skin.HBox (parent=vbox)
         save= cimarron.skin.Button (
             parent= hbox,
@@ -792,5 +850,8 @@ class Editor (Controller):
             onAction= self.discard,
             )
 
-        return self
+        # we do (connect) what we can
+        toConnect= self._connect (toConnect)
+        
+        return (self, toConnect)
     fromXmlObj = classmethod(fromXmlObj)

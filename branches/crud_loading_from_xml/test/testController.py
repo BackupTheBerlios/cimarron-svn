@@ -242,13 +242,12 @@ class TestCrUDController (TestWindowController):
         self.widget= CrUDController (
             parent= self.app,
             klass= Country,
-            editorKlass= CountryEditor,
-            filename="test/testCrUDController.xml",
+            editorKlass= Editor,
             )
 
-    def testNew (self):
-        self.widget.newModel (self.widget, Country)
-        self.assert_ (isinstance (self.widget.value, Country))
+#     def testNew (self):
+#         self.widget.newModel (self.widget, Country)
+#         self.assert_ (isinstance (self.widget.value, Country))
 
 #     def testVisual (self):
 #         self.win.show ()

@@ -32,7 +32,7 @@ import libxml2
 __all__ = ('XmlMixin', 'Widget', 'Container', 'Control',
            'ForcedNo', 'No', 'Unknown', 'Yes', 'ForcedYes')
 
-from papo.cimarron.tools import is_simple
+from papo.cimarron.tools import is_simple, traverse
 
 def nullAction(*a, **k): pass
 
@@ -72,6 +72,10 @@ from papo import cimarron
 
 
 class XmlMixin (object):
+    def toConnect (klass):
+        return []
+    toConnect= classmethod (toConnect)
+    
     def fromXmlObj(klass, xmlObj, skin):
         """
         Helper function for loading a Cimarrón app from an xml file. (see
@@ -79,26 +83,39 @@ class XmlMixin (object):
         """
         self = klass()
         self.fromXmlObjProps(xmlObj.properties)
+        toConnect= {self: klass.toConnect ()}
+        
         xmlObj = xmlObj.children
         while xmlObj:
-            obj= self.childFromXmlObj (xmlObj, skin)
+            (obj, toConnectInChild)= self.childFromXmlObj (xmlObj, skin)
             if obj is not None:
                 obj.parent = self
+                toConnect.update (toConnectInChild)
             xmlObj = xmlObj.next
-        return self
+        
+        return (self, toConnect)
     fromXmlObj = classmethod(fromXmlObj)
         
     def childFromXmlObj (self, xmlObj, skin):
         """
         Load a Cimarron object child from a libxml2 xmlNode
         """
-        obj= None
+        obj= (None, None)
         if xmlObj.type == 'element':
             obj = getattr(skin, xmlObj.name).fromXmlObj(xmlObj, skin)
         return obj
 
     def fromXmlObjProp(self, prop):
-        setattr(self, prop.name, eval(prop.content))
+        if prop.name in self.toConnect ():
+            setattr(self, prop.name, prop.content)
+        else:
+            # this is ugly
+            try:
+                setattr(self, prop.name, eval(prop.content))
+            except NameError:
+                # the eval failed
+                # hoe that it will be resolved later :(
+                setattr(self, prop.name, prop.content)
 
     def fromXmlObjProps(self, prop):
         while prop:
@@ -281,10 +298,16 @@ class Container(Widget):
             child.skeleton(skel)
         return skel
 
+
 class Control(Widget):
     """
     L{Control} is...
     """
+    def toConnect (klass):
+        toConnect= super (Control, klass).toConnect ()
+        return toConnect+['onAction']
+    toConnect= classmethod (toConnect)
+
     def __init__(self, onAction=None, value=None, **kw):
         super(Control, self).__init__(**kw)
         self.value = value
@@ -315,20 +338,3 @@ class Control(Widget):
         if is_simple(value):
             skelargs['value'] = value
         return skelargs
-
-    def fromXmlObjProp(self, prop):
-        if prop.name=='onAction':
-            # don't eval
-            setattr(self, prop.name, prop.content)
-        else:
-            super (Control, self).fromXmlObjProp (prop)
-
-    def _connectWith (self, other):
-        if hasattr (self, 'onAction') and type (self.onAction)==str:
-            # split the path by dot
-            elems= self.onAction.split ('.')
-            # traverse each one getattr()'ing
-            obj= other
-            for e in elems:
-                obj= getattr (obj, e)
-            self.onAction= obj

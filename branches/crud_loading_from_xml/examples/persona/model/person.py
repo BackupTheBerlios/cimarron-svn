@@ -18,11 +18,8 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-class Types (object):
-    pass
-
 class Person (object):
-    def __init__ (self, name='', surname='', addresses= [], type=0):
+    def __init__ (self, name='', surname='', addresses= []):
         self.setName (name)
         self.setSurname (surname)
         self.addresses= addresses
@@ -63,3 +60,20 @@ class Person (object):
             self.surname,
             str (self.addresses),
             )
+
+    def search (klass, values):
+        name, surname= values[:2]
+        ans= []
+
+        for i in klass.__values__:
+            found= False
+            if name is not None:
+                found= name in i.name
+            if surname is not None:
+                found= found and surname in i.surname
+
+            if found:
+                ans.append (i)
+
+        return ans
+    search= classmethod (search)

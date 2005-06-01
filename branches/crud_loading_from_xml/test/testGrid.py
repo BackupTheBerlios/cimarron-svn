@@ -42,6 +42,27 @@ class Person (object):
         self.__surname= sn
     surname= property (getSurname, setSurname)
 
+    def search (klass, values):
+        name, surname= values[:2]
+        ans= []
+
+        for i in klass.__values__:
+            found= False
+            if name is not None:
+                found= name in i.name
+            if surname is not None:
+                if name is not None:
+                    found= found and surname in i.surname
+                else:
+                    found= surname in i.surname
+
+            if found:
+                ans.append (i)
+
+        return ans
+    search= classmethod (search)
+
+
 class TestGrid (abstractTestControl):
     def setUp (self):
         super (TestGrid, self).setUp ()

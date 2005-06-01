@@ -63,26 +63,26 @@ class ABMPerson (cimarron.skin.WindowController):
         print self.data
 
 
-class PersonSearch (cimarron.skin.Search):
-    def __init__ (self, data=[], **kw):
-        super (PersonSearch, self).__init__ (**kw)
-        self.data= data
+# class PersonSearch (cimarron.skin.Search):
+#     def __init__ (self, data=[], **kw):
+#         super (PersonSearch, self).__init__ (**kw)
+#         self.data= data
         
-    def search (self, values):
-        name, surname= values[:2]
-        ans= []
+#     def search (self, values):
+#         name, surname= values[:2]
+#         ans= []
 
-        for i in self.data:
-            found= False
-            if name is not None:
-                found= name in i.name
-            if surname is not None:
-                found= found and surname in i.surname
+#         for i in self.data:
+#             found= False
+#             if name is not None:
+#                 found= name in i.name
+#             if surname is not None:
+#                 found= found and surname in i.surname
 
-            if found:
-                ans.append (i)
+#             if found:
+#                 ans.append (i)
 
-        return ans
+#         return ans
 
 
 class PersonSearchPage (cimarron.skin.Controller):
@@ -98,10 +98,11 @@ class PersonSearchPage (cimarron.skin.Controller):
             cimarron.skin.Column (name='Nombre', read=Person.getName, write=Person.setName),
             cimarron.skin.Column (name='Apellido', read=Person.getSurname, write=Person.setSurname),
             )
-        self.searcher= PersonSearch (
+        self.searcher= SearchEntry (
             parent= v,
             columns= columns,
             onAction= self.personSelected,
+            searcher= Person,
             data= self.data,
             )
 

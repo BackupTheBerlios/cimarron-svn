@@ -31,3 +31,13 @@ def is_simple(obj):
                  len(filter(None, map(is_simple, obj.values()))) == len(obj))
             )
                  
+
+def traverse (obj, path):
+    """
+    Returns the object found by traversing the path
+    (as a string) starting from obj.
+    """
+    for e in path.split ('.'):
+        obj= getattr (obj, e)
+
+    return obj
