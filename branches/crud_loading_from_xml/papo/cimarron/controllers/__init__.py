@@ -45,6 +45,7 @@ class Controller(Control, Container):
         self.__initialized = False
         super (Controller, self).__init__ (**kw)
         self.__initialized = True
+
     def _set_value(self, value):
         self.__value=value
         if self.__initialized:
@@ -338,7 +339,7 @@ class SelectionWindow (Controller):
             title= 'Select',
             )
         v= cimarron.skin.VBox (parent=self.win)
-        self.grid= cimarron.skin.Grid (
+        self.grid= cimarron.skin.SelectionGrid (
             parent= v,
             columns= columns,
             onAction= self.onOk,
@@ -469,14 +470,6 @@ class SearchEntry (Controller):
         self.value= self.selwin.value
         self.selwin.hide ()
         self.onAction ()
-
-#     def search (self, *data):
-#         """
-#         This abstract method is called for performing the actual search
-#         with the values of the Entrys as search criteria. Must return the
-#         list of objects that match that criteria.
-#         """
-#         raise NotImplementedError
 
     def refresh (self):
         """
