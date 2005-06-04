@@ -18,6 +18,23 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+import re
+
+def makeName (name):
+    def __upper__ (letter):
+        return letter.group (1).upper ()
+    # some_thing
+    name= re.sub (r'_([a-z])', __upper__, name)
+    # someThing
+    return name
+
+def MakeName (name):
+    name= makeName (name)
+    # someThing
+    name= name[0:1].upper ()+name[1:]
+    # SomeThing
+    return name
+
 simple_types = (str, unicode, type(None), bool, int, long, float, complex )
 
 def is_simple(obj):

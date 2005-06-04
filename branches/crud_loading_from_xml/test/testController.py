@@ -22,7 +22,7 @@ import unittest
 from pprint import pformat
 
 from papo import cimarron
-from papo.cimarron.controllers import Controller, WindowController, CrUDController, Editor
+from papo.cimarron.controllers import Controller, WindowController, CRUDController, Editor
 from model.person import Person
 from model.country import Country
 
@@ -32,7 +32,7 @@ __all__ = ('TestController',
            'TestBarController',
            'TestApp',
            'TestWindowController',
-           'TestCrUDController',
+           'TestCRUDController',
            )
 
 def visualTest():
@@ -236,10 +236,10 @@ class CountryEditor (Editor):
     def __init__(self, *a, **kw):
         return super(CountryEditor, self).__init__(*a, **kw)
 
-class TestCrUDController (TestWindowController):
+class TestCRUDController (TestWindowController):
     def setUp (self):
-        super (TestCrUDController, self).setUp ()
-        self.widget= CrUDController (
+        super (TestCRUDController, self).setUp ()
+        self.widget= CRUDController (
             parent= self.app,
             klass= Country,
             editorKlass= Editor,
