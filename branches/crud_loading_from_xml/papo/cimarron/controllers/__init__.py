@@ -24,7 +24,7 @@ __all__ = ('Controller', 'App',
            'Editor',
            )
 
-from base import Controller, WindowController
+from base import Controller, WindowController, DelayedTraversal
 from app import App
 from search import SearchEntry, Search
 from grid import Grid, Column

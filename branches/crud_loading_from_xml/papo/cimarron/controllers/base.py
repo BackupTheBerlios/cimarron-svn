@@ -19,6 +19,7 @@
 # Suite 330, Boston, MA 02111-1307 USA
 
 import os
+import libxml2
 
 from papo import cimarron
 from papo.cimarron.tools import traverse
@@ -39,7 +40,7 @@ class Controller(Control, Container):
         self.__initialized = True
 
     def _set_value(self, value):
-        self.__value=value
+        self.__value= value
         if self.__initialized:
             self.refresh()
     def _get_value(self):
@@ -53,26 +54,24 @@ class Controller(Control, Container):
         Load a Cimarrón Controller from an xml file.
         """
         if os.path.isfile(filename):
-            return klass.fromXmlObj(libxml2.parseFile(filename).getRootElement (),
-                                    cimarron.skin)[0]
+            (self, toConnect, idDict)= klass.fromXmlObj(
+                libxml2.parseFile(filename).getRootElement (),
+                cimarron.skin
+                )
+            self.idDict= idDict
+            self._connect (toConnect)
+            return self
         else:
             raise OSError, "Unable to open file: %r" % filename
     fromXmlFile = classmethod(fromXmlFile)
 
-    def fromXmlObj (klass, xmlObj, skin):
-        (net, toConnect)= super (Controller, klass).fromXmlObj (xmlObj, skin)
-        toConnect= net._connect (toConnect)
-        
-        return (net, toConnect)
-    fromXmlObj = classmethod(fromXmlObj)
-    
     def childFromXmlObj (self, xmlObj, skin):
         """
         Load a Cimarron object child from a libxml2 xmlNode
         """
-        obj= (None, None)
+        obj= (None, None, {})
         if xmlObj.name=='import':
-            self.importFromXmlObj (xmlObj)
+            obj= self.importFromXmlObj (xmlObj)
         else:
             obj= super (Controller, self).childFromXmlObj (xmlObj, skin)
         return obj
@@ -81,51 +80,55 @@ class Controller(Control, Container):
         """
         Import a module using the description represented by the xmlNode
         """
-        import_from, import_what= None, None
-        
-        prop= xmlObj.properties
-        while prop:
-            if prop.name=='from':
-                import_from= prop.content
-            elif prop.name=='what':
-                import_what= prop.content
-            else:
-                # raise KeyError?
-                pass
-            prop= prop.next
+        idDict= {}
+        import_from = xmlObj.prop('from') or None
+        import_what = xmlObj.prop('what') or None
+        hasId= xmlObj.prop('id') or None
 
         if import_from is not None:
-            module= __import__ (import_from, None, None, True)
-            
+            obj= __import__ (import_from, None, None, True)
             if import_what is not None:
-                setattr (self, import_what, getattr (module, import_what))
-            else:
-                setattr (self, import_from, module)
+                obj= getattr (obj, import_what)
         else:
             # raise KeyError?
             pass
-        print self, import_from, import_what
+
+        if hasId:
+            idDict[hasId]= obj
+        return (None, None, idDict)
         
     def _connect (self, toConnect):
-        stillToConnect= {}
         for obj, attrs in toConnect.items ():
             for attr in attrs:
-                # print 'connecting', obj, attr,
+                path= None
                 try:
-                    # connect
                     path= getattr (obj, attr)
-                    # print path, ':',
-                    other= traverse (self, path)
-                    setattr (obj, attr, other)
-                    # print self, 'done'
                 except AttributeError:
-                    # I can't find it; (hopefully) it will be resolved later
+                    # the info is not quite right
+                    pass
+                # print self.idDict
+                # print `obj`, '.', `attr`, '=', `path`,
+                if isinstance (path, basestring):
                     try:
-                        stillToConnect[obj].append (attr)
-                    except KeyError:
-                        stillToConnect[obj]= [attr]
-                    # print 'not yet'
-        return stillToConnect
+                        (key, path)= path.split ('.', 1)
+                        other= DelayedTraversal (self.idDict[key], path)
+                        # print 'connected to DT', `self.idDict[key]`, path,
+                    except ValueError:
+                        # no path, directly the object
+                        other= self.idDict[path]
+                        # print 'connected to', `self.idDict[path]`,
+                    setattr (obj, attr, other)
+                else:
+                    # print 'connect impossible', 
+                # print
+
+class DelayedTraversal(object):
+    def __init__(self, other, path):
+        self.path = path
+        self.other = other
+ 
+    def __call__(self, *a, **kw):
+        return traverse (self.other, self.path)(*a, **kw)
 
 
 class WindowController (Controller):

@@ -312,23 +312,23 @@ class Grid (Controller):
 
     def _set_columns (self, columns):
         self._columns= columns
-        # build the tv columns and the data types tuple
-        (self._tvcolumns, self._dataspec)= izip(*izip(
-            [ gtk.TreeViewColumn (c.name) for c in columns ],
-            repeat(str)
-            ))
+        if columns!=[]:
+            # build the tv columns and the data types tuple
+            (self._tvcolumns, self._dataspec)= izip(*izip(
+                [ gtk.TreeViewColumn (c.name) for c in columns ],
+                repeat(str)
+                ))
 
-        # add the columns and attrs
-        for i in xrange (len (columns)):
-            c= self._tvcolumns[i]
-            crt= gtk.CellRendererText ()
-            # editable
-            crt.set_property ('editable', True)
-            crt.connect ('edited', self._cell_edited, (i, columns[i].write))
-            c.pack_start (crt, True)
-            c.add_attribute (crt, 'text', i)
-            self._tv.append_column (c)
-            
+            # add the columns and attrs
+            for i in xrange (len (columns)):
+                c= self._tvcolumns[i]
+                crt= gtk.CellRendererText ()
+                # editable
+                crt.set_property ('editable', True)
+                crt.connect ('edited', self._cell_edited, (i, columns[i].write))
+                c.pack_start (crt, True)
+                c.add_attribute (crt, 'text', i)
+                self._tv.append_column (c)
     def _get_columns (self):
         return self._columns
     columns= property (_get_columns, _set_columns)
@@ -345,7 +345,7 @@ class Grid (Controller):
         # b) leaves it with wrong value, so the user can edit it (preferred)
         return False
     def _keypressed (self, widget, key_event, *ignore):
-        if key_event.keyval==gtk.keysyms.Return:
+        if key_event.keyval==gtk.keysyms.Return or key_event.keyval==gtk.keysyms.KP_Enter:
             self.onAction ()
             return True
         return False
@@ -353,9 +353,12 @@ class Grid (Controller):
     def refresh (self):
         if len (self.columns)>0:
             self._tvdata= gtk.ListStore (*self._dataspec)
+        else:
+            self._tvdata= gtk.ListStore (str)
+        # print 'Grid.refresh:', `self.value`, self.columns
         if self.value is not None:
             for i in self.value:
-                # build a ListStore w/ all the values
+                # add all the values
                 # NOTE: this forces the data to be read.
                 self._tvdata.append ([j.read (i) for j in self.columns])
         self._tv.set_model (self._tvdata)

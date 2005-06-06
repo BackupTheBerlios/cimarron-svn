@@ -183,22 +183,25 @@ class SearchEntry (Controller):
         self = klass()
         self.fromXmlObjProps(xmlObj.properties)
         toConnect= {self: klass.toConnect ()}
+        try:
+            idDict= {self.id: self}
+        except AttributeError:
+            idDict= {}
 
         columns= []
         xmlObj = xmlObj.children
         while xmlObj:
-            (obj, toConnectInChild)= self.childFromXmlObj (xmlObj, skin)
+            (obj, toConnectInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
             if obj is not None:
                 columns.append (obj)
                 toConnect.update (toConnectInChild)
+                idDict.update (idDictInChild)
             xmlObj= xmlObj.next
         if columns:
-            # warn
+            # warn (if not?)
             self.columns= columns
 
-        toConnect= self._connect (toConnect)
-        
-        return (self, toConnect)
+        return (self, toConnect, idDict)
     fromXmlObj = classmethod(fromXmlObj)
 
 

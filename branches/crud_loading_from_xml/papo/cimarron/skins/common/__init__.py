@@ -84,23 +84,28 @@ class XmlMixin (object):
         self = klass()
         self.fromXmlObjProps(xmlObj.properties)
         toConnect= {self: klass.toConnect ()}
+        try:
+            idDict= {self.id: self}
+        except AttributeError:
+            idDict= {}
         
         xmlObj = xmlObj.children
         while xmlObj:
-            (obj, toConnectInChild)= self.childFromXmlObj (xmlObj, skin)
+            (obj, toConnectInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
             if obj is not None:
                 obj.parent = self
                 toConnect.update (toConnectInChild)
+            idDict.update (idDictInChild)
             xmlObj = xmlObj.next
         
-        return (self, toConnect)
+        return (self, toConnect, idDict)
     fromXmlObj = classmethod(fromXmlObj)
         
     def childFromXmlObj (self, xmlObj, skin):
         """
         Load a Cimarron object child from a libxml2 xmlNode
         """
-        obj= (None, None)
+        obj= (None, None, {})
         if xmlObj.type == 'element':
             obj = getattr(skin, xmlObj.name).fromXmlObj(xmlObj, skin)
         return obj
@@ -114,8 +119,9 @@ class XmlMixin (object):
                 setattr(self, prop.name, eval(prop.content))
             except NameError:
                 # the eval failed
-                # hoe that it will be resolved later :(
+                # hope that it will be resolved later :(
                 setattr(self, prop.name, prop.content)
+            # print self, 'prop', prop.name, getattr (self, prop.name)
 
     def fromXmlObjProps(self, prop):
         while prop:

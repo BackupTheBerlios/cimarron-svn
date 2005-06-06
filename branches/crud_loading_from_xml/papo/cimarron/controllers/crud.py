@@ -32,9 +32,9 @@ class CRUDController (WindowController):
     toConnect= classmethod (toConnect)
     
     def __init__ (self, klass=None, searchColumns=[], editorKlass=None, filename=None, **kw):
+        self.editors= []
         super (CRUDController, self).__init__ (**kw)
         self.note= cimarron.skin.Notebook (parent=self.win)
-        self.editors= {}
 
         # first tab
         self.firstTab= cimarron.skin.VBox (label='Search')
@@ -63,7 +63,7 @@ class CRUDController (WindowController):
                 # let's hope the editorKlass knows what to do
                 modelEditor= editorKlass ()
             modelEditor.parent= self.note
-            self.editors[modelEditor]= lambda x: x
+            self.editors.append (modelEditor)
 
         # more tabs?
 
@@ -76,7 +76,6 @@ class CRUDController (WindowController):
     klass= property (_get_klass, _set_klass)
         
     def newModel (self, control, klass, *ignore):
-        print 'newModel'
         self.changeModel (control, klass ())
 
     def changeModel (self, control, model=None):
@@ -84,32 +83,35 @@ class CRUDController (WindowController):
             self.value= self.search.value
         else:
             self.value= model
-        for editor, f in self.editors.items ():
-            editor.value= f (self.value)
-        self.note.activate (1)
-        # and this?
-        # self.editor.focus ()
+
+        # print 'CRUD.changeModel', `model`, model is None, self.search.value, self.value
+        if self.value is not None:
+            self.note.activate (1)
+            # and this?
+            # self.editor.focus ()
 
     def save (self, *ignore):
         pass
 
     def refresh (self):
-        # update all the `children'
-        for child in self.note.children:
+        for editor in self.editors:
             try:
-                child.refresh ()
-            except AttributeError:
-                pass
+                editor.value= editor.read ()
+                # print 'CRUD:', editor, `editor.read`, `editor.value`
+            except (AttributeError, TypeError):
+                editor.value= self.value
+                # print 'CRUD:', editor, `editor.value`
 
     def fromXmlObj (klass, xmlObj, skin):
         self = klass()
         root= xmlObj
         toConnect= {self: klass.toConnect ()}
+        idDict= {}
 
         xmlObj = xmlObj.children
         first= True
         while xmlObj:
-            (obj, toConnectInChild)= self.childFromXmlObj (xmlObj, skin)
+            (obj, toConnectInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
             if obj is not None:
                 if first:
                     obj.parent= self.firstTab
@@ -117,34 +119,53 @@ class CRUDController (WindowController):
                     first= False
                 else:
                     obj.parent= self.note
-                    self.editors[obj]= lambda x: x
+                    self.editors.append (obj)
+                toConnectInChild[obj]+= ['read', 'write']
                 toConnect.update (toConnectInChild)
+            idDict.update (idDictInChild)
             xmlObj= xmlObj.next
 
         # at this time, so it has time to do the <import>s
         self.fromXmlObjProps(root.properties)
-        toConnect= self._connect (toConnect)
+        try:
+            idDict[self.id]= self
+        except AttributeError:
+            # have no id, ignore
+            pass
         
-        return (self, toConnect)
+        return (self, toConnect, idDict)
     fromXmlObj = classmethod(fromXmlObj)
         
+
 class Editor (Controller):
     def refresh (self, *ignore):
-        # the _attributes_ must be in the same order
-        # than the entries :(
-        if self.value is not None:
+        try:
             for entry in self.entries.children:
-                entry.value= entry.read (self.value)
+                try:
+                    entry.value= entry.read ()
+                    print 'editor:', entry, `entry.read`, `entry.value`
+                except (AttributeError, TypeError):
+                    entry.value= self.value
+                    print 'editor:', entry, `entry.value`
+        except AttributeError:
+            # the entries are not there yet
+            pass
 
     def modifyModel (self, control, *ignore):
-        control.write (self.value, control.value)
+        try:
+            control.write (control.value)
+        except AttributeError:
+            # no saving needed?
+            # yes, it's possible, like a grid editing addresses
+            # it modifies the addresses directly.
+            pass
 
     def save (self, *ignore):
-        # how will thi be finally done is a mistery (yet)
+        # how will this be finally done is a mistery (yet)
         print 'save', str (self.value)
         pass
     def discard (self, *ignore):
-        # how will thi be finally done is a mistery (yet)
+        # how will this be finally done is a mistery (yet)
         print 'discard', self.value
         pass
 
@@ -154,6 +175,10 @@ class Editor (Controller):
     def fromXmlObj (klass, xmlObj, skin):
         self = klass()
         self.fromXmlObjProps(xmlObj.properties)
+        try:
+            idDict= {self.id: self}
+        except AttributeError:
+            idDict= {}
 
         # main containers
         vbox= cimarron.skin.VBox (parent=self, label=self.label)
@@ -165,7 +190,7 @@ class Editor (Controller):
         toConnect= {self: klass.toConnect ()}
         xmlObj = xmlObj.children
         while xmlObj:
-            (obj, toConnectInChild)= self.childFromXmlObj (xmlObj, skin)
+            (obj, toConnectInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
             if obj!=None:
                 if xmlObj.name=="Label":
                     obj.parent= labels
@@ -175,6 +200,7 @@ class Editor (Controller):
                     obj.delegates.append (self)
                     toConnectInChild[obj]+= ['read', 'write']
                 toConnect.update (toConnectInChild)
+            idDict.update (idDictInChild)
             
             xmlObj= xmlObj.next
 
@@ -191,8 +217,5 @@ class Editor (Controller):
             onAction= self.discard,
             )
 
-        # we do (connect) what we can
-        toConnect= self._connect (toConnect)
-        
-        return (self, toConnect)
+        return (self, toConnect, idDict)
     fromXmlObj = classmethod(fromXmlObj)

@@ -22,7 +22,7 @@ import unittest
 from pprint import pformat
 
 from papo import cimarron
-from papo.cimarron.controllers import Controller, WindowController, CRUDController, Editor
+from papo.cimarron.controllers import Controller, WindowController, CRUDController, Editor, DelayedTraversal
 from model.person import Person
 from model.country import Country
 
@@ -80,6 +80,9 @@ class FooController(Controller):
         self.label.text= str (self.value.get (self.entry.value, 'Not found'))
         self.daLabel.text = pformat(self.value)
 
+class Connection (object):
+    pass
+    
 class TestController(abstractTestControl):
     def setUp (self):
         self.value = dict(foo=1,
@@ -118,6 +121,42 @@ class TestController(abstractTestControl):
 
     def testFromXmlNonexistantFile(self):
         self.assertRaises(OSError, self.widget.fromXmlFile, 'xyzzy')
+
+    def testImport (self):
+        # tests <import from="">
+        pass
+
+    def testImportFrom (self):
+        # tests <import from what>
+        pass
+
+    def connection (self):
+        self.connected= True
+
+    def testConnectWithPath (self):
+        self.widget.idDict= {'master': self.widget}
+        self.widget.attrToConnect= 'master.connection'
+        self.widget.connection= self.connection
+        
+        # test 1: the proper type
+        self.widget._connect ({self.widget: ['attrToConnect']})
+        self.assertEqual (type (self.widget.attrToConnect), DelayedTraversal)
+        # test 2: the call works
+        self.widget.attrToConnect ()
+        self.assert_ (self.connected)
+
+    def testConnectWithoutPath (self):
+        self.widget.idDict= {'Connection': Connection}
+        self.widget.attrToConnect= 'Connection'
+        self.widget.connection= self.connection
+        
+        # test 1: the proper type
+        self.widget._connect ({self.widget: ['attrToConnect']})
+        self.assertEqual (self.widget.attrToConnect, Connection)
+        # test 2: the call works
+        obj= self.widget.attrToConnect ()
+        self.assertEqual (type (obj), Connection)
+    
 
 class BarController (Controller):
     def __init__ (self, **kw):
