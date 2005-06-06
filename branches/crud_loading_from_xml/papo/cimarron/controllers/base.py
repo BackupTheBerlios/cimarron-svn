@@ -118,7 +118,7 @@ class Controller(Control, Container):
                         other= self.idDict[path]
                         # print 'connected to', `self.idDict[path]`,
                     setattr (obj, attr, other)
-                else:
+                # else:
                     # print 'connect impossible', 
                 # print
 
