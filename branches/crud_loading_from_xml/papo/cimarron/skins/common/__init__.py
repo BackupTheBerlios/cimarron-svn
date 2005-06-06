@@ -21,7 +21,7 @@
 """
 
 L{common} is a set of abstract classes that
-are the foundation of Cimarron's class hierarchy.
+are the foundation of Cimarrón's class hierarchy.
 
 """
 
@@ -33,6 +33,7 @@ __all__ = ('XmlMixin', 'Widget', 'Container', 'Control',
            'ForcedNo', 'No', 'Unknown', 'Yes', 'ForcedYes')
 
 from papo.cimarron.tools import is_simple, traverse
+from papo import cimarron
 
 def nullAction(*a, **k): pass
 
@@ -68,22 +69,25 @@ ForcedNo, No, Unknown, Yes, ForcedYes = map(DelegationAnswer,
                              ('ForcedNo', 'No', 'Unknown', 'Yes', 'ForcedYes'))
 
 
-from papo import cimarron
 
 
 class XmlMixin (object):
-    def toConnect (klass):
+    def attributesToConnect (klass):
+        """
+        Return the list of attributes that a serialized object might have,
+        and that would need resolving via delayed traversal.
+        """
         return []
-    toConnect= classmethod (toConnect)
+    attributesToConnect= classmethod (attributesToConnect)
     
     def fromXmlObj(klass, xmlObj, skin):
         """
         Helper function for loading a Cimarrón app from an xml file. (see
-        L{Controller.fromXmlFile}).
+        L{Controller.fromXmlFile<cimarron.controllers.base.Controller.fromXmlFile>}).
         """
         self = klass()
         self.fromXmlObjProps(xmlObj.properties)
-        toConnect= {self: klass.toConnect ()}
+        attrs= {self: klass.attributesToConnect ()}
         try:
             idDict= {self.id: self}
         except AttributeError:
@@ -91,19 +95,19 @@ class XmlMixin (object):
         
         xmlObj = xmlObj.children
         while xmlObj:
-            (obj, toConnectInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
+            (obj, attrsInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
             if obj is not None:
                 obj.parent = self
-                toConnect.update (toConnectInChild)
+                attrs.update (attrsInChild)
             idDict.update (idDictInChild)
             xmlObj = xmlObj.next
         
-        return (self, toConnect, idDict)
+        return (self, attrs, idDict)
     fromXmlObj = classmethod(fromXmlObj)
         
     def childFromXmlObj (self, xmlObj, skin):
         """
-        Load a Cimarron object child from a libxml2 xmlNode
+        Load a Cimarrón object child from a libxml2 xmlNode
         """
         obj= (None, None, {})
         if xmlObj.type == 'element':
@@ -111,7 +115,7 @@ class XmlMixin (object):
         return obj
 
     def fromXmlObjProp(self, prop):
-        if prop.name in self.toConnect ():
+        if prop.name in self.attributesToConnect ():
             setattr(self, prop.name, prop.content)
         else:
             # this is ugly
@@ -210,6 +214,9 @@ class Widget(XmlMixin):
 
     def delegate(self, message, *args):
         """
+        Request delegates' consensus over whether a certain action should be
+        performed.
+
         L{Control}s (L{Button <skins.gtk2.Button>}, L{Entry
         <skins.gtk2.Entry>}, L{Controller <controllers.Controller>} itself,
         etc.)  have a purpose in life, and that purpose is to react to a given
@@ -309,10 +316,10 @@ class Control(Widget):
     """
     L{Control} is...
     """
-    def toConnect (klass):
-        toConnect= super (Control, klass).toConnect ()
-        return toConnect+['onAction']
-    toConnect= classmethod (toConnect)
+    def attributesToConnect (klass):
+        attrs = super (Control, klass).attributesToConnect ()
+        return attrs+['onAction']
+    attributesToConnect= classmethod (attributesToConnect)
 
     def __init__(self, onAction=None, value=None, **kw):
         super(Control, self).__init__(**kw)

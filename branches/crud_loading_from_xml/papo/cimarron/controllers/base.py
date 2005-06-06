@@ -54,12 +54,12 @@ class Controller(Control, Container):
         Load a Cimarrón Controller from an xml file.
         """
         if os.path.isfile(filename):
-            (self, toConnect, idDict)= klass.fromXmlObj(
+            (self, attrs, idDict)= klass.fromXmlObj(
                 libxml2.parseFile(filename).getRootElement (),
                 cimarron.skin
                 )
             self.idDict= idDict
-            self._connect (toConnect)
+            self._connect (attrs)
             return self
         else:
             raise OSError, "Unable to open file: %r" % filename
@@ -97,8 +97,8 @@ class Controller(Control, Container):
             idDict[hasId]= obj
         return (None, None, idDict)
         
-    def _connect (self, toConnect):
-        for obj, attrs in toConnect.items ():
+    def _connect (self, attrs):
+        for obj, attrs in attrs.items ():
             for attr in attrs:
                 path= None
                 try:

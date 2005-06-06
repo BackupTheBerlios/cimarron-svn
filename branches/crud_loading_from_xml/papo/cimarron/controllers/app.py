@@ -22,6 +22,8 @@ from papo import cimarron
 from papo.cimarron.skins.common import Unknown, ForcedYes
 from base import Controller
 
+__all__ = ('App',)
+
 class WindowContainer(list):
     """
     Not public. Please Ignore :)

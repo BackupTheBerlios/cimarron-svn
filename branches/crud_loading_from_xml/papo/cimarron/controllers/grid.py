@@ -27,10 +27,10 @@ class Column (XmlMixin):
     A Column describes a field. This field can be used for both
     B{SearchEntry}s and B{Grid}s.
     """
-    def toConnect (klass):
-        toConnect= super (Column, klass).toConnect ()
-        return toConnect+['read', 'write']
-    toConnect= classmethod (toConnect)
+    def attributesToConnect (klass):
+        attrs= super (Column, klass).attributesToConnect ()
+        return attrs+['read', 'write']
+    attributesToConnect= classmethod (attributesToConnect)
 
     def __init__ (self, name='', read=None, write=None, entry=None):
         """

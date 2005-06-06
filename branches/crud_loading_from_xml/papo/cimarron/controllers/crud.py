@@ -23,13 +23,13 @@ from base import Controller, WindowController
 
 class CRUDController (WindowController):
     """
-    C(reate)R(ead)U(pdate)D(elete) Controller ('ABM' in spanish).
+    CRUD ('ABM' in spanish) Controller .
     see: http://c2.com/cgi/wiki?CrudScreen
     """
-    def toConnect (klass):
-        toConnect= super (CRUDController, klass).toConnect ()
-        return toConnect+['klass']
-    toConnect= classmethod (toConnect)
+    def attributesToConnect (klass):
+        attrs = super (CRUDController, klass).attributesToConnect ()
+        return attrs+['klass']
+    attributesToConnect= classmethod (attributesToConnect)
     
     def __init__ (self, klass=None, searchColumns=[], editorKlass=None, filename=None, **kw):
         self.editors= []
@@ -105,13 +105,13 @@ class CRUDController (WindowController):
     def fromXmlObj (klass, xmlObj, skin):
         self = klass()
         root= xmlObj
-        toConnect= {self: klass.toConnect ()}
+        attrs= {self: klass.attributesToConnect ()}
         idDict= {}
 
         xmlObj = xmlObj.children
         first= True
         while xmlObj:
-            (obj, toConnectInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
+            (obj, attrsInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
             if obj is not None:
                 if first:
                     obj.parent= self.firstTab
@@ -120,8 +120,8 @@ class CRUDController (WindowController):
                 else:
                     obj.parent= self.note
                     self.editors.append (obj)
-                toConnectInChild[obj]+= ['read', 'write']
-                toConnect.update (toConnectInChild)
+                attrsInChild[obj]+= ['read', 'write']
+                attrs.update (attrsInChild)
             idDict.update (idDictInChild)
             xmlObj= xmlObj.next
 
@@ -133,7 +133,7 @@ class CRUDController (WindowController):
             # have no id, ignore
             pass
         
-        return (self, toConnect, idDict)
+        return (self, attrs, idDict)
     fromXmlObj = classmethod(fromXmlObj)
         
 
@@ -187,10 +187,10 @@ class Editor (Controller):
         self.entries= cimarron.skin.VBox (parent=hbox)
 
         # load children
-        toConnect= {self: klass.toConnect ()}
+        attrs= {self: klass.attributsToConnect ()}
         xmlObj = xmlObj.children
         while xmlObj:
-            (obj, toConnectInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
+            (obj, attrsInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
             if obj!=None:
                 if xmlObj.name=="Label":
                     obj.parent= labels
@@ -198,8 +198,8 @@ class Editor (Controller):
                     obj.parent= self.entries
                     obj.onAction= self.modifyModel
                     obj.delegates.append (self)
-                    toConnectInChild[obj]+= ['read', 'write']
-                toConnect.update (toConnectInChild)
+                    attrsInChild[obj]+= ['read', 'write']
+                attrs.update (attrsInChild)
             idDict.update (idDictInChild)
             
             xmlObj= xmlObj.next
@@ -217,5 +217,5 @@ class Editor (Controller):
             onAction= self.discard,
             )
 
-        return (self, toConnect, idDict)
+        return (self, attrs, idDict)
     fromXmlObj = classmethod(fromXmlObj)

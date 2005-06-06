@@ -85,10 +85,10 @@ class SearchEntry (Controller):
 
     When one object is found or selected, it calls the action.
     """
-    def toConnect (klass):
-        toConnect= super (SearchEntry, klass).toConnect ()
-        return toConnect+['searcher']
-    toConnect= classmethod (toConnect)
+    def attributesToConnect (klass):
+        attrs= super (SearchEntry, klass).attributesToConnect ()
+        return attrs+['searcher']
+    attributesToConnect= classmethod (attributesToConnect)
     
     def __init__ (self, columns=None, searcher=None, **kw):
         """
@@ -182,7 +182,7 @@ class SearchEntry (Controller):
         """
         self = klass()
         self.fromXmlObjProps(xmlObj.properties)
-        toConnect= {self: klass.toConnect ()}
+        attrs= {self: klass.attributesToConnect ()}
         try:
             idDict= {self.id: self}
         except AttributeError:
@@ -191,17 +191,17 @@ class SearchEntry (Controller):
         columns= []
         xmlObj = xmlObj.children
         while xmlObj:
-            (obj, toConnectInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
+            (obj, attrsInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
             if obj is not None:
                 columns.append (obj)
-                toConnect.update (toConnectInChild)
+                attrs.update (attrsInChild)
                 idDict.update (idDictInChild)
             xmlObj= xmlObj.next
         if columns:
             # warn (if not?)
             self.columns= columns
 
-        return (self, toConnect, idDict)
+        return (self, attrs, idDict)
     fromXmlObj = classmethod(fromXmlObj)
 
 
