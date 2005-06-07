@@ -18,16 +18,17 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-PYTHON=python
+PYTHON ?= python
+EPYDOC ?= epydoc
 
 all:
 
 clean:
 
 distclean: clean
-	find '(' -name '*.py[co]' -o -name '*~' ')' -print0 | xargs -0 -r rm -v
+	find '(' -name '*.py[co]' -o -name '*~' ')' -print0 | xargs -0 -r $(RM) -v
 	$(PYTHON) setup.py clean
-	rm -rfv build dist html MANIFEST
+	$(RM) -rv build dist html MANIFEST
 
 test:
 	PYTHONPATH=.:./examples/persona:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS)
@@ -36,6 +37,6 @@ install:
 	$(PYTHON) setup.py install
 
 html:
-	epydoc --html `find papo -type f -name __init__.py -printf "%h\n"`
+	$(EPYDOC) --html `find papo -type f -name \*.py`
 
 .PHONY: test html
