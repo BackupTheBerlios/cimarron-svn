@@ -1,0 +1,6 @@
+<Editor label="'Edit'" id="mainEditor">
+  <import from="model.country" what="State" id="State"/>
+
+  <Label text="'name'"/>
+  <Entry read="mainEditor.value.getName" write="mainEditor.value.setName"/>
+</Editor>
