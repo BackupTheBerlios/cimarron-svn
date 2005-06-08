@@ -20,7 +20,7 @@
 
 """
 
-L{common} is a set of abstract classes that
+L{skins.common} is a set of abstract classes that
 are the foundation of Cimarrón's class hierarchy.
 
 """
@@ -67,9 +67,6 @@ class DelegationAnswer (int):
 
 ForcedNo, No, Unknown, Yes, ForcedYes = map(DelegationAnswer,
                              ('ForcedNo', 'No', 'Unknown', 'Yes', 'ForcedYes'))
-
-
-
 
 class XmlMixin (object):
     def attributesToConnect (klass):
@@ -314,7 +311,12 @@ class Container(Widget):
 
 class Control(Widget):
     """
-    L{Control} is...
+    L{Control} is a Widget that can be interacted with. L{Control}s
+    have an action, that is a callback that is called when a
+    L{Control}-specific event happens. For example,
+    L{Button<gtk2.Button>}s fire the action when you press or click
+    them, whereas L{Entry<gtk2.Entry>}s do so when they have focus
+    and enter is pressed, or they lose focus.
     """
     def attributesToConnect (klass):
         attrs = super (Control, klass).attributesToConnect ()

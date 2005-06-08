@@ -20,6 +20,9 @@
 
 PYTHON ?= python
 EPYDOC ?= epydoc
+EPYDOC_OPTS ?=
+
+EPYDOC_FILES=$(shell find papo -type f -name \*.py)
 
 all:
 
@@ -31,12 +34,13 @@ distclean: clean
 	$(RM) -rv build dist html MANIFEST
 
 test:
+	$(EPYDOC) --check --tests all $(EPYDOC_FILES)
 	PYTHONPATH=.:./examples/persona:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS)
 
 install:
 	$(PYTHON) setup.py install
 
 html:
-	$(EPYDOC) --html `find papo -type f -name \*.py`
+	$(EPYDOC) --html $(EPYDOC_OPTS) $(EPYDOC_FILES)
 
 .PHONY: test html
