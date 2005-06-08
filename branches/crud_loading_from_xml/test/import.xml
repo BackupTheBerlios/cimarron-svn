@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<CrUDController>
-  <import from="testButton" id="testButton"/>
-  <import from="testButton" what="TestCheckbox" id="TestCheckbox"/>
-</CrUDController>
