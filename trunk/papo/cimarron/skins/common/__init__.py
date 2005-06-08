@@ -21,7 +21,7 @@
 """
 
 L{common} is a set of abstract classes that
-are the foundation of Cimarron's class hierarchy.
+are the foundation of Cimarrón's class hierarchy.
 
 """
 
@@ -29,10 +29,11 @@ from new import instancemethod
 import operator
 import libxml2
 
-__all__ = ('Widget', 'Container', 'Control',
+__all__ = ('XmlMixin', 'Widget', 'Container', 'Control',
            'ForcedNo', 'No', 'Unknown', 'Yes', 'ForcedYes')
 
-from papo.cimarron.tools import is_simple
+from papo.cimarron.tools import is_simple, traverse
+from papo import cimarron
 
 def nullAction(*a, **k): pass
 
@@ -69,44 +70,62 @@ ForcedNo, No, Unknown, Yes, ForcedYes = map(DelegationAnswer,
 
 
 
-from papo import cimarron
 
-class Widget(object):
-    """
-    L{Widget} is ...
-    """
-
-    def __init__(self, parent=None, **kw):
+class XmlMixin (object):
+    def attributesToConnect (klass):
         """
-        @param parent: the parent of the widget (you don't say!)
-        @type parent: L{Widget}
+        Return the list of attributes that a serialized object might have,
+        and that would need resolving via delayed traversal.
         """
-        super (Widget, self).__init__ (**kw)
-        self.delegates = []
-        self.parent = parent
-        for k, v in kw.items ():
-            setattr (self, k, v)
-
-
+        return []
+    attributesToConnect= classmethod (attributesToConnect)
+    
     def fromXmlObj(klass, xmlObj, skin):
         """
         Helper function for loading a Cimarrón app from an xml file. (see
-        L{Controller.fromXmlFile}).
+        L{Controller.fromXmlFile<cimarron.controllers.base.Controller.fromXmlFile>}).
         """
         self = klass()
         self.fromXmlObjProps(xmlObj.properties)
+        attrs= {self: klass.attributesToConnect ()}
+        try:
+            idDict= {self.id: self}
+        except AttributeError:
+            idDict= {}
+        
         xmlObj = xmlObj.children
         while xmlObj:
-            if xmlObj.type != 'text':
-                obj = getattr(skin, xmlObj.name).fromXmlObj(xmlObj, skin)
+            (obj, attrsInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
+            if obj is not None:
                 obj.parent = self
+                attrs.update (attrsInChild)
+            idDict.update (idDictInChild)
             xmlObj = xmlObj.next
-        return self
+        
+        return (self, attrs, idDict)
     fromXmlObj = classmethod(fromXmlObj)
         
+    def childFromXmlObj (self, xmlObj, skin):
+        """
+        Load a Cimarrón object child from a libxml2 xmlNode
+        """
+        obj= (None, None, {})
+        if xmlObj.type == 'element':
+            obj = getattr(skin, xmlObj.name).fromXmlObj(xmlObj, skin)
+        return obj
 
     def fromXmlObjProp(self, prop):
-        setattr(self, prop.name, eval(prop.content))
+        if prop.name in self.attributesToConnect ():
+            setattr(self, prop.name, prop.content)
+        else:
+            # this is ugly
+            try:
+                setattr(self, prop.name, eval(prop.content))
+            except NameError:
+                # the eval failed
+                # hope that it will be resolved later :(
+                setattr(self, prop.name, prop.content)
+            # print self, 'prop', prop.name, getattr (self, prop.name)
 
     def fromXmlObjProps(self, prop):
         while prop:
@@ -134,6 +153,24 @@ class Widget(object):
             this.setProp(prop, repr(value))
         return this
 
+
+class Widget(XmlMixin):
+    """
+    L{Widget} is ...
+    """
+
+    def __init__(self, parent=None, **kw):
+        """
+        @param parent: the parent of the widget (you don't say!)
+        @type parent: L{Widget}
+        """
+        super (Widget, self).__init__ (**kw)
+        self.delegates = []
+        self.parent = parent
+        for k, v in kw.items ():
+            setattr (self, k, v)
+
+
     def _set_parent(self, parent):
         if parent is not None and self.parent is parent:
             raise ValueError, 'Child already in parent'
@@ -145,7 +182,7 @@ class Widget(object):
         if parent is not None:
             parent.concreteParenter(self)
             parent._children.append(self)
-            self.__parent = parent
+        self.__parent = parent
 
         # re-link missed parentizations
         try:
@@ -177,6 +214,9 @@ class Widget(object):
 
     def delegate(self, message, *args):
         """
+        Request delegates' consensus over whether a certain action should be
+        performed.
+
         L{Control}s (L{Button <skins.gtk2.Button>}, L{Entry
         <skins.gtk2.Entry>}, L{Controller <controllers.Controller>} itself,
         etc.)  have a purpose in life, and that purpose is to react to a given
@@ -271,10 +311,16 @@ class Container(Widget):
             child.skeleton(skel)
         return skel
 
+
 class Control(Widget):
     """
     L{Control} is...
     """
+    def attributesToConnect (klass):
+        attrs = super (Control, klass).attributesToConnect ()
+        return attrs+['onAction']
+    attributesToConnect= classmethod (attributesToConnect)
+
     def __init__(self, onAction=None, value=None, **kw):
         super(Control, self).__init__(**kw)
         self.value = value
@@ -305,20 +351,3 @@ class Control(Widget):
         if is_simple(value):
             skelargs['value'] = value
         return skelargs
-
-    def fromXmlObjProp(self, prop):
-        if prop.name=='onAction':
-            # don't eval
-            setattr(self, prop.name, prop.content)
-        else:
-            super (Control, self).fromXmlObjProp (prop)
-
-    def _connectWith (self, other):
-        if hasattr (self, 'onAction') and type (self.onAction)==str:
-            # split the path by dot
-            elems= self.onAction.split ('.')
-            # traverse each one getattr()'ing
-            obj= other
-            for e in elems:
-                obj= getattr (obj, e)
-            self.onAction= obj

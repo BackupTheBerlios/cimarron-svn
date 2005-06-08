@@ -286,10 +286,88 @@ class Notebook (Container):
         return ans
 
 
-class Grid (Controller):
+class Grid (ColumnAwareXmlMixin, Controller):
     """
-    Grids are used for showing and may be editing a list of objects,
-    or for selecting one among those.
+    Grids are used for editing a list of objects.
+    """
+    def __init__ (self, columns=[], **kw):
+        """
+        @param columns: a list of B{Column}s that describe
+            what to show in the grid, how obtain it from the
+            objects, and eventually how to save data back to.
+        """
+        self._tv= gtk.TreeView ()
+        self.columns= columns
+
+        # put the TreeView in a scrolled window
+        self._widget= gtk.ScrolledWindow ()
+        self._widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
+        self._widget.add (self._tv)
+
+        self._tv.connect ('key-press-event', self._keypressed)
+
+        super (Grid, self).__init__ (**kw)
+        # this was not done because it was initializing
+        self.refresh ()
+
+    def _set_columns (self, columns):
+        self._columns= columns
+        if columns!=[]:
+            # build the tv columns and the data types tuple
+            (self._tvcolumns, self._dataspec)= izip(*izip(
+                [ gtk.TreeViewColumn (c.name) for c in columns ],
+                repeat(str)
+                ))
+
+            # add the columns and attrs
+            for i in xrange (len (columns)):
+                c= self._tvcolumns[i]
+                crt= gtk.CellRendererText ()
+                # editable
+                crt.set_property ('editable', True)
+                crt.connect ('edited', self._cell_edited, (i, columns[i].write))
+                c.pack_start (crt, True)
+                c.add_attribute (crt, 'text', i)
+                self._tv.append_column (c)
+    def _get_columns (self):
+        return self._columns
+    columns= property (_get_columns, _set_columns)
+        
+    def _cell_edited (self, cell, path, text, data, *ignore):
+        (colNo, write)= data
+        # modify the ListStore model...
+        self._tvdata[path][colNo]= text
+        # ... and our model
+        write (self.value[int (path)], text)
+        # coming soon: our models will (should) suport the generic TreeModel protocol
+        # also: if write() returns false, the entry flashes and
+        # a) rollbacks the value or
+        # b) leaves it with wrong value, so the user can edit it (preferred)
+        return False
+    def _keypressed (self, widget, key_event, *ignore):
+        if key_event.keyval==gtk.keysyms.Return or key_event.keyval==gtk.keysyms.KP_Enter:
+            self.onAction ()
+            return True
+        return False
+
+    def refresh (self):
+        if len (self.columns)>0:
+            self._tvdata= gtk.ListStore (*self._dataspec)
+        else:
+            self._tvdata= gtk.ListStore (str)
+        # print 'Grid.refresh:', `self.value`, self.columns
+        if self.value is not None:
+            for i in self.value:
+                # add all the values
+                # NOTE: this forces the data to be read.
+                self._tvdata.append ([j.read (i) for j in self.columns])
+        self._tv.set_model (self._tvdata)
+
+
+class SelectionGrid (ColumnAwareXmlMixin, Controller):
+    """
+    SelectionGrids are used for showing a list of objects,
+    and for selecting one among those.
     """
     def __init__ (self, data=[], columns=[], **kw):
         """
@@ -318,29 +396,14 @@ class Grid (Controller):
         for i in xrange (len (columns)):
             c= self._tvcolumns[i]
             crt= gtk.CellRendererText ()
-            if columns[i].write is not None:
-                # editable
-                crt.set_property ('editable', True)
-                crt.connect ('edited', self._cell_edited, (i, columns[i].write))
             c.pack_start (crt, True)
             c.add_attribute (crt, 'text', i)
             self._tv.append_column (c)
 
         self._tv.connect ('key-press-event', self._keypressed)
 
-        super (Grid, self).__init__ (**kw)
+        super (SelectionGrid, self).__init__ (**kw)
 
-    def _cell_edited (self, cell, path, text, data, *ignore):
-        (colNo, write)= data
-        # modify the ListStore model...
-        self._tvdata[path][colNo]= text
-        # ... and our model
-        write (self.data[int (path)], text)
-        # coming soon: our models will (should) suport the generic TreeModel protocol
-        # also: if write() returns false, the entry flashes and
-        # a) rollbacks the value or
-        # b) leaves it with wrong value, so the user can edit it (preferred)
-        return False
     def _keypressed (self, widget, key_event, *ignore):
         if key_event.keyval==gtk.keysyms.Return:
             self.onAction ()
@@ -393,6 +456,7 @@ class Grid (Controller):
                      """The selected object. If no object is selected, it is None.""")
 
     def refresh (self):
+        # the refresh is done in _set_data()
         pass
 
 
@@ -416,13 +480,17 @@ def concreteParenter(parent, child):
     Do not call directly.
     """
     if '_widget' in child.__dict__:
+        # print 'parenting', parent, child,
         if '_widget' in parent.__dict__:
+            # print 'concreted'
             parent._widget.add(child._widget)
         else:
             if parent.parent is None:
+                # print 'postponed'
                 try:
                     parent._childrenToParent.append (child)
                 except AttributeError:
                     parent._childrenToParent= [child]
             else:
+                # print 'forwarded to', parent.parent
                 parent.parent.concreteParenter (child)

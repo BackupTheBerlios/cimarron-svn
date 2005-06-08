@@ -22,9 +22,9 @@ import unittest
 from pprint import pformat
 
 from papo import cimarron
-from papo.cimarron.controllers import Controller, WindowController, CrUDController
-from model.person import Person
-from model.country import Country
+from papo.cimarron.controllers import Controller, WindowController, CRUDController, Editor, DelayedTraversal
+from model.person import Person, Address
+from model.country import Country, State
 
 from testCommon import abstractTestControl, abstractTestVisibility
 
@@ -32,7 +32,8 @@ __all__ = ('TestController',
            'TestBarController',
            'TestApp',
            'TestWindowController',
-           'TestCrUDController',
+           'TestCRUDController',
+           'TestEditor',
            )
 
 def visualTest():
@@ -80,6 +81,9 @@ class FooController(Controller):
         self.label.text= str (self.value.get (self.entry.value, 'Not found'))
         self.daLabel.text = pformat(self.value)
 
+class Connection (object):
+    pass
+    
 class TestController(abstractTestControl):
     def setUp (self):
         self.value = dict(foo=1,
@@ -118,6 +122,39 @@ class TestController(abstractTestControl):
 
     def testFromXmlNonexistantFile(self):
         self.assertRaises(OSError, self.widget.fromXmlFile, 'xyzzy')
+
+    def testImport (self):
+        other= CRUDController.fromXmlFile ('test/import.xml')
+        self.assertEqual (other.idDict.has_key ('testButton'), True)
+        self.assert_ (other.idDict.has_key ('TestCheckbox'), True)
+
+    def connection (self):
+        self.connected= True
+
+    def testConnectWithPath (self):
+        self.widget.idDict= {'master': self.widget}
+        self.widget.attrToConnect= 'master.connection'
+        self.widget.connection= self.connection
+        
+        # test 1: the proper type
+        self.widget._connect ({self.widget: ['attrToConnect']})
+        self.assertEqual (type (self.widget.attrToConnect), DelayedTraversal)
+        # test 2: the call works
+        self.widget.attrToConnect ()
+        self.assert_ (self.connected)
+
+    def testConnectWithoutPath (self):
+        self.widget.idDict= {'Connection': Connection}
+        self.widget.attrToConnect= 'Connection'
+        self.widget.connection= self.connection
+        
+        # test 1: the proper type
+        self.widget._connect ({self.widget: ['attrToConnect']})
+        self.assertEqual (self.widget.attrToConnect, Connection)
+        # test 2: the call works
+        obj= self.widget.attrToConnect ()
+        self.assertEqual (type (obj), Connection)
+    
 
 class BarController (Controller):
     def __init__ (self, **kw):
@@ -231,67 +268,41 @@ class TestWindowController (abstractTestVisibility):
         self.will_hide_passed= True
 
 
-import re
-def makeName (name):
-    def __upper__ (letter):
-        return letter.group (1).upper ()
-    # some_thing
-    name= re.sub (r'_([a-z])', __upper__, name)
-    # someThing
-    return name
-
-def MakeName (name):
-    name= makeName (name)
-    # someThing
-    name= name[0:1].upper ()+name[1:]
-    # SomeThing
-    return name
-
-class EditorType(type):
-    def __new__(klass, name, bases, dictionary):
-        k = super(EditorType, klass).__new__(klass, name, bases, dictionary)
-        code= """def %(methodName)s (self, control, *ignore):
-            print control.value
-            self.value.%(methodName)s(control.value)"""
-        for i in dictionary.get('_attributes_', ()):
-            name =  'set'+MakeName (i)
-            exec code % dict (methodName=name)
-            setattr(k, name, locals()[name])
-        return k
-        
-
-class Editor (Controller):
-    __metaclass__ = EditorType
-        
-    def refresh (self, *ignore):
-        pass
-
-    def save (self, *ignore):
-        print 'save', self.value
-        pass
-    def discard (self, *ignore):
-        print 'discard', self.value
-        pass
-
-class CountryEditor (Editor):
-    _attributes_= ('name', 'phone', 'iso2', 'iso3', 'un')
-    def __init__(self, *a, **kw):
-        return super(CountryEditor, self).__init__(*a, **kw)
-
-class TestCrUDController (TestWindowController):
+class TestCRUDController (abstractTestControl):
     def setUp (self):
-        super (TestCrUDController, self).setUp ()
-        self.widget= CrUDController (
-            parent= self.app,
-            klass= Country,
-            editorKlass= CountryEditor,
-            filename="test/testCrUDController.xml",
+        super (TestCRUDController, self).setUp ()
+        self.widget= CRUDController.fromXmlFile ('test/testCrud.xml')
+        self.widget.parent= self.parent= self.app
+        self.widget.value= self.value= Person (
+            "Freeman",
+            "Newman",
+            [Address (text="San luis 870"), Address (text="San luis 594 2D")]
             )
-
-    def testNew (self):
-        self.widget.newModel (self.widget, Country)
-        self.assert_ (isinstance (self.widget.value, Country))
+        
+#     def testNew (self):
+#         self.widget.newModel (self.widget, Country)
+#         self.assert_ (isinstance (self.widget.value, Country))
 
 #     def testVisual (self):
 #         self.win.show ()
 #         self.app.run ()
+
+    def testRefresh (self):
+        self.widget.value= self.value
+        self.assertEqual (self.widget.editors[0].value, self.value)
+        self.assertEqual (self.widget.editors[1].value, self.value.getAddresses ())
+
+class TestEditor (abstractTestControl):
+    def setUp (self):
+        super (TestEditor, self).setUp ()
+        self.parent= cimarron.skin.Window ()
+        self.widget= Editor.fromXmlFile ('test/editor.xml')
+        self.widget.parent= self.parent
+        self.entry= self.widget.entries.children[0]
+        
+        self.countryName= 'Elbonia'
+        self.setUpControl (value= Country (name=self.countryName))
+
+    def testRefresh (self):
+        self.widget.value= self.value
+        self.assertEqual (self.entry.value, self.countryName)

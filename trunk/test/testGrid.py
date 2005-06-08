@@ -22,7 +22,7 @@ import unittest
 from papo import cimarron
 from testCommon import abstractTestControl
 
-__all__= ('TestGrid', 'Person')
+__all__= ('TestSelectionGrid', 'TestGrid', 'Person')
 
 
 class Person (object):
@@ -42,9 +42,30 @@ class Person (object):
         self.__surname= sn
     surname= property (getSurname, setSurname)
 
-class TestGrid (abstractTestControl):
+    def search (klass, values):
+        name, surname= values[:2]
+        ans= []
+
+        for i in klass.__values__:
+            found= False
+            if name is not None:
+                found= name in i.name
+            if surname is not None:
+                if name is not None:
+                    found= found and surname in i.surname
+                else:
+                    found= surname in i.surname
+
+            if found:
+                ans.append (i)
+
+        return ans
+    search= classmethod (search)
+
+
+class TestSelectionGrid (abstractTestControl):
     def setUp (self):
-        super (TestGrid, self).setUp ()
+        super (TestSelectionGrid, self).setUp ()
         self.model= [
             Person ('jose', 'perez'),
             Person ('marcos', 'dione'),
@@ -56,10 +77,9 @@ class TestGrid (abstractTestControl):
             )
 
         self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
-        self.widget= self.grid= cimarron.skin.Grid (
+        self.widget= self.grid= cimarron.skin.SelectionGrid (
             parent= self.parent,
             columns= columns,
-            rows= 5,
             )
 
         # so testValue passes
@@ -81,13 +101,29 @@ class TestGrid (abstractTestControl):
         self.widget.value= None
         self.assertEqual (self.widget.value, None)
 
+
+class TestGrid (abstractTestControl):
+    def setUp (self):
+        super (TestGrid, self).setUp ()
+        self.model= [
+            Person ('jose', 'perez'),
+            Person ('marcos', 'dione'),
+            Person ('john', 'lenton'),
+            ]
+        columns= (
+            cimarron.skin.Column (name='Nombre', read=Person.getName, write=Person.setName),
+            cimarron.skin.Column (name='Apellido', read=Person.getSurname, write=Person.setSurname),
+            )
+
+        self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
+        self.widget= self.grid= cimarron.skin.Grid (
+            parent= self.parent,
+            columns= columns,
+            )
+
+        self.widget.value= self.model
+
     def testWrite (self):
-        # self.widget.entries[0, 0]._widget.set_text ('juan')
-
-        # self.widget.entries[0, 0].value= 'juan'
-        # self.widget.entries[0, 0].onAction ()
-
-        # this time is different
         self.widget._cell_edited (None, 0, 'juan', (0, Person.setName))
         self.widget.index= 0
-        self.assertEqual (self.widget.value.name, 'juan')
+        self.assertEqual (self.widget.value[0].name, 'juan')

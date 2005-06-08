@@ -25,22 +25,22 @@ from testGrid import Person
 
 __all__=('TestSearch',)
 
-class PersonSearch (cimarron.controllers.SearchEntry):
-    def search (self, values):
-        name, surname= values[:2]
-        ans= []
+# class PersonSearch (cimarron.controllers.SearchEntry):
+#     def search (self, values):
+#         name, surname= values[:2]
+#         ans= []
 
-        for i in self.data:
-            found= False
-            if name is not None:
-                found= name in i.name
-            if surname is not None:
-                found= found and surname in i.surname
+#         for i in self.data:
+#             found= False
+#             if name is not None:
+#                 found= name in i.name
+#             if surname is not None:
+#                 found= found and surname in i.surname
 
-            if found:
-                ans.append (i)
+#             if found:
+#                 ans.append (i)
 
-        return ans
+#         return ans
 
 class TestSearch (abstractTestControl):
     def setUp (self):
@@ -50,11 +50,12 @@ class TestSearch (abstractTestControl):
             cimarron.skin.Column (name='Nombre', read=Person.getName, write=Person.setName),
             cimarron.skin.Column (name='Apellido', read=Person.getSurname, write=Person.setSurname),
             )
-        self.widget= PersonSearch (
+        self.widget= cimarron.skin.SearchEntry (
             parent= self.parent,
             columns= columns,
+            searcher= Person,
             )
-        self.data= [
+        Person.__values__= self.data= [
             Person ('jose', 'perez'),
             Person ('marcos', 'dione'),
             Person ('john', 'lenton'),
@@ -64,13 +65,15 @@ class TestSearch (abstractTestControl):
 
     def testNoneInEmptyFound (self):
         # here we 'plant' the data, but real Search's will fetch its own data
-        self.widget.data= []
+        # self.widget.data= []
+        Person.__values__= []
         self.widget.doSearch ()
         self.assertEqual (self.widget.value, None)
 
     def testNoneMatchesFound (self):
         # here we 'plant' the data, but real Search's will fetch its own data
-        self.widget.data= self.data
+        # self.widget.data= self.data
+        Person.__values__= self.data
         searchingValues= (
             ('martin', ''),
             ('', 'rezk'),
