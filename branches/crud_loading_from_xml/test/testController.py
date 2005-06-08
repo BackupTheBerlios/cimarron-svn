@@ -23,8 +23,8 @@ from pprint import pformat
 
 from papo import cimarron
 from papo.cimarron.controllers import Controller, WindowController, CRUDController, Editor, DelayedTraversal
-from model.person import Person
-from model.country import Country
+from model.person import Person, Address
+from model.country import Country, State
 
 from testCommon import abstractTestControl, abstractTestVisibility
 
@@ -33,6 +33,7 @@ __all__ = ('TestController',
            'TestApp',
            'TestWindowController',
            'TestCRUDController',
+           'TestEditor',
            )
 
 def visualTest():
@@ -123,12 +124,9 @@ class TestController(abstractTestControl):
         self.assertRaises(OSError, self.widget.fromXmlFile, 'xyzzy')
 
     def testImport (self):
-        # tests <import from="">
-        pass
-
-    def testImportFrom (self):
-        # tests <import from what>
-        pass
+        other= CRUDController.fromXmlFile ('test/import.xml')
+        self.assertEqual (other.idDict.has_key ('testButton'), True)
+        self.assert_ (other.idDict.has_key ('TestCheckbox'), True)
 
     def connection (self):
         self.connected= True
@@ -270,20 +268,17 @@ class TestWindowController (abstractTestVisibility):
         self.will_hide_passed= True
 
 
-class CountryEditor (Editor):
-    _attributes_= ('name', 'phone', 'iso2', 'iso3', 'un')
-    def __init__(self, *a, **kw):
-        return super(CountryEditor, self).__init__(*a, **kw)
-
-class TestCRUDController (TestWindowController):
+class TestCRUDController (abstractTestControl):
     def setUp (self):
         super (TestCRUDController, self).setUp ()
-        self.widget= CRUDController (
-            parent= self.app,
-            klass= Country,
-            editorKlass= Editor,
+        self.widget= CRUDController.fromXmlFile ('test/testCrud.xml')
+        self.widget.parent= self.parent= self.app
+        self.widget.value= self.value= Person (
+            "Freeman",
+            "Newman",
+            [Address (text="San luis 870"), Address (text="San luis 594 2D")]
             )
-
+        
 #     def testNew (self):
 #         self.widget.newModel (self.widget, Country)
 #         self.assert_ (isinstance (self.widget.value, Country))
@@ -291,3 +286,23 @@ class TestCRUDController (TestWindowController):
 #     def testVisual (self):
 #         self.win.show ()
 #         self.app.run ()
+
+    def testRefresh (self):
+        self.widget.value= self.value
+        self.assertEqual (self.widget.editors[0].value, self.value)
+        self.assertEqual (self.widget.editors[1].value, self.value.getAddresses ())
+
+class TestEditor (abstractTestControl):
+    def setUp (self):
+        super (TestEditor, self).setUp ()
+        self.parent= cimarron.skin.Window ()
+        self.widget= Editor.fromXmlFile ('test/editor.xml')
+        self.widget.parent= self.parent
+        self.entry= self.widget.entries.children[0]
+        
+        self.countryName= 'Elbonia'
+        self.setUpControl (value= Country (name=self.countryName))
+
+    def testRefresh (self):
+        self.widget.value= self.value
+        self.assertEqual (self.entry.value, self.countryName)

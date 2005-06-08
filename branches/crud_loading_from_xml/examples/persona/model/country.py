@@ -13,6 +13,8 @@ class Country (object):
 
     def setPhone (self, phone):
         self.phone= phone
+    def getPhone (self):
+        return self.phone
 
     def setIso2 (self, iso2):
         self.iso2= iso2
@@ -21,27 +23,35 @@ class Country (object):
 
     def setIso3 (self, iso3):
         self.iso3= iso3
+    def getIso3 (self):
+        return self.iso3
 
     def setUn (self, un):
         self.un= un
+    def getUn (self):
+        return self.un
 
     def search (klass, values):
         # this is what I don't want: the search alg is tied
         # to what-the-screen needs. that sucks. may be, now
         # that we have (almost) fields in Entries and Searches,
         # we can just pass a dict around and figure it out here
-        iso3, name= values[:2]
+        iso2, name= values[:2]
         ans= []
 
         for i in klass.__values__:
             found= False
-            if name is None and iso3 is None:
+
+            if iso2 is None and name is None:
                 found= True
             else:
                 if name is not None:
                     found= name in i.name
-                if iso3 is not None:
-                    found= found or iso3==i.iso3
+                if iso2 is not None:
+                    if name is not None:
+                        found= found and iso2==i.iso2
+                    else:
+                        found= iso2==i.iso2
 
             if found:
                 ans.append (i)

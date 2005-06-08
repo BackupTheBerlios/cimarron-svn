@@ -21,5 +21,6 @@
 from base import Controller, WindowController, DelayedTraversal
 from app import App
 from search import SearchEntry, Search
-from grid import Grid, Column
+from grid import Grid
 from crud import CRUDController, Editor
+from column import Column, ColumnAwareXmlMixin

@@ -20,6 +20,7 @@
 
 from papo import cimarron
 from base import Controller
+from column import ColumnAwareXmlMixin
 
 class SelectionWindow (Controller):
     """
@@ -69,7 +70,7 @@ class SelectionWindow (Controller):
     def refresh (self):
         self.grid.refresh ()
 
-class SearchEntry (Controller):
+class SearchEntry (ColumnAwareXmlMixin, Controller):
     """
     Abstract class for searching. Consist of a widget
     with one Entry for each Column.
@@ -174,35 +175,6 @@ class SearchEntry (Controller):
         else:
             for i in xrange (len (self.entries)):
                 self.entries[i].value= ''
-
-    def fromXmlObj(klass, xmlObj, skin):
-        """
-        Helper function for loading a Cimarrón app from an xml file. (see
-        L{Controller.fromXmlFile}).
-        """
-        self = klass()
-        self.fromXmlObjProps(xmlObj.properties)
-        attrs= {self: klass.attributesToConnect ()}
-        try:
-            idDict= {self.id: self}
-        except AttributeError:
-            idDict= {}
-
-        columns= []
-        xmlObj = xmlObj.children
-        while xmlObj:
-            (obj, attrsInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
-            if obj is not None:
-                columns.append (obj)
-                attrs.update (attrsInChild)
-                idDict.update (idDictInChild)
-            xmlObj= xmlObj.next
-        if columns:
-            # warn (if not?)
-            self.columns= columns
-
-        return (self, attrs, idDict)
-    fromXmlObj = classmethod(fromXmlObj)
 
 
 class Search (SearchEntry):

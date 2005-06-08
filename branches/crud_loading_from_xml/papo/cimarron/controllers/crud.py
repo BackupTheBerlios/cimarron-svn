@@ -64,6 +64,7 @@ class CRUDController (WindowController):
                 modelEditor= editorKlass ()
             modelEditor.parent= self.note
             self.editors.append (modelEditor)
+            self.mainWidget= modelEditor
 
         # more tabs?
 
@@ -91,7 +92,7 @@ class CRUDController (WindowController):
             # self.editor.focus ()
 
     def save (self, *ignore):
-        pass
+        self.onAction ()
 
     def refresh (self):
         for editor in self.editors:
@@ -110,6 +111,7 @@ class CRUDController (WindowController):
 
         xmlObj = xmlObj.children
         first= True
+        second= False
         while xmlObj:
             (obj, attrsInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
             if obj is not None:
@@ -117,9 +119,15 @@ class CRUDController (WindowController):
                     obj.parent= self.firstTab
                     self.search= obj
                     first= False
+                    second= True
                 else:
                     obj.parent= self.note
                     self.editors.append (obj)
+                    if second:
+                        self.mainWidget= obj
+                        obj.onAction= self.save
+                        second= False
+
                 attrsInChild[obj]+= ['read', 'write']
                 attrs.update (attrsInChild)
             idDict.update (idDictInChild)
@@ -143,10 +151,13 @@ class Editor (Controller):
             for entry in self.entries.children:
                 try:
                     entry.value= entry.read ()
-                    print 'editor:', entry, `entry.read`, `entry.value`
-                except (AttributeError, TypeError):
+                    # print 'editor:', entry, `entry.read.other`, entry.read.path, `entry.value`
+                except TypeError:
+                    # print 'editor:', entry, `entry.read.other`, entry.read.path, `self.value`
                     entry.value= self.value
-                    print 'editor:', entry, `entry.value`
+                except AttributeError:
+                    entry.value= self.value
+                    # print 'editor:', entry, `entry.value`
         except AttributeError:
             # the entries are not there yet
             pass
@@ -162,11 +173,11 @@ class Editor (Controller):
 
     def save (self, *ignore):
         # how will this be finally done is a mistery (yet)
-        print 'save', str (self.value)
-        pass
+        # print 'save', str (self.value)
+        self.onAction ()
     def discard (self, *ignore):
         # how will this be finally done is a mistery (yet)
-        print 'discard', self.value
+        # print 'discard', self.value
         pass
 
     def will_focus_out (self, control, *ignore):
@@ -187,7 +198,7 @@ class Editor (Controller):
         self.entries= cimarron.skin.VBox (parent=hbox)
 
         # load children
-        attrs= {self: klass.attributsToConnect ()}
+        attrs= {self: klass.attributesToConnect ()}
         xmlObj = xmlObj.children
         while xmlObj:
             (obj, attrsInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
@@ -211,6 +222,8 @@ class Editor (Controller):
             label= 'Save',
             onAction= self.save,
             )
+        # so tests passes
+        self.mainWidget= save
         discard= cimarron.skin.Button (
             parent= hbox,
             label= 'Discard',

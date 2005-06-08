@@ -286,7 +286,7 @@ class Notebook (Container):
         return ans
 
 
-class Grid (Controller):
+class Grid (ColumnAwareXmlMixin, Controller):
     """
     Grids are used for editing a list of objects.
     """
@@ -364,7 +364,7 @@ class Grid (Controller):
         self._tv.set_model (self._tvdata)
 
 
-class SelectionGrid (Controller):
+class SelectionGrid (ColumnAwareXmlMixin, Controller):
     """
     SelectionGrids are used for showing a list of objects,
     and for selecting one among those.
