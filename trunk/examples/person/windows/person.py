@@ -98,7 +98,7 @@ class PersonSearchPage (cimarron.skin.Controller):
             cimarron.skin.Column (name='Nombre', read=Person.getName, write=Person.setName),
             cimarron.skin.Column (name='Apellido', read=Person.getSurname, write=Person.setSurname),
             )
-        self.searcher= SearchEntry (
+        self.searcher= cimarron.skin.SearchEntry (
             parent= v,
             columns= columns,
             onAction= self.personSelected,
@@ -188,21 +188,21 @@ class PersonAddressesEditPage (cimarron.skin.Controller):
         h.label= 'Edit addresses'
         h.parent= self
 
-        new= cimarron.skin.Button (
-            parent= h,
-            label= 'New',
-            onAction= self.newAddress,
-            )
+#         new= cimarron.skin.Button (
+#             parent= h,
+#             label= 'New',
+#             onAction= self.newAddress,
+#             )
         self.addresses= cimarron.skin.Grid (
             parent= h,
             columns= (cimarron.skin.Column (read=Address.getText, write=Address.setText), ),
+            klass= Address,
             data= self.value,
             )
 
     def newAddress (self, *ignore):
         self.value.append (Address ())
         print self.value
-        self.refresh ()
 
     def refresh (self):
         self.addresses.data= self.value
