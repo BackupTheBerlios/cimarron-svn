@@ -35,7 +35,7 @@ distclean: clean
 
 test:
 	$(EPYDOC) --check --tests all $(EPYDOC_FILES)
-	PYTHONPATH=.:./examples/persona:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS)
+	PYTHONPATH=.:./examples/person:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS)
 
 install:
 	$(PYTHON) setup.py install

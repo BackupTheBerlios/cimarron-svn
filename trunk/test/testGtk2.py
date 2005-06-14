@@ -29,6 +29,8 @@ from run import test_options
 from papo import cimarron
 from papo.cimarron.skins.common import Unknown, ForcedNo
 
+from model.person import Person
+
 from testCommon import abstractTestWidget, abstractTestVisibility
 from testWindow import TestWindow
 from testLabel import TestLabel
@@ -36,7 +38,7 @@ from testButton import TestButton, TestCheckbox
 from testEntry import TestEntry
 from testBox import TestBoxes
 from testNotebook import TestNotebook
-from testGrid import TestSelectionGrid
+from testGrid import TestSelectionGrid, TestGrid
 
 
 __all__ = ('TestGtkEntry',
@@ -48,6 +50,7 @@ __all__ = ('TestGtkEntry',
            'TestGtkBoxes',
            'TestGtkNotebook',
            'TestGtkSelectionGrid',
+           'TestGtkGrid',
            )
 
 class testGtkParenting (abstractTestWidget):
@@ -198,3 +201,60 @@ class TestGtkSelectionGrid (testGtkParenting, TestSelectionGrid):
 
         self.widget._keypressed (self.widget, event)
         self.assert_(self.widget in self.messages_recieved)
+
+class TestGtkGrid (testGtkParenting, TestGrid):
+    def testNew (self):
+        self.widget.value= None
+        event= gtk.gdk.Event (gtk.gdk.KEY_PRESS)
+        event.keyval= gtk.keysyms.Down
+
+        # trigger the test
+        self.widget._keypressed (self.widget, event)
+
+        # tests:
+        # right type
+        self.assertEqual (type (self.widget.new), Person)
+        # not on the value yet
+        self.assert_ (self.widget.value is None)
+
+    def testNewEditable (self):
+        self.testNew ()
+        # is editable
+        self.testWrite ()
+
+    def testNewNew (self):
+        self.testNew ()
+        old= self.widget.new
+        event= gtk.gdk.Event (gtk.gdk.KEY_PRESS)
+        event.keyval= gtk.keysyms.Down
+        
+        # trigger the test
+        self.widget._keypressed (self.widget, event)
+
+        # tests:
+        # nothing went to the value
+        self.assert_ (self.widget.value is None)
+        # no new obejct was created
+        self.assertEqual (self.widget.new, old)
+
+    def testNewEditedNew (self):
+        self.testNewEditable ()
+        old= self.widget.new
+        event= gtk.gdk.Event (gtk.gdk.KEY_PRESS)
+        event.keyval= gtk.keysyms.Down
+
+        # trigger the test
+        self.widget._keypressed (self.widget, event)
+
+        # tests:
+        # right type
+        self.assertEqual (type (self.widget.new), Person)
+        # the other one got into the value
+        # this should not be the behaviour
+        self.assertEqual (type (self.widget.value), list)
+        self.assertEqual (len (self.widget.value), 1)
+        self.assertEqual (self.widget.value[0], old)
+
+    def testOnAction (self):
+        # grids have no action
+        pass

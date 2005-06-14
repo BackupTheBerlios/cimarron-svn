@@ -20,8 +20,7 @@
 
 from papo import cimarron
 
-from model.person import Person
-from model.address import Address
+from model.person import Person, Address
 
 import model.data.persons
 
@@ -61,28 +60,6 @@ class ABMPerson (cimarron.skin.WindowController):
         # a model that can add itself to a transaction and commit
         self.data.append (self.editPage.value)
         print self.data
-
-
-# class PersonSearch (cimarron.skin.Search):
-#     def __init__ (self, data=[], **kw):
-#         super (PersonSearch, self).__init__ (**kw)
-#         self.data= data
-        
-#     def search (self, values):
-#         name, surname= values[:2]
-#         ans= []
-
-#         for i in self.data:
-#             found= False
-#             if name is not None:
-#                 found= name in i.name
-#             if surname is not None:
-#                 found= found and surname in i.surname
-
-#             if found:
-#                 ans.append (i)
-
-#         return ans
 
 
 class PersonSearchPage (cimarron.skin.Controller):
@@ -188,11 +165,6 @@ class PersonAddressesEditPage (cimarron.skin.Controller):
         h.label= 'Edit addresses'
         h.parent= self
 
-#         new= cimarron.skin.Button (
-#             parent= h,
-#             label= 'New',
-#             onAction= self.newAddress,
-#             )
         self.addresses= cimarron.skin.Grid (
             parent= h,
             columns= (cimarron.skin.Column (read=Address.getText, write=Address.setText), ),

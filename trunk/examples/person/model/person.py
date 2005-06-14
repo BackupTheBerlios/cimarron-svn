@@ -23,9 +23,6 @@ class Person (object):
         self.setName (name)
         self.setSurname (surname)
         self.addresses= addresses
-        self.new= False
-        if name=='' and surname=='' and addresses==[]:
-            self.new= True
         self.isDirty= False
         
     def getName (self):
@@ -52,7 +49,7 @@ class Person (object):
     addresses= property (getAddresses, setAddresses)
 
     def save (self):
-        self.isDirty= self.new= False
+        self.isDirty= False
 
     def __str__ (self):
         return "Person (name='%s', surname='%s', addresses=%s)" % (
@@ -88,15 +85,20 @@ class Person (object):
 class Address (object):
     def __init__ (self, text=''):
         self.text= text
+        self.isDirty= False
 
     def getText (self):
         return self.__text
     def setText (self, text):
         self.__text= text
+        self.isDirty= True
     text= property (getText, setText)
 
     def __str__ (self):
-        return "Address (text='%s')" % self.text
+        s= "Address (text='%s')" % self.text
+        if self.isDirty:
+            s= "* "+s
+        return 
 
 
 Person.__values__= [

@@ -286,18 +286,22 @@ class Notebook (Container):
         return ans
 
 
+# shouldn't it be just a Control?
 class Grid (ColumnAwareXmlMixin, Controller):
     """
     Grids are used for editing a list of objects.
     """
-    def __init__ (self, columns=[], **kw):
+    def __init__ (self, columns=[], klass=None, **kw):
         """
         @param columns: a list of B{Column}s that describe
             what to show in the grid, how obtain it from the
             objects, and eventually how to save data back to.
         """
-        self._tv= gtk.TreeView ()
+        self._widget= self._tv= gtk.TreeView ()
+        self.mainWidget= self
         self.columns= columns
+
+        self.klass= klass
 
         # put the TreeView in a scrolled window
         self._widget= gtk.ScrolledWindow ()
@@ -308,6 +312,7 @@ class Grid (ColumnAwareXmlMixin, Controller):
 
         super (Grid, self).__init__ (**kw)
         # this was not done because it was initializing
+        # is this still true?
         self.refresh ()
 
     def _set_columns (self, columns):
@@ -338,16 +343,34 @@ class Grid (ColumnAwareXmlMixin, Controller):
         # modify the ListStore model...
         self._tvdata[path][colNo]= text
         # ... and our model
-        write (self.value[int (path)], text)
+        try:
+            write (self.value[int (path)], text)
+        except (TypeError, IndexError):
+            # we're editing the new value
+            write (self.new, text)
+            
         # coming soon: our models will (should) suport the generic TreeModel protocol
         # also: if write() returns false, the entry flashes and
         # a) rollbacks the value or
         # b) leaves it with wrong value, so the user can edit it (preferred)
         return False
     def _keypressed (self, widget, key_event, *ignore):
-        if key_event.keyval==gtk.keysyms.Return or key_event.keyval==gtk.keysyms.KP_Enter:
-            self.onAction ()
-            return True
+        last= self.value is None or len (self.value)==0 or int (self._tv.get_cursor ()[0][0])==len (self.value)
+
+        if key_event.keyval==gtk.keysyms.Down and last:
+            try:
+                if self.new.isDirty:
+                    if self.value is None:
+                        self.value= [self.new]
+                    else:
+                        self.value.append (self.new)
+                    self.new= self.klass ()
+                    self._tvdata.append ([j.read (self.new) for j in self.columns])
+            except AttributeError:
+                # print 'self.new does not exist. so, go create it'
+                self.new= self.klass ()
+                self._tvdata.append ([j.read (self.new) for j in self.columns])
+            
         return False
 
     def refresh (self):

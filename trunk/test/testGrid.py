@@ -19,49 +19,14 @@
 # Suite 330, Boston, MA 02111-1307 USA
 
 import unittest
+
 from papo import cimarron
+
+from model.person import Person
+
 from testCommon import abstractTestControl
 
-__all__= ('TestSelectionGrid', 'TestGrid', 'Person')
-
-
-class Person (object):
-    def __init__ (self, name, surname):
-        self.setName (name)
-        self.setSurname (surname)
-
-    def getName (self):
-        return self.__name
-    def setName (self, name):
-        self.__name= name
-    name= property (getName, setName)
-
-    def getSurname (self):
-        return self.__surname
-    def setSurname (self, sn):
-        self.__surname= sn
-    surname= property (getSurname, setSurname)
-
-    def search (klass, values):
-        name, surname= values[:2]
-        ans= []
-
-        for i in klass.__values__:
-            found= False
-            if name is not None:
-                found= name in i.name
-            if surname is not None:
-                if name is not None:
-                    found= found and surname in i.surname
-                else:
-                    found= surname in i.surname
-
-            if found:
-                ans.append (i)
-
-        return ans
-    search= classmethod (search)
-
+__all__= ('TestSelectionGrid', 'TestGrid')
 
 class TestSelectionGrid (abstractTestControl):
     def setUp (self):
@@ -105,7 +70,7 @@ class TestSelectionGrid (abstractTestControl):
 class TestGrid (abstractTestControl):
     def setUp (self):
         super (TestGrid, self).setUp ()
-        self.model= [
+        self.value= [
             Person ('jose', 'perez'),
             Person ('marcos', 'dione'),
             Person ('john', 'lenton'),
@@ -119,11 +84,16 @@ class TestGrid (abstractTestControl):
         self.widget= self.grid= cimarron.skin.Grid (
             parent= self.parent,
             columns= columns,
+            klass= Person,
             )
 
-        self.widget.value= self.model
+        self.widget.value= self.value
 
     def testWrite (self):
         self.widget._cell_edited (None, 0, 'juan', (0, Person.setName))
+        # this? do this ones have index?
         self.widget.index= 0
-        self.assertEqual (self.widget.value[0].name, 'juan')
+        try:
+            self.assertEqual (self.widget.value[0].name, 'juan')
+        except (TypeError, IndexError):
+            self.assertEqual (self.widget.new.name, 'juan')
