@@ -96,7 +96,7 @@ class TestGrid (abstractTestControl):
             self.assertEqual (self.value[i], self.widget.value[i])
 
     def testWrite (self):
-        self.widget._cell_edited (None, 0, 'juan', (0, Person.setName))
+        self.widget._cell_edited (None, 0, 'juan', 0)
         self.widget.index= 0
         try:
             self.assertEqual (self.widget.value[0].name, 'juan')
