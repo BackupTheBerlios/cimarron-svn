@@ -42,6 +42,7 @@ class ColumnAwareXmlMixin (object):
             if obj is not None:
                 columns.append (obj)
                 attrs.update (attrsInChild)
+                # print `attrs`
                 idDict.update (idDictInChild)
             xmlObj= xmlObj.next
         if columns:

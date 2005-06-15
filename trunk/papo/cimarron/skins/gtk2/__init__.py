@@ -315,6 +315,9 @@ class Grid (ColumnAwareXmlMixin, Controller):
         # this was not done because it was initializing
         # is this still true?
         self.refresh ()
+    def attributesToConnect (klass):
+        return ['klass']+super (Grid, klass).attributesToConnect ()
+    attributesToConnect= classmethod (attributesToConnect)
 
     def _set_columns (self, columns):
         self._columns= columns
@@ -331,7 +334,7 @@ class Grid (ColumnAwareXmlMixin, Controller):
                 crt= gtk.CellRendererText ()
                 # editable
                 crt.set_property ('editable', True)
-                crt.connect ('edited', self._cell_edited, (i, columns[i].write))
+                crt.connect ('edited', self._cell_edited, i)
                 c.pack_start (crt, True)
                 c.add_attribute (crt, 'text', i)
                 self._tv.append_column (c)
@@ -352,8 +355,8 @@ class Grid (ColumnAwareXmlMixin, Controller):
                      """The index of the object currently selected.
                      If no object is selected, it is None.""")
 
-    def _cell_edited (self, cell, path, text, data, *ignore):
-        (colNo, write)= data
+    def _cell_edited (self, cell, path, text, colNo, *ignore):
+        write= self.columns[colNo].write
         # modify the ListStore model...
         self._tvdata[path][colNo]= text
         # ... and our model
