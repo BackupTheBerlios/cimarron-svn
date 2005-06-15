@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CrUDController title="'person'" klass="Person" id="Crud">
   <import from="model.person" what="Person" id="Person"/>
-  <import from="model.address" what="Address" id="Address"/>
+  <import from="model.person" what="Address" id="Address"/>
 
   <Search onAction="Crud.changeModel" searcher="Person">
     <Column name="'name'" read="Person.getName"/>
@@ -18,8 +18,7 @@
   <Editor label="'Addresses'" read="Crud.value.getAddresses" id="Addrs">
     <Label text="'Addresses'"/>
     <Grid>
-      <Column name="'address'" read="Addrs.value.getText" write="Addrs.value.setText"/>
+      <Column name="'address'" read="Address.getText" write="Address.setText"/>
     </Grid>
   </Editor>
 </CrUDController>
-

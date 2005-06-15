@@ -203,13 +203,23 @@ class TestGtkSelectionGrid (testGtkParenting, TestSelectionGrid):
         self.assert_(self.widget in self.messages_recieved)
 
 class TestGtkGrid (testGtkParenting, TestGrid):
-    def testNew (self):
-        self.widget.value= None
+    def setUp (self):
+        super (TestGtkGrid, self).setUp ()
+        
+    def testOnAction (self):
+        # grids have no action
+        pass
+
+    def triggerNew (self):
         event= gtk.gdk.Event (gtk.gdk.KEY_PRESS)
         event.keyval= gtk.keysyms.Down
-
-        # trigger the test
         self.widget._keypressed (self.widget, event)
+
+    ######################
+    # tests from no-value
+    def testNew (self):
+        self.widget.value= None
+        self.triggerNew ()
 
         # tests:
         # right type
@@ -218,18 +228,17 @@ class TestGtkGrid (testGtkParenting, TestGrid):
         self.assert_ (self.widget.value is None)
 
     def testNewEditable (self):
+        self.widget.value= None
         self.testNew ()
         # is editable
         self.testWrite ()
 
     def testNewNew (self):
+        self.widget.value= None
         self.testNew ()
         old= self.widget.new
-        event= gtk.gdk.Event (gtk.gdk.KEY_PRESS)
-        event.keyval= gtk.keysyms.Down
-        
-        # trigger the test
-        self.widget._keypressed (self.widget, event)
+
+        self.triggerNew ()
 
         # tests:
         # nothing went to the value
@@ -238,13 +247,11 @@ class TestGtkGrid (testGtkParenting, TestGrid):
         self.assertEqual (self.widget.new, old)
 
     def testNewEditedNew (self):
+        self.widget.value= None
         self.testNewEditable ()
         old= self.widget.new
-        event= gtk.gdk.Event (gtk.gdk.KEY_PRESS)
-        event.keyval= gtk.keysyms.Down
 
-        # trigger the test
-        self.widget._keypressed (self.widget, event)
+        self.triggerNew ()
 
         # tests:
         # right type
@@ -255,6 +262,21 @@ class TestGtkGrid (testGtkParenting, TestGrid):
         self.assertEqual (len (self.widget.value), 1)
         self.assertEqual (self.widget.value[0], old)
 
-    def testOnAction (self):
-        # grids have no action
-        pass
+    ########################
+    # test from some-values
+    def testSomethingNew (self):
+        """
+        Tests that, having some values already loaded,
+        we can add more.
+        """
+        l= len(self.widget.value)
+        self.widget.index= l-1
+        self.triggerNew ()
+        
+        # tests:
+        # right type
+        self.assertEqual (type (self.widget.new), Person)
+        # the other one got into the value
+        # this should not be the behaviour
+        self.assertEqual (type (self.widget.value), list)
+        self.assertEqual (len (self.widget.value), l)

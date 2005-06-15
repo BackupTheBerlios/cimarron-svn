@@ -21,6 +21,7 @@
 from papo import cimarron
 from base import Controller, WindowController
 
+# import traceback
 class CRUDController (WindowController):
     """
     CRUD ('ABM' in spanish) Controller .
@@ -100,6 +101,7 @@ class CRUDController (WindowController):
                 editor.value= editor.read ()
                 # print 'CRUD:', editor, `editor.read`, `editor.value`
             except (AttributeError, TypeError):
+                # traceback.print_exc ()
                 editor.value= self.value
                 # print 'CRUD:', editor, `editor.value`
 
@@ -153,9 +155,11 @@ class Editor (Controller):
                     entry.value= entry.read ()
                     # print 'editor:', entry, `entry.read.other`, entry.read.path, `entry.value`
                 except TypeError:
+                    # `read' is not callable
                     # print 'editor:', entry, `entry.read.other`, entry.read.path, `self.value`
                     entry.value= self.value
                 except AttributeError:
+                    # `entry' has no `read' attr
                     entry.value= self.value
                     # print 'editor:', entry, `entry.value`
         except AttributeError:

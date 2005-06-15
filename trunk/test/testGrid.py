@@ -89,9 +89,14 @@ class TestGrid (abstractTestControl):
 
         self.widget.value= self.value
 
+    def testIndex (self):
+        for i in xrange (len (self.widget.value)):
+            self.widget.index= i
+            self.assertEqual (self.widget.index, i)
+            self.assertEqual (self.value[i], self.widget.value[i])
+
     def testWrite (self):
         self.widget._cell_edited (None, 0, 'juan', (0, Person.setName))
-        # this? do this ones have index?
         self.widget.index= 0
         try:
             self.assertEqual (self.widget.value[0].name, 'juan')

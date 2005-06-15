@@ -287,6 +287,7 @@ class Notebook (Container):
 
 
 # shouldn't it be just a Control?
+import traceback
 class Grid (ColumnAwareXmlMixin, Controller):
     """
     Grids are used for editing a list of objects.
@@ -338,6 +339,19 @@ class Grid (ColumnAwareXmlMixin, Controller):
         return self._columns
     columns= property (_get_columns, _set_columns)
         
+    def _set_index (self, index):
+        if index is not None:
+            self._tv.set_cursor ((index, ))
+    def _get_index (self):
+        try:
+            return int (self._tv.get_cursor ()[0][0])
+        except TypeError:
+            # None is unsubscriptable, the cursor is not set
+            return None
+    index= property (_get_index, _set_index, None,
+                     """The index of the object currently selected.
+                     If no object is selected, it is None.""")
+
     def _cell_edited (self, cell, path, text, data, *ignore):
         (colNo, write)= data
         # modify the ListStore model...
@@ -355,7 +369,8 @@ class Grid (ColumnAwareXmlMixin, Controller):
         # b) leaves it with wrong value, so the user can edit it (preferred)
         return False
     def _keypressed (self, widget, key_event, *ignore):
-        last= self.value is None or len (self.value)==0 or int (self._tv.get_cursor ()[0][0])==len (self.value)
+        last= self.value is None or len (self.value)==0 or self.index==len (self.value)-1
+        # print `self.value`, `self._tv.get_cursor ()`, last
 
         if key_event.keyval==gtk.keysyms.Down and last:
             try:
@@ -383,7 +398,12 @@ class Grid (ColumnAwareXmlMixin, Controller):
             for i in self.value:
                 # add all the values
                 # NOTE: this forces the data to be read.
-                self._tvdata.append ([j.read (i) for j in self.columns])
+                data= [j.read (i) for j in self.columns]
+                # print 'Grid: adding', data
+                self._tvdata.append (data)
+            self.index= 0
+        else:
+            self.index= None
         self._tv.set_model (self._tvdata)
 
 

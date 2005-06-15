@@ -279,14 +279,6 @@ class TestCRUDController (abstractTestControl):
             [Address (text="San luis 870"), Address (text="San luis 594 2D")]
             )
         
-#     def testNew (self):
-#         self.widget.newModel (self.widget, Country)
-#         self.assert_ (isinstance (self.widget.value, Country))
-
-#     def testVisual (self):
-#         self.win.show ()
-#         self.app.run ()
-
     def testRefresh (self):
         self.widget.value= self.value
         self.assertEqual (self.widget.editors[0].value, self.value)
