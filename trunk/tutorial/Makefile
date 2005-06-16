@@ -18,32 +18,24 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-PYTHON ?= python
-EPYDOC ?= epydoc
-EPYDOC_OPTS ?=
+PYTHON		?= python
+PYTHON_BASE	?= $(shell $(PYTHON) -c 'import os; print os.path.dirname(os.__file__)')
+MKHOWTO		= $(PYTHON_BASE)/doc/tools/mkhowto
 
-EPYDOC_FILES=$(shell find papo -type f -name \*.py)
-
-all:
-	$(MAKE) -C tutorial
+all:	tutorial/index.html tutorial.dvi tutorial.pdf
 
 clean:
-	$(MAKE) -C tutorial clean
+	$(RM) -r tutorial tutorial.dvi tutorial.pdf *~
 
 distclean: clean
-	find '(' -name '*.py[co]' -o -name '*~' ')' -print0 | xargs -0 -r $(RM) -v
-	$(PYTHON) setup.py clean
-	$(RM) -rv build dist html MANIFEST
-	$(MAKE) -C tutorial distclean
 
-test:
-	$(EPYDOC) --check --tests all $(EPYDOC_FILES)
-	PYTHONPATH=.:./examples/person:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS)
+tutorial/index.html: tutorial.tex
+	$(MKHOWTO) --html tutorial.tex
 
-install:
-	$(PYTHON) setup.py install
+tutorial.dvi: tutorial.tex
+	$(MKHOWTO) --dvi tutorial.tex
 
-html:
-	$(EPYDOC) --html $(EPYDOC_OPTS) $(EPYDOC_FILES)
+tutorial.pdf: tutorial.tex
+	$(MKHOWTO) --pdf tutorial.tex
 
-.PHONY: test html all clean distclean
+.PHONY: all clean distclean

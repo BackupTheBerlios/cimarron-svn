@@ -15,8 +15,11 @@ implement the Gtk2 'skin' so far.
 
 As there are several takes on what MVC means, we'll try to explain it here.
 
-Meanwhile, you might want to get your hands dirty with examples/LEEME.txt (yes,
-it's in spanish).
+Meanwhile, you might want to get your hands dirty with
+examples/LEEME.txt. Yes, it's in spanish, and right now, it's not even
+completely correct. The beginnings of an English-language tutorial are
+in the 'tutorial' directory. Alas, the API described in it is not
+completely implemented yet (it should be very soon).
 
 Dependencies
 ------------
