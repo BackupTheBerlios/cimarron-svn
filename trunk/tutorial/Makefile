@@ -29,20 +29,23 @@ SOURCES		= tutorial.tex \
 		  simplepersoneditor.py \
 		  simpleperson.py
 
-all:	tutorial/index.html tutorial.dvi tutorial.pdf
+ALL		= tutorial tutorial.pdf tutorial.dvi
+
+all:	$(ALL)
 
 clean:
-	$(RM) -r tutorial tutorial.dvi tutorial.pdf *~
+	$(RM) -r $(ALL) tutorial.l2h
 
 distclean: clean
+	$(RM) *~
 
-tutorial/index.html: $(SOURCES)
-	$(MKHOWTO) --html tutorial.tex
+tutorial: $(SOURCES)
+	$(MKHOWTO) --html $<
 
 tutorial.dvi: $(SOURCES)
-	$(MKHOWTO) --dvi tutorial.tex
+	$(MKHOWTO) --dvi $<
 
 tutorial.pdf: $(SOURCES)
-	$(MKHOWTO) --pdf tutorial.tex
+	$(MKHOWTO) --pdf $<
 
 .PHONY: all clean distclean
