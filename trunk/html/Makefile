@@ -17,38 +17,23 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-PYTHON ?= python
+ALL=api tutorial index.html
+RST2HTML ?= rst2html
 EPYDOC ?= epydoc
 EPYDOC_OPTS ?=
+EPYDOC_FILES=$(shell find ../papo -type f -name \*.py)
 
-EPYDOC_FILES=$(shell find papo -type f -name \*.py)
-
-all: docs
+all: $(ALL)
 
 clean:
-	$(MAKE) -C tutorial clean
-	$(MAKE) -C html clean
+	$(RM) -r $(ALL)
 
-distclean: clean
-	find '(' -name '*.py[co]' -o -name '*~' ')' -print0 | xargs -0 -r $(RM)
-	$(PYTHON) setup.py clean
-	$(RM) -r build dist MANIFEST
-	$(MAKE) -C tutorial distclean
-	$(MAKE) -C html clean
+index.html: ../README.txt
+	$(RST2HTML) < $< > $@
 
-test:
-	$(EPYDOC) --check $(EPYDOC_FILES)
-	PYTHONPATH=.:./examples/person:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS)
+tutorial: ../tutorial/tutorial
+	$(RM) -r $@
+	cp -a $< $@
 
-install:
-	$(PYTHON) setup.py install
-
-docs: html tutorial
-
-tutorial:
-	$(MAKE) -C tutorial
-
-html: tutorial
-	$(MAKE) -C html
-
-.PHONY: test docs tutorial all clean distclean api
+api: $(EPYDOC_FILES)
+	$(EPYDOC) --output $@ --html $(EPYDOC_OPTS) $(EPYDOC_FILES)

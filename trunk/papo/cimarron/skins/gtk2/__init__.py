@@ -18,11 +18,12 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-from new import instancemethod
 import pygtk
 pygtk.require('2.0')
 import gtk, gobject
 from itertools import izip, repeat
+from zope import interface
+from papo.cimarron.interfaces import IWindow
 
 # clients of cimarron won't want to worry where their stuff is coming
 # from
@@ -78,6 +79,8 @@ class Window(GtkVisibilityMixin, Container):
     """
     A Window. Duh.
     """
+    interface.implements(IWindow)
+    
     def __init__(self, title='', **kw):
         """
         @param title: the title for the window.
@@ -540,3 +543,7 @@ def concreteParenter(parent, child):
             else:
                 # print 'forwarded to', parent.parent
                 parent.parent.concreteParenter (child)
+
+from zope.interface import moduleProvides
+from papo.cimarron.interfaces import ISkin
+moduleProvides(ISkin)

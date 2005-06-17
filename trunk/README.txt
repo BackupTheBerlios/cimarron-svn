@@ -1,3 +1,23 @@
+.. -*- rst -*-
+
+   Copyright 2005 Fundación Via Libre
+  
+   This file is part of PAPO.
+  
+   PAPO is free software; you can redistribute it and/or modify it under the
+   terms of the GNU General Public License as published by the Free Software
+   Foundation; either version 2 of the License, or (at your option) any later
+   version.
+  
+   PAPO is distributed in the hope that it will be useful, but WITHOUT ANY
+   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+   FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+   details.
+  
+   You should have received a copy of the GNU General Public License along with
+   PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
+   Suite 330, Boston, MA 02111-1307 USA
+
 Cimarrón
 ========
 
@@ -17,25 +37,43 @@ As there are several takes on what MVC means, we'll try to explain it here.
 
 Meanwhile, you might want to get your hands dirty with
 examples/LEEME.txt. Yes, it's in spanish, and right now, it's not even
-completely correct. The beginnings of an English-language tutorial are
-in the 'tutorial' directory. Alas, the API described in it is not
-completely implemented yet (it should be very soon).
+completely correct. An English-language tutorial_ is in progress;
+Alas, the API described in it is not completely implemented yet (it
+should be very soon).
+
+.. _tutorial: tutorial/index.html
+
+The API_ documentation is up to date because it is generated, but it
+might not be terribly useful yet (not enough documentation in the
+classes, perhaps).
+
+.. _API: api/index.html
 
 Dependencies
 ------------
 
-Basically, we depend on python_ (2.2.3 or later) and pygtk_ 2. We've tested it
-on Debian_ Sarge_ (python 2.3.5, pygtk 2.6.1), Mandrake_ 10.1_ (python 2.3,
-pygtk 2.3.96), and Ubuntu_ Hoary_ (python 2.4.1, pygtk 2.6.1).
+Basically, we depend on python_ (2.2.3 or later, although we've not
+been able to run all the tests on 2.2 yet), libxml2_ and, for default
+(and currently only) skin, pygtk_ 2. Also, we use zope3_'s
+zope.interface and zope.schema packages, so you'll need those too.
+
+We've tested it on Debian_ Sarge_ (python 2.3.5, libxml2 2.6.16, pygtk
+2.6.1), Mandrake_ 10.1_ (python 2.3, libxml2 2.6.13, pygtk 2.3.96),
+and Ubuntu_ Hoary_ (python 2.4.1, libxml2 2.6.17, pygtk 2.6.1).
 
 .. _python: http://www.python.org/
+.. _libxml2: http://xmlsoft.org/
 .. _pygtk: http://www.pygtk.org/
+.. _zope3: http://www.zope.org/DevHome/Wikis/DevSite/Projects/ComponentArchitecture/FrontPage
 .. _debian: http://www.debian.org/
 .. _sarge: http://www.debian.org/releases/sarge/
 .. _mandrake: http://www.mandrivalinux.com/
 .. _10.1: http://www.google.com/
 .. _ubuntu: http://www.ubuntulinux.org/
 .. _hoary: http://us.releases.ubuntu.com/releases/5.04/
+.. _epydoc: http://epydoc.sourceforge.net/
+
+To run the tests and create the API reference you'll need epydoc_.
 
 Quickstart
 ----------
