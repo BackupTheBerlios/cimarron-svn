@@ -27,11 +27,12 @@
  This document is intended as a primer for Python programmers who want
  to get an overview on how to write programs based on \Cimarron.
 
- \Cimarron is simplified framework designed to help write cross-platform
- database-centric applications, such as accounting systems. It provides
- an abstract widget set that can be presented to the user through the
- native user interface on the system she is running, and is heavily
- based on the Model-View-Controller and the Delegation patterns.
+ \Cimarron\ is a simplified framework designed to help write
+ cross-platform database-centric applications, such as accounting
+ systems. It provides an abstract widget set that can be presented to
+ the user through the native user interface on the system she is
+ running, and is heavily based on the Model-View-Controller and the
+ Delegation patterns.
 
  After reading this document, you should have a general understanding of
  \Cimarron's way of doing things.
@@ -42,11 +43,11 @@
 \section{Before you even begin}
 
 Python will have to be able to find \Cimarron{} in order for the
-examples in this tutorial to work. Unless \Cimarron{} is installed in a
-directory within your \envvar{PYTHONPATH}, you may have to run your
-instance of Python with a \envvar{PYTHONPATH} that works. Assuming your
-copy of \Cimarron{} is in \file{~/src/cimarron}, the following command
-sequence should do the trick:
+examples in this tutorial to work. Unless \Cimarron{} is installed in
+a directory within your \envvar{PYTHONPATH}, you may have to run your
+instance of Python with a \envvar{PYTHONPATH} that works. Assuming
+your copy of \Cimarron{} is in \file{\textasciitilde/src/cimarron},
+the following command sequence should do the trick:
 
 \begin{verbatim}
 ~$ cd src/cimarron
