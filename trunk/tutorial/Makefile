@@ -22,6 +22,13 @@ PYTHON		?= python
 PYTHON_BASE	?= $(shell $(PYTHON) -c 'import os; print os.path.dirname(os.__file__)')
 MKHOWTO		= $(PYTHON_BASE)/doc/tools/mkhowto
 
+SOURCES		= tutorial.tex \
+		  helloworld.py \
+		  multiplexedaction.py \
+		  simpleaction.py \
+		  simplepersoneditor.py \
+		  simpleperson.py
+
 all:	tutorial/index.html tutorial.dvi tutorial.pdf
 
 clean:
@@ -29,13 +36,13 @@ clean:
 
 distclean: clean
 
-tutorial/index.html: tutorial.tex
+tutorial/index.html: $(SOURCES)
 	$(MKHOWTO) --html tutorial.tex
 
-tutorial.dvi: tutorial.tex
+tutorial.dvi: $(SOURCES)
 	$(MKHOWTO) --dvi tutorial.tex
 
-tutorial.pdf: tutorial.tex
+tutorial.pdf: $(SOURCES)
 	$(MKHOWTO) --pdf tutorial.tex
 
 .PHONY: all clean distclean

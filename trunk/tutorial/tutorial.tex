@@ -56,15 +56,12 @@ sequence should do the trick:
 
 \section{First steps}
 
-Figure~\ref{fig:helloworld} shows the Python code to produce the GUI
-equivalent of the ``Hello Word'' program using \Cimarron. Just paste the code
-into an instance of Python to get a single window with a single button
-in it. The window's title is ``Main Window'', and the button reads ``Hello''.
+Here is the Python code to produce the GUI equivalent of the ``Hello
+Word'' program using \Cimarron. Just paste the code into an instance of
+Python to get a single window with a single button in it. The window's
+title is ``Main Window'', and the button reads ``Hello''.
 
-\begin{figure}[ht]
- \verbatiminput{helloworld.py}
- \caption{\Cimarron{} says hi}\label{fig:helloworld}
-\end{figure}
+\verbatiminput{helloworld.py}
 
 As you can see in the code, we build the window from the outside in,
 specifying each new widget's parent as we go. We start declaring
@@ -121,12 +118,11 @@ care of interaction with the user. After storing the instance of
 method to handle user events. This method exits when the user closes the
 last (and in this case only) window.
 
-As an exercise, we suggest that you attempt to modify the code in
-Figure~\ref{fig:helloworld} in such a way that
-\class{MainWindowController}'s constructor accepts a parameter
-\var{title} that allows you to specify the window's title on creation,
-with a default value of ``Main Window''. Then modify the main program to
-display two (or more) windows with different titles.
+As an exercise, we suggest that you attempt to modify the code above in
+such a way that \class{MainWindowController}'s constructor accepts a
+parameter \var{title} that allows you to specify the window's title on
+creation, with a default value of ``Main Window''. Then modify the main
+program to display two (or more) windows with different titles.
 
 \section{Actions}
 
@@ -139,28 +135,21 @@ it). The called function must accept one argument, which will contain
 the control that got triggered. This way, the same action can be shared
 by different controls.
 
-The code in Figure~\ref{fig:simpleaction} extends the first example to
-actually do something when the button is pressed: it prints the message
-``Button pressed!'' in the console. Not very useful, but enough for the
-purpose of illustration.
+The following code extends the first example to actually do something
+when the button is pressed: it prints the message ``Button pressed!'' in
+the console. Not very useful, but enough for the purpose of
+illustration.
 
-\begin{figure}[ht]
- \verbatiminput{simpleaction.py}
- \caption{A simple action}\label{fig:simpleaction}
-\end{figure}
+\verbatiminput{simpleaction.py}
 
 Note that although the \method{doSomething()} method ignores the
 \var{sender} parameter, it could query the \class{Button} it contains
-for information, or otherwise alter it. The code in
-Figure~\ref{fig:multiplexedaction} shows how to use a \class{VBox} to
-create a stack of two buttons inside the window, and one way to use the
-\var{sender} parameter to alter the action according to the control that
-got triggered.
+for information, or otherwise alter it. For example, this program shows
+how to use a \class{VBox} to create a stack of two buttons inside the
+window, and one way to use the \var{sender} parameter to influence the
+action's outcome according to data obtained from the triggered control.
 
-\begin{figure}[ht]
- \verbatiminput{multiplexedaction.py}
- \caption{A simple action}\label{fig:multiplexedaction}
-\end{figure}
+\verbatiminput{multiplexedaction.py}
 
 \class{VBox}es and \class{HBox}es are used in \Cimarron{} to lay out
 widgets. \class{VBox} stacks the widgets inside it on top of each other
@@ -178,31 +167,29 @@ interaction between a controller (\class{MainWindowController}), whose
 job is to set up a view (the window and its widgets), complete with the
 actions that must occur when something is triggered. The widgets also
 know how to interact with a model, to keep track of the values of
-particular attributes. To illustrate, we'll use the trivial model shown
-in Figure~\ref{fig:simplepersonmodel}, which implements all the methods
-that are needed to interact with \Cimarron{} widgets. It is important to
-note that attributes that are to be under the control of a \Cimarron{}
-widget must be declared as properties.
+particular attributes. To illustrate, we'll use the following trivial
+model, which implements all the methods that are needed to interact with
+\Cimarron{} widgets. It is important to note that attributes that are to
+be under the control of a \Cimarron{} widget must be declared as
+properties.
 
-\begin{figure}[ht]
- \verbatiminput{simpleperson.py}
- \caption{A very simple model that can interact with \Cimarron{}
- widgets}
- \label{fig:simplepersonmodel}
-\end{figure}
+\verbatiminput{simpleperson.py}
 
-The code in Figure~\ref{fig:simplepersoneditor} shows how to set up
-widgets in such a way that they can reflect the model's status, and
-modify it as instructed by the user. As you can see, the bulk of the
-code is concerned with creating and packing the widgets. Note that the
-\class{Entry} widgets have don't have an associated action. The
-controller specifies the model's attribute that will be controlled by
-the widget instead. Note that a widget can have both an action and an
-attribute associated with it: the action establishes a communications
-channel back to the controller, while the attribute acts as a forward
-communication with the model.
+Given this model, here's how a program can set up widgets in such a way
+that they can reflect the model's status, and modify it as instructed by
+the user.
 
-Once the window is all set up, it is the \class{PersonEditor}
+\verbatiminput{simplepersoneditor.py}
+
+As you can see, the bulk of the code is concerned with creating and
+packing the widgets. Note that the \class{Entry} widgets have don't have
+an associated action. The controller specifies the model's attribute
+that will be controlled by the widget instead. Note that a widget can
+have both an action and an attribute associated with it: the action
+establishes a communications channel back to the controller, while the
+attribute acts as a forward communication with the model.
+
+Once the window is all set up, it is \class{PersonEditor}'s
 \member{setTarget()} method's responsibility to inform each widget which
 concrete instance they are to interact with at any given moment. The
 \member{checkValues()} method, invoked every time you press the
@@ -210,11 +197,5 @@ concrete instance they are to interact with at any given moment. The
 object's values are being modified through the widgets. Note that this
 example defines the \member{target} attribute as a property just for
 consistency's sake.
-
-\begin{figure}[ht]
- \verbatiminput{simplepersoneditor.py}
- \caption{A very simple object editor}
- \label{fig:simplepersoneditor}
-\end{figure}
 
 \end{document}

@@ -36,5 +36,5 @@ class PersonEditor(cimarron.skin.WindowController):
 app = cimarron.skin.App()
 w = PersonEditor(parent=app)
 w.show()
-w.setTarget(Person(name="John", surname="Doe"))
+w.target = Person(name="John", surname="Doe")
 app.run()
