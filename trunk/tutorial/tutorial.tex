@@ -153,7 +153,7 @@ Note that although the \method{doSomething()} method ignores the
 \var{sender} parameter, it could query the \class{Button} it contains
 for information, or otherwise alter it. The code in
 Figure~\ref{fig:multiplexedaction} shows how to use a \class{VBox} to
-put more than one button in a window, and one way to use the
+create a stack of two buttons inside the window, and one way to use the
 \var{sender} parameter to alter the action according to the control that
 got triggered.
 
@@ -162,6 +162,13 @@ got triggered.
  \caption{A simple action}\label{fig:multiplexedaction}
 \end{figure}
 
+\class{VBox}es and \class{HBox}es are used in \Cimarron{} to lay out
+widgets. \class{VBox} stacks the widgets inside it on top of each other
+from top to bottom, \class{HBox} makes a horizontal row with them, from
+left to right. You can have a \class{VBox} inside a \class{HBox} inside
+a \class{VBox}, to as many levels as you want. You could have a
+\class{VBox} inside a \class{VBox}, but of course it would be rather
+pointless.
 
 \section{Interacting with a model}
 
