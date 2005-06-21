@@ -21,8 +21,8 @@
 import unittest
 from pprint import pformat
 
-from papo import cimarron
-from papo.cimarron.controllers import Controller, WindowController, CRUDController, Editor, DelayedTraversal
+from fvl import cimarron
+from fvl.cimarron.controllers import Controller, WindowController, CRUDController, Editor, DelayedTraversal
 from model.person import Person, Address
 from model.country import Country, State
 

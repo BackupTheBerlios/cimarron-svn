@@ -21,7 +21,7 @@ ALL=api tutorial index.html
 RST2HTML ?= rst2html
 EPYDOC ?= epydoc
 EPYDOC_OPTS ?=
-EPYDOC_FILES=$(shell find ../papo -type f -name \*.py)
+EPYDOC_FILES=$(shell find ../fvl -type f -name \*.py)
 
 all: $(ALL)
 

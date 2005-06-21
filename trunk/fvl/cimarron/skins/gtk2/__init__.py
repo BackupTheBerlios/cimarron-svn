@@ -23,12 +23,12 @@ pygtk.require('2.0')
 import gtk, gobject
 from itertools import izip, repeat
 from zope import interface
-from papo.cimarron.interfaces import IWindow
+from fvl.cimarron.interfaces import IWindow
 
 # clients of cimarron won't want to worry where their stuff is coming
 # from
-from papo.cimarron.skins.common import *
-from papo.cimarron.controllers import *
+from fvl.cimarron.skins.common import *
+from fvl.cimarron.controllers import *
 
 class GtkVisibilityMixin(object):
     """
@@ -545,5 +545,5 @@ def concreteParenter(parent, child):
                 parent.parent.concreteParenter (child)
 
 from zope.interface import moduleProvides
-from papo.cimarron.interfaces import ISkin
+from fvl.cimarron.interfaces import ISkin
 moduleProvides(ISkin)

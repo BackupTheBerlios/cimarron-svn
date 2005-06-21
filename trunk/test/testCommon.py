@@ -20,7 +20,7 @@
 
 import unittest
 from run import test_options
-from papo import cimarron
+from fvl import cimarron
 
 class abstractTestBasic(unittest.TestCase, object):
     def setUp(self):
@@ -28,7 +28,7 @@ class abstractTestBasic(unittest.TestCase, object):
         self.app = cimarron.skin.App()
         super (abstractTestBasic, self).setUp ()
     def testSkinArgv(self):
-        self.assertEqual(cimarron.skin.__name__, 'papo.cimarron.skins.gtk2')
+        self.assertEqual(cimarron.skin.__name__, 'fvl.cimarron.skins.gtk2')
     def tearDown(self):
         self.app.hide()
         self.app.quit()

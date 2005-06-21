@@ -1,4 +1,4 @@
-from papo import cimarron
+from fvl import cimarron
 cimarron.config()
 
 class MainWindowController(cimarron.skin.WindowController):

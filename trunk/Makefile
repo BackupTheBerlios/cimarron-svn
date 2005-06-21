@@ -21,7 +21,7 @@ PYTHON ?= python
 EPYDOC ?= epydoc
 EPYDOC_OPTS ?=
 
-EPYDOC_FILES=$(shell find papo -type f -name \*.py)
+EPYDOC_FILES=$(shell find fvl -type f -name \*.py)
 
 all: docs
 

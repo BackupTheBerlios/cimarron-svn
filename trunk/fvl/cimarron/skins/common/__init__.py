@@ -32,8 +32,8 @@ import libxml2
 __all__ = ('XmlMixin', 'Widget', 'Container', 'Control',
            'ForcedNo', 'No', 'Unknown', 'Yes', 'ForcedYes')
 
-from papo.cimarron.tools import is_simple, traverse
-from papo import cimarron
+from fvl.cimarron.tools import is_simple, traverse
+from fvl import cimarron
 
 def nullAction(*a, **k): pass
 
@@ -203,7 +203,7 @@ class Widget(XmlMixin):
         try:
             return self.__skin
         except AttributeError:
-            from papo.cimarron import skin
+            from fvl.cimarron import skin
             self.__skin = skin
             return skin
     skin = property(_get_skin,

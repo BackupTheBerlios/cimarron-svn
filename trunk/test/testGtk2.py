@@ -26,8 +26,8 @@ import gobject
 
 from run import test_options
 
-from papo import cimarron
-from papo.cimarron.skins.common import Unknown, ForcedNo
+from fvl import cimarron
+from fvl.cimarron.skins.common import Unknown, ForcedNo
 
 from model.person import Person
 

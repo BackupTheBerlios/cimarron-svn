@@ -21,9 +21,9 @@
 import os
 import libxml2
 
-from papo import cimarron
-from papo.cimarron.tools import traverse
-from papo.cimarron.skins.common import Control, Container
+from fvl import cimarron
+from fvl.cimarron.tools import traverse
+from fvl.cimarron.skins.common import Control, Container
 
 class Controller(Control, Container):
     """

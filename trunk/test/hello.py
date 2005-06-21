@@ -19,7 +19,7 @@
 # Suite 330, Boston, MA 02111-1307 USA
 
 import unittest
-from papo import cimarron
+from fvl import cimarron
 cimarron.config()
 skin = cimarron.skin
 
@@ -29,7 +29,7 @@ class TestHelloWorld(unittest.TestCase):
     def setUp(self):
         self.app = skin.App()
     def testSkinArgv(self):
-        self.assertEqual(skin.__name__, 'papo.cimarron.skins.gtk2')
+        self.assertEqual(skin.__name__, 'fvl.cimarron.skins.gtk2')
     def testWindow(self):
         self.win = skin.Window()
     def testWindowParent(self):

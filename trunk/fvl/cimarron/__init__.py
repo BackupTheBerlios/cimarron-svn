@@ -23,7 +23,7 @@ L{cimarron} is...
 """
 from zope.schema import Object
 from zope.interface.verify import verifyObject, verifyClass
-from papo.cimarron.interfaces import ISkin
+from fvl.cimarron.interfaces import ISkin
 
 DEFAULT_SKIN_NAME = 'gtk2'
 
@@ -47,7 +47,7 @@ def config(skin_name=DEFAULT_SKIN_NAME):
     @type skin_name: str
     """
     global skin
-    skin = __import__('papo.cimarron.skins.' + skin_name,
+    skin = __import__('fvl.cimarron.skins.' + skin_name,
                       globals(), locals(), skin_name)
 
     verifyObject(ISkin, skin)

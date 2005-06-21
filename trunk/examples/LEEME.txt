@@ -56,7 +56,7 @@ En algún otro lado, creamos una aplicación, un objeto de tipo Main con la
 aplicación como `parent´ y la lanzamos:
 
 
-    from papo import cimarron
+    from fvl import cimarron
     cimarron.config ()
 
     from windows import Main

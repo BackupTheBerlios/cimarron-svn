@@ -20,7 +20,7 @@
 
 import unittest
 
-from papo import cimarron
+from fvl import cimarron
 
 from testCommon import abstractTestContainer
 

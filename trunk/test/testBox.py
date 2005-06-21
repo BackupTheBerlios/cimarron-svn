@@ -22,7 +22,7 @@ import unittest
 import sys
 from cStringIO import StringIO
 
-from papo import cimarron
+from fvl import cimarron
 from testCommon import abstractTestContainer
 
 __all__ = ('TestBoxes',

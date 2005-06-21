@@ -21,9 +21,9 @@
 import unittest
 import libxml2
 
-import papo.cimarron
-papo.cimarron.config()
-from papo.cimarron import skin
+import fvl.cimarron
+fvl.cimarron.config()
+from fvl.cimarron import skin
 
 __all__ = ('TestSkeleton',)
 

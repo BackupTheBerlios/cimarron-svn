@@ -19,7 +19,7 @@
 # Suite 330, Boston, MA 02111-1307 USA
 
 import unittest
-from papo import cimarron
+from fvl import cimarron
 from testCommon import abstractTestControl
 
 __all__ = ('TestButton',
