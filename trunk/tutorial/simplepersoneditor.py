@@ -8,19 +8,19 @@ class PersonEditor(cimarron.skin.WindowController):
         self.win.title = 'Main Window'
         vbox = cimarron.skin.VBox(parent=self.win)
         hbox = cimarron.skin.HBox(parent=vbox)
-        cimarron.skin.Label(parent=hbox, label='Name:')
+        cimarron.skin.Label(parent=hbox, text='Name:')
         self.nameWidget = \
             cimarron.skin.Entry(parent=hbox, attribute="name")
         hbox = cimarron.skin.HBox(parent=vbox)
-        cimarron.skin.Label(parent=hbox, label='Surname:')
+        cimarron.skin.Label(parent=hbox, text='Surname:')
         self.surnameWidget = \
             cimarron.skin.Entry(parent=hbox, attribute="surname")
-        cimarron.skin.Button(parent=vbox, label='Check',
-            onAction = self.checkValues)
+        cimarron.skin.Button(parent=vbox, label='Check', 
+	     onAction = self.checkValues)
         self.target = None
 
     def checkValues(self, sender):
-        print "Mr/Ms %s, %s" % self.target.surname, self.target.name
+       print "Mr/Ms %s, %s" % (self.target.surname, self.target.name)
 
     def setTarget(self, aPerson):
         self._target = aPerson
@@ -30,8 +30,8 @@ class PersonEditor(cimarron.skin.WindowController):
     def getTarget(self):
         return self._target
 
-    target = property(get_target, set_target, None,
-                       """The person we're editing""")
+    target = property(getTarget, setTarget, None,
+    	"""The person we're editing""")
     
 app = cimarron.skin.App()
 w = PersonEditor(parent=app)
