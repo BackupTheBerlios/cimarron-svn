@@ -112,17 +112,7 @@ class XmlMixin (object):
         return obj
 
     def fromXmlObjProp(self, prop):
-        if prop.name in self.attributesToConnect ():
-            setattr(self, prop.name, prop.content)
-        else:
-            # this is ugly
-            try:
-                setattr(self, prop.name, eval(prop.content))
-            except NameError:
-                # the eval failed
-                # hope that it will be resolved later :(
-                setattr(self, prop.name, prop.content)
-            # print self, 'prop', prop.name, getattr (self, prop.name)
+        setattr(self, prop.name, prop.content)
 
     def fromXmlObjProps(self, prop):
         while prop:
