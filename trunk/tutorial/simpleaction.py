@@ -11,7 +11,7 @@ class MainWindowController(cimarron.skin.WindowController):
    def doSomething(self, sender):
        print 'Button pressed!'
 
-app = cimarron.skin.App()
+app = cimarron.skin.Application()
 w = MainWindowController(parent=app)
 w.show()
 app.run()

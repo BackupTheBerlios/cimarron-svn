@@ -29,7 +29,7 @@ __all__ = ('TestSkeleton',)
 
 class TestSkeleton(unittest.TestCase):
     def setUp(self):
-        self.app = skin.App()
+        self.app = skin.Application()
         self.window = skin.Window(parent=self.app)
         self.vbox = skin.VBox(parent=self.window)
         self.button = skin.Button(parent=self.vbox,
@@ -63,27 +63,27 @@ class TestSkeleton(unittest.TestCase):
     def testAppSkeleton(self):
         skel = self.app.skeleton()
         self.assertEqual(skel.serialize(),
-                         '<App value="None">'
+                         '<Application value="None">'
                            '<Window>'
                              '<VBox>'
                                '<Button value="5" label="\'click my clicker\'"/>'
                                '<Entry value="None"/>'
                              '</VBox>'
                            '</Window>'
-                         '</App>')
+                         '</Application>')
 
     def testRoundTrip(self):
         sk = self.app.skeleton()
-        app = skin.App.fromXmlObj(sk.doc.children, skin)[0]
+        app = skin.Application.fromXmlObj(sk.doc.children, skin)[0]
         self.assertEqual(app.skeleton().serialize(), sk.serialize())
 
     def testSkipSpaces (self):
-        xmlRaw= """<App>
+        xmlRaw= """<Application>
   <Window>
     <VBox>
       <Button value="5" label="'click my clicker'"/>
     </VBox>
   </Window>
-</App>"""
+</Application>"""
         xmlObj= libxml2.parseMemory (xmlRaw, len (xmlRaw))
-        app = skin.App.fromXmlObj(xmlObj.children, skin)
+        app = skin.Application.fromXmlObj(xmlObj.children, skin)

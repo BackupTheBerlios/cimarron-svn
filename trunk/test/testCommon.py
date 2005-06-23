@@ -25,7 +25,7 @@ from fvl import cimarron
 class abstractTestBasic(unittest.TestCase, object):
     def setUp(self):
         cimarron.config()
-        self.app = cimarron.skin.App()
+        self.app = cimarron.skin.Application()
         super (abstractTestBasic, self).setUp ()
     def testSkinArgv(self):
         self.assertEqual(cimarron.skin.__name__, 'fvl.cimarron.skins.gtk2')

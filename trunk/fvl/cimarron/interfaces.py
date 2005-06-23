@@ -27,20 +27,20 @@ class IWindow(interface.Interface):
 class ISkin(interface.Interface):
     def _run():
         """
-        _run() is called from App.run, to set in motion whatever
+        _run() is called from Application.run, to set in motion whatever
         mechanism the concrete backend uses to display widgets.
         """
 
     def _quit():
         """
-        _quit() is called from App.quit to terminate the application;
+        _quit() is called from Application.quit to terminate the application;
         it might never return (or leave the backend in an unspecified
         state)
         """
 
     def _schedule(timeout, callback, repeat=False):
         """
-        _schedule is called from App.schedule to actually do the
+        _schedule is called from Application.schedule to actually do the
         scheduling of the delayed action.
         """
 

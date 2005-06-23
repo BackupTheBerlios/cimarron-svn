@@ -37,7 +37,7 @@ __all__ = ('TestController',
            )
 
 def visualTest():
-    app = cimarron.skin.App()
+    app = cimarron.skin.Application()
     cimarron.config()
     win = cimarron.skin.Window(parent=app)
     foo = FooController(parent=win, value=dict(foo=1,bar=2,baz=3))
@@ -211,7 +211,7 @@ class TestBarController (abstractTestControl):
 class TestApp(unittest.TestCase):
     def setUp(self):
         cimarron.config()
-        self.app = cimarron.skin.App()
+        self.app = cimarron.skin.Application()
         self.win1 = cimarron.skin.Window(parent=self.app)
         self.win2 = cimarron.skin.Window(parent=self.app)
         self.app.show()
@@ -246,7 +246,7 @@ class TestApp(unittest.TestCase):
 class TestWindowController (abstractTestVisibility):
     def setUp (self):
         super (TestWindowController, self).setUp ()
-        self.app = cimarron.skin.App()
+        self.app = cimarron.skin.Application()
         self.win= self.widget= WindowController (parent= self.app)
 
     def testVisible (self):

@@ -7,7 +7,7 @@ class MainWindowController(cimarron.skin.WindowController):
        self.win.title = 'Main Window'
        cimarron.skin.Button(parent=self.win, label='Hello')
 
-app = cimarron.skin.App()
+app = cimarron.skin.Application()
 w = MainWindowController(parent=app)
 w.show()
 app.run()

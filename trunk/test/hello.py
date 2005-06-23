@@ -27,7 +27,7 @@ __all__ = ('TestHelloWorld',)
 
 class TestHelloWorld(unittest.TestCase):
     def setUp(self):
-        self.app = skin.App()
+        self.app = skin.Application()
     def testSkinArgv(self):
         self.assertEqual(skin.__name__, 'fvl.cimarron.skins.gtk2')
     def testWindow(self):

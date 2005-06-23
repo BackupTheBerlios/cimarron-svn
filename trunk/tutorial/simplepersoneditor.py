@@ -33,7 +33,7 @@ class PersonEditor(cimarron.skin.WindowController):
     target = property(getTarget, setTarget, None,
     	"""The person we're editing""")
     
-app = cimarron.skin.App()
+app = cimarron.skin.Application()
 w = PersonEditor(parent=app)
 w.show()
 w.target = Person(name="John", surname="Doe")

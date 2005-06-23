@@ -19,7 +19,7 @@
 # Suite 330, Boston, MA 02111-1307 USA
 
 from base import Controller, WindowController, DelayedTraversal
-from app import App
+from app import Application
 from search import SearchEntry, Search
 from grid import Grid
 from crud import CRUDController, Editor

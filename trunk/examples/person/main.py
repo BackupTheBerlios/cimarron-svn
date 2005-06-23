@@ -24,7 +24,7 @@ cimarron.config ()
 from windows import Main
 
 def main ():
-    app= cimarron.skin.App ()
+    app= cimarron.skin.Application ()
     w= Main (parent= app)
     w.show ()
     app.run ()

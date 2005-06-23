@@ -22,7 +22,7 @@ from fvl import cimarron
 from fvl.cimarron.skins.common import Unknown, ForcedYes
 from base import Controller
 
-__all__ = ('App',)
+__all__ = ('Application',)
 
 class WindowContainer(list):
     """
@@ -35,19 +35,19 @@ class WindowContainer(list):
         super(WindowContainer, self).append(window)
         window.delegates.append(self.__controller)
 
-class App(Controller):
+class Application(Controller):
     """
-    An App represents the main loop of the application.
+    An Application represents the main loop of the application.
     It is the C{parent} for the first B{Window}s.
     """
     def __init__(self, **kw):
-        assert 'parent' not in kw, 'App should have no parent'
-        super(App, self).__init__(**kw)
+        assert 'parent' not in kw, 'Application should have no parent'
+        super(Application, self).__init__(**kw)
         self._children = WindowContainer(self)
 
     def run(self):
         """
-        Run the App. Will actually show any shown window,
+        Run the Application. Will actually show any shown window,
         and keep runnuing until:
           - all the windows are closed, or
           - someone calls C{quit()} and no window opposes
@@ -57,7 +57,7 @@ class App(Controller):
 
     def quit(self):
         """
-        Terminates the App.
+        Terminates the Application.
         """
         cimarron.skin._quit()
 

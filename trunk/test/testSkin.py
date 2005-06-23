@@ -25,4 +25,4 @@ class TestSkin(unittest.TestCase):
         from fvl import cimarron
         cimarron.config()
     def testImportFromSkin(self):
-        from fvl.cimarron.skin import App
+        from fvl.cimarron.skin import Application

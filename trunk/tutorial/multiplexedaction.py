@@ -17,7 +17,7 @@ class MainWindowController(cimarron.skin.WindowController):
        else:
            print 'Ouch!!! Don\'t do that!'
 
-app = cimarron.skin.App()
+app = cimarron.skin.Application()
 w = MainWindowController(parent=app)
 w.show()
 app.run()
