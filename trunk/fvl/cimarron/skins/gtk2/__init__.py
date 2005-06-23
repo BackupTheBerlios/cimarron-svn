@@ -123,6 +123,28 @@ class Label(Widget):
         return self._widget.get_text()
     text = property(_get_text, _set_text, None, """The static test.""")
 
+class Image(Widget):
+	"""
+	A Image is a Static Picture loaded from a file
+	"""
+	def __init__(self,aFile=None,**kw):
+		self._widget = gtk.Image()
+		super(Image,self).__init__(**kw)
+		self.imgFile = self.aFile = aFile
+
+	def show(self):
+		self._widget.show()
+		
+	def _set_file(self,aFile):
+		self._widget.set_from_file(aFile)
+	
+	def _get_file(self):
+		return self.aFile
+
+	imgFile = property(_get_file, _set_file, None, """The static test.""")
+	
+		
+
 class Button(GtkFocusableMixin, Control):
     """
     A Button is a Control that can be pressed, and when it does,

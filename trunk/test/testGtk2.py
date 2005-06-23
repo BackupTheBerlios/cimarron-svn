@@ -34,6 +34,7 @@ from model.person import Person
 from testCommon import abstractTestWidget, abstractTestVisibility
 from testWindow import TestWindow
 from testLabel import TestLabel
+from testImage import TestImage
 from testButton import TestButton, TestCheckbox
 from testEntry import TestEntry
 from testBox import TestBoxes
@@ -44,6 +45,7 @@ from testGrid import TestSelectionGrid, TestGrid
 __all__ = ('TestGtkEntry',
            'TestGtkWindow',
            'TestGtkLabel',
+	   'TestImage',
            'TestGtkButton',
            'TestGtkCheckbox',
            'TestGtkEntry',
