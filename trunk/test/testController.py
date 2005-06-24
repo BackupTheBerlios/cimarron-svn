@@ -232,6 +232,7 @@ class TestBarController (TestController):
     def setUp (self):
         self.target = (dict(foo=1, bar=2, baz=3),
                        dict (a=1, b= 2, c= 3))
+        self.attribute = None
         super (TestBarController, self).setUp ()
         self.parent = self.win = cimarron.skin.Window(title='Test 2',
                                                       parent=self.app)
