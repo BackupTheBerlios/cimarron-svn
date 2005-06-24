@@ -335,7 +335,7 @@ class Control(Widget):
         if target is not _placeholder:
             self.target= target
         if self.target is not None and self.attribute is not None:
-            value= getattr (self.target, self.attribute)
+            value= self.target.getattr(self.attribute)
         else:
             value= self.target
         # print self.target, value
@@ -349,7 +349,7 @@ class Control(Widget):
         if value is not _placeholder:
             self.value= value
         if self.attribute is not None:
-            setattr (self.target, self.attribute, self.value)
+            self.target.setattr(self.attribute, self.value)
         else:
             self.target= self.value
         

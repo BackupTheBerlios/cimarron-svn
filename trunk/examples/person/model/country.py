@@ -18,7 +18,9 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-class Country (object):
+from base import Model
+
+class Country (Model):
     def __init__ (self, name='', phone='', iso2='', iso3='', un=''):
         self.name= name
         self.phone= phone
@@ -83,7 +85,7 @@ class Country (object):
         return 'Country name: '+self.name
 
 
-class State (object):
+class State (Model):
     def __init__ (self, name='', country=None):
         self.name= name
         self.country= country
@@ -117,7 +119,7 @@ class State (object):
         return 'State name: '+ self.name+', Country: '+str (self.country)
 
 
-class City (object):
+class City (Model):
     def __init__ (self, name='', state=None):
         self.name= name
         self.state= state

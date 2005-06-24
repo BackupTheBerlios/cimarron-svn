@@ -18,7 +18,9 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-class Person (object):
+from base import Model
+
+class Person (Model):
     def __init__ (self, name='', surname='', addresses= []):
         self.setName (name)
         self.setSurname (surname)
@@ -82,7 +84,7 @@ class Person (object):
     search= classmethod (search)
 
 
-class Address (object):
+class Address (Model):
     def __init__ (self, text=''):
         self.text= text
         self.isDirty= False

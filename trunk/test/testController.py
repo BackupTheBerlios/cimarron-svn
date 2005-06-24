@@ -213,34 +213,28 @@ class BarController (Controller):
         self.mainWidget = self.foo
         self.refresh ()
 
-    def _get_value (self):
-        try:
-            return self.target[self.index]
-        except:
-            return None
-    def _set_value (self, value):
-        try:
-            self.index= self.target.index (value)
-        except:
-            self.index= None
-    value= property (_get_value, _set_value)
-
     def refresh (self):
         self.foo.refresh ()
 
-class TestBarController (TestController):
-    def setUp (self):
-        self.target = (dict(foo=1, bar=2, baz=3),
-                       dict (a=1, b= 2, c= 3))
-        self.attribute = None
-        super (TestBarController, self).setUp ()
+class FooList(list):
+    def getattr(self, attr):
+        return self[attr]
+
+class TestBarController(TestController):
+    def setUp(self):
+        self.target = FooList([dict(foo=1, bar=2, baz=3),
+                               dict(a=1, b= 2, c=3),
+                               ])
+        self.attribute = 0
+        self.value = self.target.getattr(self.attribute)
+        super(TestBarController, self).setUp()
         self.parent = self.win = cimarron.skin.Window(title='Test 2',
                                                       parent=self.app)
         def here (*a):
             print 'here!'
         self.widget= BarController (parent=self.win, target=self.target,
-                                    onAction=here)
-        self.value= self.target
+                                    attribute=self.attribute, onAction=here)
+        self.widget.refresh()
 
     def testRoll (self):
         self.widget.next.onAction()
