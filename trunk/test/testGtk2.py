@@ -144,6 +144,10 @@ class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
         self.widget.value= 'this is a test'
         self.assertEqual (self.widget._widget.get_text(), self.widget.value)
 
+    def testValueIsTargetWhenNoAttr (self):
+        self.target= getattr (self.target, self.attribute)
+        super (TestGtkEntry, self).testValueIsTargetWhenNoAttr ()
+
 class TestGtkWindow(testGtkVisibility, TestWindow):
     pass
 

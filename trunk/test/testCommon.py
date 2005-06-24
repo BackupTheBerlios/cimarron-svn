@@ -142,7 +142,7 @@ class abstractTestControl(abstractTestWidget):
 
         self.assert_ (self.widget.value is None, str (self.widget.value))
 
-    def testValuesIsTargetWhenNoAttr (self):
+    def testValueIsTargetWhenNoAttr (self):
         self.widget.attribute= None
         self.widget.newTarget (self.target)
 

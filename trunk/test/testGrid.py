@@ -69,9 +69,9 @@ class TestGrid (abstractTestControl):
         except (TypeError, IndexError):
             self.assertEqual (self.widget.new.name, 'juan')
 
-    def testValuesIsTargetWhenNoAttr (self):
+    def testValueIsTargetWhenNoAttr (self):
         self.target= self.list
-        super (TestGrid, self).testValuesIsTargetWhenNoAttr ()
+        super (TestGrid, self).testValueIsTargetWhenNoAttr ()
 
 
 class TestSelectionGrid (abstractTestControl):
@@ -115,7 +115,7 @@ class TestSelectionGrid (abstractTestControl):
         self.widget.value= None
         self.assertEqual (self.widget.value, None)
 
-    def testValuesIsTargetWhenNoAttr (self):
+    def testValueIsTargetWhenNoAttr (self):
         self.target= self.list[0]
         self.widget.index= 0
-        super (TestSelectionGrid, self).testValuesIsTargetWhenNoAttr ()
+        super (TestSelectionGrid, self).testValueIsTargetWhenNoAttr ()
