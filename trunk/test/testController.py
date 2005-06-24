@@ -182,17 +182,18 @@ class TestFooController(TestController):
     
 
 class BarController (Controller):
-    def __init__ (self, **kw):
+    def __init__ (self, data=None, **kw):
         super (BarController, self).__init__ (**kw)
         v= cimarron.skin.VBox (parent=self)
         h= cimarron.skin.HBox (parent= v)
         self.prev= cimarron.skin.Button (parent= h, label='<<', value=-1)
         self.next= cimarron.skin.Button (parent= h, label='>>', value=1)
         self.index= 0
+        self.data= data
 
         def onFooAction(foo, *a):
             self.onAction(*a)
-        self.foo= FooController (parent=v, target=self.target[self.index],
+        self.foo= FooController (parent=v, target=self.data[self.index],
                                  onAction=onFooAction)
 
         def onOkAction(ok, *a):
@@ -213,6 +214,18 @@ class BarController (Controller):
         self.mainWidget = self.foo
         self.refresh ()
 
+#     def _get_value (self):
+#         try:
+#             return self.data[self.index]
+#         except:
+#             return None
+#     def _set_value (self, value):
+#         try:
+#             self.index= self.data.index (value)
+#         except:
+#             self.index= None
+#     value= property (_get_value, _set_value)
+
     def refresh (self):
         self.foo.refresh ()
 
@@ -222,9 +235,10 @@ class FooList(list):
 
 class TestBarController(TestController):
     def setUp(self):
-        self.target = FooList([dict(foo=1, bar=2, baz=3),
-                               dict(a=1, b= 2, c=3),
-                               ])
+        self.list= [dict(foo=1, bar=2, baz=3),
+            dict(a=1, b= 2, c=3),
+            ]
+        self.target = FooList(self.list)
         self.attribute = 0
         self.value = self.target.getattr(self.attribute)
         super(TestBarController, self).setUp()
@@ -232,8 +246,9 @@ class TestBarController(TestController):
                                                       parent=self.app)
         def here (*a):
             print 'here!'
-        self.widget= BarController (parent=self.win, target=self.target,
+        self.widget= BarController (parent=self.win, data=self.list,
                                     attribute=self.attribute, onAction=here)
+        # self.value= self.list[0]
         self.widget.refresh()
 
     def testRoll (self):

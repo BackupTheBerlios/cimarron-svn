@@ -23,12 +23,13 @@ import unittest
 from fvl import cimarron
 
 from model.person import Person
+from model.base import Model
 
 from testCommon import abstractTestControl
 
 __all__= ('TestSelectionGrid', 'TestGrid')
 
-class DummyTarget (object):
+class DummyTarget (Model):
     def __init__ (self, dummy):
         self.dummy= dummy
 
