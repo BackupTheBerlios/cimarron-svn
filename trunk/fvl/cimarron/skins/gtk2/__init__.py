@@ -176,6 +176,9 @@ class Button(GtkFocusableMixin, Control):
         skelargs['label'] = self.label
         return skelargs
 
+    def refresh (self):
+        pass
+
 class Checkbox(Button):
     """
     A Control that represents a boolean value.
@@ -190,6 +193,9 @@ class Checkbox(Button):
         self._widget.set_active(checked)
     checked = property(_get_checked, _set_checked)
 
+    def refresh (self):
+        pass
+
 
 class Entry(GtkFocusableMixin, Control):
     """
@@ -198,7 +204,7 @@ class Entry(GtkFocusableMixin, Control):
     def __init__(self, **kw):
         self._widget = gtk.Entry ()
         super(Entry, self).__init__(**kw)
-        self.update ()
+        self.refresh ()
         self._widget.connect ('activate', self._activate)
         self._widget.connect ('key-press-event', self._keypressed)
         self.delegates.append (self)
@@ -211,10 +217,10 @@ class Entry(GtkFocusableMixin, Control):
         # NOT (our value is None AND the value to set is an empty string)
         # if not hasattr (self, '__value') or not (self.__value is None and value==''):
         self.__value = value
-        self.update ()
+        self.refresh ()
     value= property (_get_value, _set_value, None, """""")
 
-    def update (self):
+    def refresh (self):
         """
         Show the value on the control.
         """
@@ -328,7 +334,7 @@ class Grid (ColumnAwareXmlMixin, Controller):
             objects, and eventually how to save data back to.
         """
         self._widget= self._tv= gtk.TreeView ()
-        self.mainWidget= self
+        # self.mainWidget= self
         self.columns= columns
 
         self.klass= klass
@@ -344,6 +350,7 @@ class Grid (ColumnAwareXmlMixin, Controller):
         # this was not done because it was initializing
         # is this still true?
         self.refresh ()
+
     def attributesToConnect (klass):
         return ['klass']+super (Grid, klass).attributesToConnect ()
     attributesToConnect= classmethod (attributesToConnect)
@@ -502,16 +509,14 @@ class SelectionGrid (ColumnAwareXmlMixin, Controller):
     data= property (_get_data, _set_data, None,
                     """The list of objects to be shown.""")
 
+    def _cursor_changed (self, *ignore):
+        self.__index= int (self._tv.get_cursor ()[0][0])
     def _set_index (self, index):
         if index is not None:
             self._tv.set_cursor (index)
+        self.__index= index
     def _get_index (self):
-        try:
-            # goddam get_cursor() returns path as tuple,
-            # not like the path passed to cell_edited()
-            return int (self._tv.get_cursor ()[0][0])
-        except:
-            return None
+        return self.__index
     index= property (_get_index, _set_index, None,
                      """The index of the object currently selected.
                      If no object is selected, it is None.""")
@@ -520,12 +525,19 @@ class SelectionGrid (ColumnAwareXmlMixin, Controller):
         try:
             index= self.data.index (value)
         except (ValueError, AttributeError):
+            #   the value is not present
+            #               data might be None?
             index= None
+            # what about building a new item?
         self.index= index
+        # super (SelectionGrid, self)._set_value (value)
+        # print '-> value:', value, 'index:', index
+        
     def _get_value (self):
         ans= None
         if self.index is not None:
             ans= self.data[self.index]
+        # print '<- value:', ans, 'index:', self.index
         return ans
     value= property (_get_value, _set_value, None,
                      """The selected object. If no object is selected, it is None.""")

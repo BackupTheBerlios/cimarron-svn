@@ -295,6 +295,7 @@ alguno de éstos:
 * Yes: la opinión es `por mí si, pero preguntale al resto´.
 * ForcedYes: la acción se hará ahora, entendido?
 
+
 Grids
 ~~~~~
 Los Grids son tablas que sirven para el mostrado y edición de un
@@ -356,3 +357,38 @@ de los objetos mostrados. Si hay un objeto seleccionado, ése es el
 valor del Grid; sino lo hay, el valor es None.
 
 Al presionar <Enter>, se dispara la acción.
+
+
+Target, attribute y value
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Todo Control tiene estos tres atributos. Para que sirven? Esa es una
+pregunta de no facil respuesta. Empecemos diciendo como se
+relacionan... ah, porque se relacionan!
+
+El valor de un Control es el objeto que esta modificando, con su
+estado actual. Es posible que ese valor sea None, indicando que ... El
+target de un Control es el objeto que _contiene_ el valor. Esta
+contencion esta dada segun la siguiente formas:
+
+* Si attribute es None, target es lo mismo que value y viceversa.
+
+* Si attribute es un nombre de atributo valido, value es el valor del
+  atributo attribute de target.
+
+Esto nos permite, por ejemplo, asociar un Entry con un Person (a
+traves del target) y especificarle que aspecto del Person esta editando
+(por ejeplo, el nombre). En este caso, target seria un Person,
+attribute seria 'name'[1] y value seria el valor correspondiente del
+nombre de ese Person.
+
+Tambien nos permite poder darle a un Control[2] un target de tipo
+Person para que lo edite, sin que tenga que ser el aspeto de ningun
+otro objeto.
+
+<Explicar el caso de un Crud de Person>
+
+--
+[1] Asuminedo que es el nombre del atributo correcto.
+
+[2] En realidad, muy probablemente sea un Controller.

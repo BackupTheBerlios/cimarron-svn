@@ -38,19 +38,7 @@ class Controller(Control, Container):
                       # Controller, that which fires when you press
                       # enter.
     def __init__(self, **kw):
-        self.__initialized = False
         super (Controller, self).__init__ (**kw)
-        self.__initialized = True
-
-    def _set_value(self, value):
-        self.__value= value
-        if self.__initialized:
-            self.refresh()
-    def _get_value(self):
-        return self.__value
-    value = property(_get_value, _set_value, doc="""Holds the Model for the B{Controller}.
-        Note that the name is the same that the I{value} for B{Control}.
-        That way, Controllers can act as Controls.""")
 
     def fromXmlFile(klass, filename):
         """

@@ -28,49 +28,14 @@ from testCommon import abstractTestControl
 
 __all__= ('TestSelectionGrid', 'TestGrid')
 
-class TestSelectionGrid (abstractTestControl):
-    def setUp (self):
-        super (TestSelectionGrid, self).setUp ()
-        self.model= [
-            Person ('jose', 'perez'),
-            Person ('marcos', 'dione'),
-            Person ('john', 'lenton'),
-            ]
-        columns= (
-            cimarron.skin.Column (name='Nombre', read=Person.getName, write=Person.setName),
-            cimarron.skin.Column (name='Apellido', read=Person.getSurname, write=Person.setSurname),
-            )
-
-        self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
-        self.widget= self.grid= cimarron.skin.SelectionGrid (
-            parent= self.parent,
-            columns= columns,
-            )
-
-        # so testValue passes
-        self.value= None
-        self.widget.data= self.model
-
-    def testIndex (self):
-        for i in xrange (len (self.model)):
-            self.widget.index= i
-            self.assertEqual (self.model[i], self.widget.value)
-
-    def testValue (self):
-        for i in xrange (len (self.model)):
-            self.widget.value= self.model[i]
-            self.assertEqual (self.model[i], self.widget.value)
-
-    def testNoValue (self):
-        self.widget.data = []
-        self.widget.value= None
-        self.assertEqual (self.widget.value, None)
-
+class DummyTarget (object):
+    def __init__ (self, dummy):
+        self.dummy= dummy
 
 class TestGrid (abstractTestControl):
     def setUp (self):
         super (TestGrid, self).setUp ()
-        self.value= [
+        self.list= [
             Person ('jose', 'perez'),
             Person ('marcos', 'dione'),
             Person ('john', 'lenton'),
@@ -87,7 +52,8 @@ class TestGrid (abstractTestControl):
             klass= Person,
             )
 
-        self.widget.value= self.value
+        target= DummyTarget (self.list)
+        self.setUpControl (target=target, attr='dummy')
 
     def testIndex (self):
         for i in xrange (len (self.widget.value)):
@@ -102,3 +68,54 @@ class TestGrid (abstractTestControl):
             self.assertEqual (self.widget.value[0].name, 'juan')
         except (TypeError, IndexError):
             self.assertEqual (self.widget.new.name, 'juan')
+
+    def testValuesIsTargetWhenNoAttr (self):
+        self.target= self.list
+        super (TestGrid, self).testValuesIsTargetWhenNoAttr ()
+
+
+class TestSelectionGrid (abstractTestControl):
+    def setUp (self):
+        super (TestSelectionGrid, self).setUp ()
+        self.list= [
+            Person ('jose', 'perez'),
+            Person ('marcos', 'dione'),
+            Person ('john', 'lenton'),
+            ]
+        columns= (
+            cimarron.skin.Column (name='Nombre', read=Person.getName, write=Person.setName),
+            cimarron.skin.Column (name='Apellido', read=Person.getSurname, write=Person.setSurname),
+            )
+
+        self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
+        self.widget= self.grid= cimarron.skin.SelectionGrid (
+            parent= self.parent,
+            columns= columns,
+            data= self.list,
+            )
+
+        # so testValue passes
+        # self.value= person
+        # self.widget.target= self.target
+        target= DummyTarget (self.list[0])
+        self.setUpControl (target=target, attr='dummy')
+
+    def testIndex (self):
+        for i in xrange (len (self.list)):
+            self.widget.index= i
+            self.assertEqual (self.list[i], self.widget.value)
+
+    def testValue (self):
+        for i in xrange (len (self.list)):
+            self.widget.value= self.list[i]
+            self.assertEqual (self.list[i], self.widget.value)
+
+    def testNoValue (self):
+        self.widget.data = []
+        self.widget.value= None
+        self.assertEqual (self.widget.value, None)
+
+    def testValuesIsTargetWhenNoAttr (self):
+        self.target= self.list[0]
+        self.widget.index= 0
+        super (TestSelectionGrid, self).testValuesIsTargetWhenNoAttr ()

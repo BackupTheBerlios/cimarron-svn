@@ -28,7 +28,7 @@ from model.country import Country, State
 
 from testCommon import abstractTestControl, abstractTestVisibility
 
-__all__ = ('TestController',
+__all__ = ('TestFooController',
            'TestBarController',
            'TestApp',
            'TestWindowController',
@@ -40,86 +40,11 @@ def visualTest():
     app = cimarron.skin.Application()
     cimarron.config()
     win = cimarron.skin.Window(parent=app)
-    foo = FooController(parent=win, value=dict(foo=1,bar=2,baz=3))
+    foo = FooController(parent=win, target=dict(foo=1,bar=2,baz=3))
     app.show()
     app.run()
 
-class FooController(Controller):
-    def __init__(self, **kw):
-        super (FooController, self).__init__ (**kw)
-        self.box= cimarron.skin.VBox (parent=self)
-        h= cimarron.skin.HBox (parent=self.box)
-        self.entry= cimarron.skin.Entry (parent=h)
-        self.label= cimarron.skin.Label (parent=h, text='Nothing yet')
-        self.button= cimarron.skin.Button (parent=self.box, label='Press me')
-        self.daLabel= cimarron.skin.Label (parent=self.box)
-
-        self.mainWidget = self.button
-
-        # connect them
-        def onButtonAction(button, *a):
-            # we put this Controller in the place of the Button
-            # so the action seems to come (as it does!) from the controller
-            self.onAction(*a)
-        self.button.onAction= onButtonAction
-        self.entry.onAction= self.changeModel
-
-        # this must be called when finished constructing the Controller
-        self.refresh ()
-
-    def changeModel (self, *ignore):
-        key = self.entry.value
-        try:
-            (key, value)= key.split (':', 1)
-            self.value[key]= value
-            self.entry.value = key
-        except ValueError, e:
-            pass
-        self.refresh()
-
-    def refresh(self):
-        self.label.text= str (self.value.get (self.entry.value, 'Not found'))
-        self.daLabel.text = pformat(self.value)
-
-class Connection (object):
-    pass
-    
-class TestController(abstractTestControl):
-    def setUp (self):
-        self.value = dict(foo=1,
-                          bar=2,
-                          baz=3)
-
-        super (TestController, self).setUp ()
-        self.parent = self.win = cimarron.skin.Window(title='Test',
-                                                      parent=self.app)
-        self.widget= FooController (parent=self.win, value=self.value)
-
-    def testModel (self):
-        self.widget.entry.value = 'foo'
-        self.widget.entry.onAction (self.widget)
-        self.assertEqual(self.widget.label.text, '1')
-
-    def testChangeModel(self):
-        self.widget.entry.value = 'quux:5'
-        self.widget.entry.onAction(self.widget)
-        self.assertEqual(self.widget.label.text, '5',
-                         'Label was not updated')
-        self.assertEqual(self.widget.entry.value, 'quux',
-                         'Entry was not updated')
-
-    def testRefresh(self):
-        self.value['foo'] = '7'
-        self.widget.refresh()
-        self.widget.entry.value = 'foo'
-        self.widget.entry.onAction()
-        self.assertEqual(self.widget.label.text, '7')
-
-    def testSetValue(self):
-        self.widget.entry.value = 'quux'
-        self.widget.value = dict(quux='-13')
-        self.assertEqual(self.widget.label.text, '-13')
-
+class TestController (abstractTestControl):
     def testFromXmlNonexistantFile(self):
         self.assertRaises(OSError, self.widget.fromXmlFile, 'xyzzy')
 
@@ -154,6 +79,103 @@ class TestController(abstractTestControl):
         # test 2: the call works
         obj= self.widget.attrToConnect ()
         self.assertEqual (type (obj), Connection)
+
+
+class FooController(Controller):
+    def __init__(self, **kw):
+        super (FooController, self).__init__ (**kw)
+        self.box= cimarron.skin.VBox (parent=self)
+        h= cimarron.skin.HBox (parent=self.box)
+        self.entry= cimarron.skin.Entry (parent=h)
+        self.label= cimarron.skin.Label (parent=h, text='Nothing yet')
+        self.button= cimarron.skin.Button (parent=self.box, label='Press me')
+        self.daLabel= cimarron.skin.Label (parent=self.box)
+
+        self.mainWidget = self.button
+
+        # connect them
+        def onButtonAction(button, *a):
+            # we put this Controller in the place of the Button
+            # so the action seems to come (as it does!) from the controller
+            self.onAction(*a)
+        self.button.onAction= onButtonAction
+        self.entry.onAction= self.changeModel
+
+        # this must be called when finished constructing the Controller
+        self.refresh ()
+
+    def changeModel (self, *ignore):
+        """
+        Tries to add a new item to the target by splitting
+        entry.value by ':'. in either case, call refresh().
+        """
+        key = self.entry.value
+        try:
+            (key, value)= key.split (':', 1)
+            self.target[key]= value
+            self.entry.value = key
+            self.value= value
+        except ValueError, e:
+            pass
+        self.refresh()
+
+    def refresh(self):
+        """
+        Put the Controller's value in the labels.
+        """
+        self.label.text= str (self.target.get (self.entry.value, 'Not found'))
+        self.daLabel.text = pformat(self.value)
+
+class Connection (object):
+    pass
+
+class TestFooController(TestController):
+    def setUp (self):
+        self.target = dict(foo=1,
+                          bar=2,
+                          baz=3)
+
+        super (TestController, self).setUp ()
+        self.parent = self.win = cimarron.skin.Window(title='Test',
+                                                      parent=self.app)
+        self.widget= FooController (parent=self.win, target=self.target)
+        self.value= 'quux:5'
+        self.attribute= None
+        
+    def testModel (self):
+        """
+        Put a key in the entry, fire the action
+        and test for the label contents.
+        """
+        self.widget.entry.value = 'foo'
+        self.widget.entry.onAction (self.widget)
+        self.assertEqual(self.widget.label.text, '1')
+
+    def testChangeModel(self):
+        """
+        Put a new key:value pair.
+        """
+        self.widget.entry.value = 'quux:5'
+        self.widget.entry.onAction(self.widget)
+        self.assertEqual(self.widget.label.text, '5',
+                         'Label was not updated')
+        self.assertEqual(self.widget.entry.value, 'quux',
+                         'Entry was not updated')
+
+    def testRefresh(self):
+        self.target['foo'] = '7'
+        self.widget.refresh()
+        self.widget.entry.value = 'foo'
+        self.widget.entry.onAction()
+        self.assertEqual(self.widget.label.text, '7')
+
+    def testSetValue(self):
+        """
+        This assumes that setting the value re-fires refresh()
+        """
+        self.widget.entry.value = 'quux'
+        self.widget.target = dict(quux='-13')
+        self.assertEqual(self.widget.label.text, '-13')
     
 
 class BarController (Controller):
@@ -167,7 +189,7 @@ class BarController (Controller):
 
         def onFooAction(foo, *a):
             self.onAction(*a)
-        self.foo= FooController (parent=v, value=self.value[self.index],
+        self.foo= FooController (parent=v, target=self.target[self.index],
                                  onAction=onFooAction)
 
         def onOkAction(ok, *a):
@@ -179,7 +201,7 @@ class BarController (Controller):
         def roll(button, *a):
             try:
                 self.index+= button.value
-                self.foo.value= self.value[self.index]
+                self.foo.value= self.value
             except IndexError:
                 self.index-= button.value
 
@@ -188,22 +210,33 @@ class BarController (Controller):
         self.mainWidget = self.foo
         self.refresh ()
 
+    def _get_value (self):
+        try:
+            return self.target[self.index]
+        except:
+            return None
+    def _set_value (self, value):
+        try:
+            self.index= self.target.index (value)
+        except:
+            self.index= None
+    value= property (_get_value, _set_value)
+
     def refresh (self):
         self.foo.refresh ()
 
-class TestBarController (abstractTestControl):
+class TestBarController (TestController):
     def setUp (self):
-        self.value = (dict(foo=1,
-                           bar=2,
-                           baz=3), dict (a=1, b= 2, c= 3))
+        self.target = (dict(foo=1, bar=2, baz=3),
+                       dict (a=1, b= 2, c= 3))
         super (TestBarController, self).setUp ()
         self.parent = self.win = cimarron.skin.Window(title='Test 2',
                                                       parent=self.app)
         def here (*a):
             print 'here!'
-        self.widget= BarController (parent=self.win, value=self.value,
+        self.widget= BarController (parent=self.win, target=self.target,
                                     onAction=here)
-
+        self.value= self.target
 
     def testRoll (self):
         self.widget.next.onAction()
@@ -268,23 +301,25 @@ class TestWindowController (abstractTestVisibility):
         self.will_hide_passed= True
 
 
-class TestCRUDController (abstractTestControl):
+class TestCRUDController (TestController):
     def setUp (self):
         super (TestCRUDController, self).setUp ()
         self.widget= CRUDController.fromXmlFile ('test/testCrud.xml')
         self.widget.parent= self.parent= self.app
-        self.widget.value= self.value= Person (
+        self.widget.target= self.target= Person (
             "Freeman",
             "Newman",
             [Address (text="San luis 870"), Address (text="San luis 594 2D")]
             )
+        self.attribute= 'name'
+        self.value= 'Freeman'
         
     def testRefresh (self):
-        self.widget.value= self.value
-        self.assertEqual (self.widget.editors[0].value, self.value)
-        self.assertEqual (self.widget.editors[1].value, self.value.getAddresses ())
+        self.widget.target= self.target
+        self.assertEqual (self.widget.editors[0].target, self.target)
+        self.assertEqual (self.widget.editors[1].target, self.target.getAddresses ())
 
-class TestEditor (abstractTestControl):
+class TestEditor (TestController):
     def setUp (self):
         super (TestEditor, self).setUp ()
         self.parent= cimarron.skin.Window ()
@@ -292,9 +327,8 @@ class TestEditor (abstractTestControl):
         self.widget.parent= self.parent
         self.entry= self.widget.entries.children[0]
         
-        self.countryName= 'Elbonia'
-        self.setUpControl (value= Country (name=self.countryName))
+        self.setUpControl ()
 
     def testRefresh (self):
-        self.widget.value= self.value
-        self.assertEqual (self.entry.value, self.countryName)
+        self.widget.target= self.target
+        self.assertEqual (self.entry.value, self.value)

@@ -301,6 +301,8 @@ class Container(Widget):
             child.skeleton(skel)
         return skel
 
+class _placeholder(object):
+    """A distinctive placeholder object"""
 
 class Control(Widget):
     """
@@ -316,10 +318,63 @@ class Control(Widget):
         return attrs+['onAction']
     attributesToConnect= classmethod (attributesToConnect)
 
-    def __init__(self, onAction=None, value=None, **kw):
+    def __init__(self, onAction=None, target=None, attribute=None, value=None,
+                 **kw):
+        # self.__initialized = False
         super(Control, self).__init__(**kw)
+        self.target= target
+        self.attribute= attribute
         self.value = value
+        # self.__initialized = True
         self.onAction= onAction
+
+    def newTarget (self, target=_placeholder):
+        """
+        Called when we need to propagate a change elsewere to the value.
+        """
+        if target is not _placeholder:
+            self.target= target
+        if self.target is not None and self.attribute is not None:
+            value= getattr (self.target, self.attribute)
+        else:
+            value= self.target
+        # print self.target, value
+        self.value= value
+        # if self.__initialized:
+        self.refresh()
+    def commitValue (self, value=_placeholder):
+        """
+        Called when we need to propagate a change value to the target.
+        """
+        if value is not _placeholder:
+            self.value= value
+        if self.attribute is not None:
+            setattr (self.target, self.attribute, self.value)
+        else:
+            self.target= self.value
+        
+#     def _set_value(self, value):
+#         self.__value= value
+#     def _get_value(self):
+#         return self.__value
+#     value = property(_get_value, _set_value, doc="""""")
+
+#     def _set_target (self, target):
+#         self.__target= target
+#         self._change_value ()
+#     def _get_target (self):
+#         return self.__target
+#     target= property (_get_target, _set_target,
+#                       doc="""Holds the Model for the B{Control}.
+#         Note that the name is the same that the I{value} for B{Control}.
+#         That way, Controllers can act as Controls.""")
+
+#     def _set_attr (self, attr):
+#         self.__attr= attr
+#         self._change_value ()
+#     def _get_attr (self):
+#         return self.__attr
+#     attribute= property (_get_attr, _set_attr)
 
     def _get_on_action (self):
         return self.__on_action

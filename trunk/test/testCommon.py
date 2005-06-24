@@ -22,6 +22,9 @@ import unittest
 from run import test_options
 from fvl import cimarron
 
+from model.person import Person
+from model.country import Country
+
 class abstractTestBasic(unittest.TestCase, object):
     def setUp(self):
         cimarron.config()
@@ -123,12 +126,45 @@ class abstractTestControl(abstractTestWidget):
     def setUp(self):
         super(abstractTestControl, self).setUp()
         self.messages_recieved = []
-    def setUpControl(self, value='123'):
-        self.widget.value = value
-        self.value = value
+    def setUpControl(self, target=Country (name='Elbonia'), attr='name'):
+        self.widget.attribute= self.attribute= attr
+        self.target= target
+        self.widget.newTarget (self.target)
+        self.value= getattr (target, attr)
 
     def testValue(self):
-        self.assertEqual (self.value, self.widget.value)
+        self.widget.value = self.value
+
+        self.assertEqual (self.widget.value, self.value)
+
+    def testValueFromNone (self):
+        self.widget.newTarget (None)
+
+        self.assert_ (self.widget.value is None, str (self.widget.value))
+
+    def testValuesIsTargetWhenNoAttr (self):
+        self.widget.attribute= None
+        self.widget.newTarget (self.target)
+
+        self.assertEqual (self.widget.value, self.widget.target)
+
+    def testValueWithAttribute (self):
+        # I don't like this workaround that much...
+        # if not isinstance (self.widget, cimarron.controllers.Controller):
+        self.widget.attribute= self.attribute
+        self.widget.newTarget (self.target)
+        
+        self.assertEqual (self.widget.value, self.value)
+
+    def testWriteValueAttribute (self):
+        self.testValueWithAttribute ()
+        
+        self.widget.value= None
+        
+        self.widget.value= self.value
+
+        # if self.attribute:
+        # self.assertEqual (getattr (self.target, self.attribute), self.value)
 
     def testOnAction (self):
         self.widget.onAction= self.notify
@@ -137,6 +173,7 @@ class abstractTestControl(abstractTestWidget):
             w = self.widget
             try:
                 while True:
+                    assert w!=w.mainWidget, w
                     w = w.mainWidget
             except AttributeError:
                 pass
@@ -150,6 +187,13 @@ class abstractTestControl(abstractTestWidget):
             raise NotImplementedError, \
                   'write skin-specific test, please, mastah!'
         self.assert_(self.widget in self.messages_recieved)
-
     def notify(self, origin):
         self.messages_recieved.append(origin)
+
+    def testMainWidgetNotItself (self):
+        try:
+            self.assertNotEqual (self.widget.mainWidget, self.widget)
+        except AttributeError:
+            # the widget has no mainWidget
+            pass
+
