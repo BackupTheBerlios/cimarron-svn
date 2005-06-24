@@ -18,17 +18,21 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+import logging
+from itertools import izip, repeat
+
 import pygtk
 pygtk.require('2.0')
 import gtk, gobject
-from itertools import izip, repeat
 from zope import interface
-from fvl.cimarron.interfaces import IWindow
 
+from fvl.cimarron.interfaces import IWindow
 # clients of cimarron won't want to worry where their stuff is coming
 # from
 from fvl.cimarron.skins.common import *
 from fvl.cimarron.controllers import *
+
+logger = logging.getLogger('fvl.cimarron.skins.gtk2')
 
 class GtkVisibilityMixin(object):
     """

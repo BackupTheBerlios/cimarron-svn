@@ -20,10 +20,13 @@
 
 import os
 import libxml2
+import logging
 
 from fvl import cimarron
 from fvl.cimarron.tools import traverse
 from fvl.cimarron.skins.common import Control, Container
+
+logger = logging.getLogger('fvl.cimarron.controllers.base')
 
 class Controller(Control, Container):
     """

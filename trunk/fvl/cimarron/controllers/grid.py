@@ -18,9 +18,13 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+import logging
+
 from fvl import cimarron
 from base import Controller
 from column import ColumnAwareXmlMixin
+
+logger = logging.getLogger('fvl.cimarron.controllers.grid')
 
 class Grid (ColumnAwareXmlMixin, Controller):
     def __init__ (self, data=[], columns=None, **kw):

@@ -27,16 +27,19 @@ are the foundation of Cimarrón's class hierarchy.
 
 from new import instancemethod
 import operator
-import libxml2
+import logging
 
-__all__ = ('XmlMixin', 'Widget', 'Container', 'Control',
-           'ForcedNo', 'No', 'Unknown', 'Yes', 'ForcedYes')
+import libxml2
 
 from fvl.cimarron.tools import is_simple, traverse
 from fvl import cimarron
 
-def nullAction(*a, **k): pass
+__all__ = ('XmlMixin', 'Widget', 'Container', 'Control',
+           'ForcedNo', 'No', 'Unknown', 'Yes', 'ForcedYes')
 
+logger = logging.getLogger('fvl.cimarron.skins.common')
+
+def nullAction(*a, **k): pass
 
 class DelegationAnswer (int):
     truthTable = (('Unknown', 'Yes', 'No'),

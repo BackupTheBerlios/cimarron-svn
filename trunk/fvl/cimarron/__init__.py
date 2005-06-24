@@ -22,11 +22,19 @@
 L{cimarron} is...
 """
 import sys
+import logging
 
 from zope.schema import Object
 from zope.interface.verify import verifyObject, verifyClass
 
 from fvl.cimarron.interfaces import ISkin
+
+handler = logging.StreamHandler()
+formatter = logging.Formatter("%(asctime)s %(name)40s:%(lineno)03d %(levelname)-8s %(message)s")
+handler.setFormatter(formatter)
+logger = logging.getLogger('fvl.cimarron')
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 DEFAULT_SKIN_NAME = 'gtk2'
 
@@ -52,12 +60,19 @@ def config(skin_name=DEFAULT_SKIN_NAME):
     global skin
     try:
         skin
+        logger.debug('reusing previously imported skin')
     except NameError:
+        logger.debug('importing skin')
         skin = __import__('fvl.cimarron.skins.' + skin_name,
                           globals(), locals(), skin_name)
+
+        logger.debug('verifying skin meets ISkin interface:')
         verifyObject(ISkin, skin)
+        logger.debug(' + %s provides ISkin', skin.__name__)
         for name, desc in ISkin.namesAndDescriptions(1):
             if isinstance(desc, Object):
                 verifyClass(desc.schema, getattr(skin, name))
+                logger.debug(' +  %s provides %s', name, desc.schema.__name__)
 
+        logger.debug('enabling "from fvl.cimarron.skin import Foo"')
         sys.modules['fvl.cimarron.skin'] = skin
