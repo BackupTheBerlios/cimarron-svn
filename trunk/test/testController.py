@@ -134,16 +134,11 @@ class Connection (object):
 
 class TestFooController(TestController):
     def setUp (self):
-        self.target = dict(foo=1,
-                          bar=2,
-                          baz=3)
-
         super (TestController, self).setUp ()
         self.parent = self.win = cimarron.skin.Window(title='Test',
                                                       parent=self.app)
-        self.widget= FooController (parent=self.win, target=self.target)
-        self.value= 'quux:5'
-        self.attribute= None
+        self.widget= FooController (parent=self.win)
+        self.setUpControl (dict(foo=1, bar=2, baz=3), None)
         
     def testModel (self):
         """
@@ -177,7 +172,7 @@ class TestFooController(TestController):
         This assumes that setting the value re-fires refresh()
         """
         self.widget.entry.value = 'quux'
-        self.widget.target = dict(quux='-13')
+        self.widget.newTarget (dict(quux='-13'))
         self.assertEqual(self.widget.label.text, '-13')
     
 
@@ -319,16 +314,20 @@ class TestCRUDController (TestController):
         super (TestCRUDController, self).setUp ()
         self.widget= CRUDController.fromXmlFile ('test/testCrud.xml')
         self.widget.parent= self.parent= self.app
-        self.widget.target= self.target= Person (
-            "Freeman",
-            "Newman",
+#         self.widget.target= self.target= Person (
+#             "Freeman",
+#             "Newman",
+#             [Address (text="San luis 870"), Address (text="San luis 594 2D")]
+#             )
+#         self.attribute= 'name'
+#         self.value= 'Freeman'
+        person= Person ("Freeman", "Newman",
             [Address (text="San luis 870"), Address (text="San luis 594 2D")]
             )
-        self.attribute= 'name'
-        self.value= 'Freeman'
+        self.setUpControl (target= person)
         
     def testRefresh (self):
-        self.widget.target= self.target
+        # self.widget.target= self.target
         self.assertEqual (self.widget.editors[0].target, self.target)
         self.assertEqual (self.widget.editors[1].target, self.target.getAddresses ())
 
