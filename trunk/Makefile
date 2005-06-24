@@ -18,6 +18,7 @@
 # Suite 330, Boston, MA 02111-1307 USA
 
 PYTHON ?= python
+COLORIZER ?= tools/ppython
 EPYDOC ?= epydoc
 EPYDOC_OPTS ?=
 
@@ -38,7 +39,7 @@ distclean: clean
 
 test:
 	$(EPYDOC) --check $(EPYDOC_FILES)
-	PYTHONPATH=.:./examples/person:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS)
+	PYTHONPATH=.:./examples/person:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS) 2>&1 | $(COLORIZER)
 
 install:
 	$(PYTHON) setup.py install
