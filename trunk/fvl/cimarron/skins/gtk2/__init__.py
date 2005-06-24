@@ -483,6 +483,7 @@ class SelectionGrid (ColumnAwareXmlMixin, Controller):
             self._tv.append_column (c)
 
         self._tv.connect ('key-press-event', self._keypressed)
+        self._tv.connect ('cursor_changed', self._cursor_changed)
 
         super (SelectionGrid, self).__init__ (**kw)
 

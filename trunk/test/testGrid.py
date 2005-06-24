@@ -95,9 +95,6 @@ class TestSelectionGrid (abstractTestControl):
             data= self.list,
             )
 
-        # so testValue passes
-        # self.value= person
-        # self.widget.target= self.target
         target= DummyTarget (self.list[0])
         self.setUpControl (target=target, attr='dummy')
 
@@ -114,9 +111,14 @@ class TestSelectionGrid (abstractTestControl):
     def testNoValue (self):
         self.widget.data = []
         self.widget.value= None
-        self.assertEqual (self.widget.value, None)
+        self.assert_ (self.widget.value is None)
 
     def testValueIsTargetWhenNoAttr (self):
-        self.target= self.list[0]
+        self.setUpControl (target=self.list[0], attr=None)
         self.widget.index= 0
         super (TestSelectionGrid, self).testValueIsTargetWhenNoAttr ()
+
+    def testNoTarget (self):
+        self.setUpControl (target=None, attr=None)
+        self.testIndex ()
+        self.testValue ()

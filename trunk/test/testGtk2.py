@@ -208,6 +208,18 @@ class TestGtkSelectionGrid (testGtkParenting, TestSelectionGrid):
         self.widget._keypressed (self.widget, event)
         self.assert_(self.widget in self.messages_recieved)
 
+    def testSelect (self):
+        self.setUpControl (target=None, attr=None)
+        event= gtk.gdk.Event (gtk.gdk.KEY_PRESS)
+        event.keyval= gtk.keysyms.Return
+
+        for i in xrange (len (self.widget.data)):
+            self.widget.index= i
+
+            self.widget._keypressed (self.widget, event)
+            
+            self.assertEqual (self.widget.value, self.widget.data[i])
+
 class TestGtkGrid (testGtkParenting, TestGrid):
     def setUp (self):
         super (TestGtkGrid, self).setUp ()
