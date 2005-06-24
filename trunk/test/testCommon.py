@@ -130,7 +130,10 @@ class abstractTestControl(abstractTestWidget):
         self.widget.attribute= self.attribute= attr
         self.target= target
         self.widget.newTarget (self.target)
-        self.value= getattr (target, attr)
+        if attr is not None:
+            self.value= getattr (target, attr)
+        else:
+            self.value= target
 
     def testValue(self):
         self.widget.value = self.value

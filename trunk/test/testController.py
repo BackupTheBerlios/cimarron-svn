@@ -123,7 +123,10 @@ class FooController(Controller):
         """
         Put the Controller's value in the labels.
         """
-        self.label.text= str (self.target.get (self.entry.value, 'Not found'))
+        if self.target is not None:
+            self.label.text= str (self.target.get (self.entry.value, 'Not found'))
+        else:
+            self.label.text= ''
         self.daLabel.text = pformat(self.value)
 
 class Connection (object):

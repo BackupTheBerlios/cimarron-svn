@@ -25,23 +25,6 @@ from testGrid import Person
 
 __all__=('TestSearch',)
 
-# class PersonSearch (cimarron.controllers.SearchEntry):
-#     def search (self, values):
-#         name, surname= values[:2]
-#         ans= []
-
-#         for i in self.data:
-#             found= False
-#             if name is not None:
-#                 found= name in i.name
-#             if surname is not None:
-#                 found= found and surname in i.surname
-
-#             if found:
-#                 ans.append (i)
-
-#         return ans
-
 class TestSearch (abstractTestControl):
     def setUp (self):
         super (TestSearch, self).setUp ()
@@ -61,7 +44,8 @@ class TestSearch (abstractTestControl):
             Person ('john', 'lenton'),
             Person ('pedro', 'dargenio'),
             ]
-        self.value= self.widget.value= self.data[0]
+        
+        self.setUpControl (target=self.data[0], attr=None)
 
     def testNoneInEmptyFound (self):
         # here we 'plant' the data, but real Search's will fetch its own data
