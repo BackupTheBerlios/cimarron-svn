@@ -29,12 +29,7 @@ from zope.interface.verify import verifyObject, verifyClass
 
 from fvl.cimarron.interfaces import ISkin
 
-handler = logging.StreamHandler()
-formatter = logging.Formatter("%(asctime)s %(name)40s:%(lineno)03d %(levelname)-8s %(message)s")
-handler.setFormatter(formatter)
 logger = logging.getLogger('fvl.cimarron')
-logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
 
 DEFAULT_SKIN_NAME = 'gtk2'
 
