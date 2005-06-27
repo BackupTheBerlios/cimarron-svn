@@ -82,7 +82,7 @@ class TestController (abstractTestControl):
 
 
 class FooController(Controller):
-    def __init__(self, **kw):
+    def __init__(self, target=None, **kw):
         super (FooController, self).__init__ (**kw)
         self.box= cimarron.skin.VBox (parent=self)
         h= cimarron.skin.HBox (parent=self.box)
@@ -92,6 +92,7 @@ class FooController(Controller):
         self.daLabel= cimarron.skin.Label (parent=self.box)
 
         self.mainWidget = self.button
+        self.newTarget(target)
 
         # connect them
         def onButtonAction(button, *a):
