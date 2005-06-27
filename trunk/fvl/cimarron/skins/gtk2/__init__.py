@@ -254,7 +254,7 @@ class Entry(GtkFocusableMixin, Control):
         """
         if key_event.keyval==gtk.keysyms.Escape:
             # esc; `reset' the value
-            self.update ()
+            self.refresh()
 
 class VBox(Container):
     """
