@@ -325,19 +325,27 @@ class Control(Widget):
         self.target= target
         self.attribute= attribute
         self.value = value
+        if value is None and target is not None:
+            self.newTarget()
         # self.__initialized = True
         self.onAction= onAction
 
     def newTarget (self, target=_placeholder):
         """
         Called when we need to propagate a change elsewere to the value.
+
+        You I{must} call L{newTarget} when you have finished setting
+        up a L{Control}, so that target/attribute/value are in sync.
+
+        No, we can't do it automatically: we don't know when you've
+        finished setting up the L{Control}.
         """
         if target is not _placeholder:
-            self.target= target
+            self.target = target
         if self.target is not None and self.attribute is not None:
-            value= self.target.getattr(self.attribute)
+            value = self.target.getattr(self.attribute)
         else:
-            value= self.target
+            value = self.target
         # print self.target, value
         self.value= value
         # if self.__initialized:
@@ -392,6 +400,7 @@ class Control(Widget):
         for the particluar Control) is issued.""")
 
     def _activate(self, *ignore):
+        self.commitValue()
         if self.onAction is not None:
             self.onAction()
 
