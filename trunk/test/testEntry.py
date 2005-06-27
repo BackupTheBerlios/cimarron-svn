@@ -20,9 +20,12 @@
 
 import unittest
 from fvl import cimarron
-from testCommon import abstractTestControl
+cimarron.config()
 
-__all__ = ('TestEntry',
+from testCommon import abstractTestControl
+from model.country import Country
+
+__all__ = ('TestEntrySomeMore',
            )
 
 class TestEntry(abstractTestControl):
@@ -35,3 +38,20 @@ class TestEntry(abstractTestControl):
 
     def testSetValue (self):
         raise NotImplementedError, 'you should subclass testEntry'
+
+
+class TestEntrySomeMore(unittest.TestCase):
+    def setUp(self):
+        self.target = Country(name='Gergovia')
+        self.app = cimarron.skin.Application()
+        self.win = cimarron.skin.Window(title='Test', parent=self.app)
+        self.widget = self.entry = cimarron.skin.Entry(parent=self.win,
+                                                       target=self.target,
+                                                       attribute='name')
+    def testNewTargetCalledUponInit(self):
+        self.assertEqual(self.widget.value, self.target.name)
+        
+    def testValueReachesModelOnActivate(self):
+        self.widget.value = 'Paysandu'
+        self.widget._activate()
+        self.assertEqual(self.widget.value, self.target.name)

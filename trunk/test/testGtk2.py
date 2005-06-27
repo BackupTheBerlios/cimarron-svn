@@ -36,13 +36,14 @@ from testWindow import TestWindow
 from testLabel import TestLabel
 from testImage import TestImage
 from testButton import TestButton, TestCheckbox
-from testEntry import TestEntry
+from testEntry import TestEntry, TestEntrySomeMore
 from testBox import TestBoxes
 from testNotebook import TestNotebook
 from testGrid import TestSelectionGrid, TestGrid
 
 
 __all__ = ('TestGtkEntry',
+           'TestEntrySomeMore',
            'TestGtkWindow',
            'TestGtkLabel',
 	   'TestImage',
