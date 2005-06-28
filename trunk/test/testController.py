@@ -315,16 +315,7 @@ class TestCRUDController (TestController):
         super (TestCRUDController, self).setUp ()
         self.widget= CRUDController.fromXmlFile ('test/testCrud.xml')
         self.widget.parent= self.parent= self.app
-#         self.widget.target= self.target= Person (
-#             "Freeman",
-#             "Newman",
-#             [Address (text="San luis 870"), Address (text="San luis 594 2D")]
-#             )
-#         self.attribute= 'name'
-#         self.value= 'Freeman'
-        person= Person ("Freeman", "Newman",
-            [Address (text="San luis 870"), Address (text="San luis 594 2D")]
-            )
+        person= Person.__values__[0]
         self.setUpControl (target= person, attr=None)
         
     def testRefresh (self):
@@ -333,6 +324,37 @@ class TestCRUDController (TestController):
         self.assertEqual (self.widget.editors[0].value, self.target)
         self.assertEqual (self.widget.editors[1].target, self.target)
         self.assertEqual (self.widget.editors[1].value, self.target.getAddresses ())
+
+    def testSearch (self):
+        # too specific stuff! fix if ui changes!
+        vbox= self.widget.note.children[0]
+        search= vbox.children[1]
+        nameEntry= search.entries[0]
+        surnameEntry= search.entries[1]
+        searchButton= search.h.children[-1]
+        personEditor= self.widget.editors[0]
+        addrEditor= self.widget.editors[1]
+
+        # test them, just in case
+        self.assert_ (isinstance (vbox, cimarron.skin.VBox))
+        self.assert_ (isinstance (search, cimarron.skin.SearchEntry))
+        self.assert_ (isinstance (nameEntry, cimarron.skin.Entry))
+        self.assert_ (isinstance (surnameEntry, cimarron.skin.Entry))
+        self.assert_ (isinstance (searchButton, cimarron.skin.Button))
+        self.assert_ (isinstance (personEditor, cimarron.skin.Editor))
+        self.assert_ (isinstance (addrEditor, cimarron.skin.Editor))
+
+        # back to `normality'
+        nameEntry.commitValue ('Freeman')
+        searchButton.onAction ()
+
+        # tests
+        # print surnameEntry
+        # self.assertEqual (surnameEntry.value, 'Newman')
+        self.assertEqual (personEditor.target, self.target)
+        self.assertEqual (personEditor.value, self.target)
+        self.assertEqual (addrEditor.target, self.target)
+        self.assertEqual (addrEditor.value, getattr (self.target, addrEditor.attribute))
 
 class TestEditor (TestController):
     def setUp (self):

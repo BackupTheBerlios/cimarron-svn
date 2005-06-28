@@ -88,7 +88,9 @@ class CRUDController (WindowController):
             value= self.search.value
         else:
             value= model
+        # print 'here1'
         self.commitValue (value)
+        self.refresh ()
 
         # print 'CRUD.changeModel', `model`, model is None, self.search.value, self.value
         if value is not None:
@@ -100,6 +102,7 @@ class CRUDController (WindowController):
         self.onAction ()
 
     def refresh (self):
+        # print 'here3', self.value
         for editor in self.editors:
             editor.newTarget (self.value)
 
@@ -149,11 +152,15 @@ class CRUDController (WindowController):
 
 class Editor (Controller):
     def refresh (self, *ignore):
+        # print 'here 4', self.target, self.value
         try:
             for entry in self.entries.children:
+                # print entry, entry.attribute,
                 entry.newTarget (self.value)
-        except AttributeError:
+                # print entry.target, entry.value
+        except AttributeError, e:
             # the entries are not there yet
+            # print 'ups', e
             pass
 
     def modifyModel (self, control, *ignore):
