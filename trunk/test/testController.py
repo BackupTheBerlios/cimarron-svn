@@ -325,12 +325,14 @@ class TestCRUDController (TestController):
         person= Person ("Freeman", "Newman",
             [Address (text="San luis 870"), Address (text="San luis 594 2D")]
             )
-        self.setUpControl (target= person)
+        self.setUpControl (target= person, attr=None)
         
     def testRefresh (self):
         # self.widget.target= self.target
         self.assertEqual (self.widget.editors[0].target, self.target)
-        self.assertEqual (self.widget.editors[1].target, self.target.getAddresses ())
+        self.assertEqual (self.widget.editors[0].value, self.target)
+        self.assertEqual (self.widget.editors[1].target, self.target)
+        self.assertEqual (self.widget.editors[1].value, self.target.getAddresses ())
 
 class TestEditor (TestController):
     def setUp (self):
@@ -340,8 +342,9 @@ class TestEditor (TestController):
         self.widget.parent= self.parent
         self.entry= self.widget.entries.children[0]
         
-        self.setUpControl ()
+        self.setUpControl (attr=None)
 
     def testRefresh (self):
-        self.widget.target= self.target
-        self.assertEqual (self.entry.value, self.value)
+        # self.widget.target= self.target
+        self.assertEqual (self.entry.target, self.target)
+        self.assertEqual (self.entry.value, getattr (self.value, self.entry.attribute))

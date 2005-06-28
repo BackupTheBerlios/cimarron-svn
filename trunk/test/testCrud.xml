@@ -29,12 +29,14 @@
 
   <Editor label="'Edit'" id="mainEditor">
     <Label text="'name'"/>
-    <Entry read="mainEditor.value.getName" write="mainEditor.value.setName"/>
+    <!-- Entry read="mainEditor.value.getName" write="mainEditor.value.setName"/ -->
+    <Entry target="mainEditor.target" attribute="'name'"/>
     <Label text="'surname'"/>
-    <Entry read="mainEditor.value.getSurname" write="mainEditor.value.setSurname"/>
+    <!-- Entry read="mainEditor.value.getSurname" write="mainEditor.value.setSurname"/ -->
+    <Entry target="mainEditor.target" attribute="'surname'"/>
   </Editor>
 
-  <Editor label="'Addresses'" read="Crud.value.getAddresses" id="Addrs">
+  <Editor label="'Addresses'" attribute="addresses" id="Addrs">
     <Label text="'Addresses'"/>
     <Grid>
       <Column name="'address'" read="Address.getText" write="Address.setText"/>

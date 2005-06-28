@@ -85,12 +85,13 @@ class CRUDController (WindowController):
 
     def changeModel (self, control, model=None):
         if model is None:
-            self.value= self.search.value
+            value= self.search.value
         else:
-            self.value= model
+            value= model
+        self.commitValue (value)
 
         # print 'CRUD.changeModel', `model`, model is None, self.search.value, self.value
-        if self.value is not None:
+        if value is not None:
             self.note.activate (1)
             # and this?
             # self.editor.focus ()
@@ -100,13 +101,7 @@ class CRUDController (WindowController):
 
     def refresh (self):
         for editor in self.editors:
-            try:
-                editor.value= editor.read ()
-                # print 'CRUD:', editor, `editor.read`, `editor.value`
-            except (AttributeError, TypeError):
-                # traceback.print_exc ()
-                editor.value= self.value
-                # print 'CRUD:', editor, `editor.value`
+            editor.newTarget (self.value)
 
     def fromXmlObj (klass, xmlObj, skin):
         self = klass()
@@ -133,7 +128,9 @@ class CRUDController (WindowController):
                         obj.onAction= self.save
                         second= False
 
-                attrsInChild[obj]+= ['read', 'write']
+                # luckily we got rid of those; they would be a PITA
+                # when defining the dtd.
+                # attrsInChild[obj]+= ['read', 'write']
                 attrs.update (attrsInChild)
             idDict.update (idDictInChild)
             xmlObj= xmlObj.next
@@ -154,17 +151,7 @@ class Editor (Controller):
     def refresh (self, *ignore):
         try:
             for entry in self.entries.children:
-                try:
-                    entry.value= entry.read ()
-                    # print 'editor:', entry, `entry.read.other`, entry.read.path, `entry.value`
-                except TypeError:
-                    # `read' is not callable
-                    # print 'editor:', entry, `entry.read.other`, entry.read.path, `self.value`
-                    entry.value= self.value
-                except AttributeError:
-                    # `entry' has no `read' attr
-                    entry.value= self.value
-                    # print 'editor:', entry, `entry.value`
+                entry.newTarget (self.value)
         except AttributeError:
             # the entries are not there yet
             pass

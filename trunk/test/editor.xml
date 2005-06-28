@@ -22,5 +22,5 @@
   <import from="model.country" what="State" id="State"/>
 
   <Label text="name"/>
-  <Entry read="mainEditor.value.getName" write="mainEditor.value.setName"/>
+  <Entry attribute="name"/>
 </Editor>
