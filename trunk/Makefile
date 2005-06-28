@@ -37,8 +37,12 @@ distclean: clean
 	$(MAKE) -C tutorial distclean
 	$(MAKE) -C html clean
 
-test:
+test: epytest unittest
+
+epytest:
 	$(EPYDOC) --check $(EPYDOC_FILES)
+
+unittest:
 	PYTHONPATH=.:./examples/person:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS) 2>&1 | $(COLORIZER)
 
 install:
@@ -52,4 +56,4 @@ tutorial:
 html: tutorial
 	$(MAKE) -C html
 
-.PHONY: test docs tutorial all clean distclean api
+.PHONY: test epytest unittest docs tutorial all clean distclean api
