@@ -17,6 +17,13 @@
 # You should have received a copy of the GNU General Public License along with
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
+
+"""
+L{fvl} is the base package for anything developed by Fundación Vía
+Libre.
+
+All we actually do here right now is set up a logger.
+"""
 import logging
 
 handler = logging.StreamHandler()
@@ -24,3 +31,4 @@ formatter = logging.Formatter("%(asctime)s %(name)40s:%(lineno)03d %(levelname)-
 handler.setFormatter(formatter)
 logger = logging.getLogger('fvl')
 logger.addHandler(handler)
+# logger.setLevel(logging.DEBUG)

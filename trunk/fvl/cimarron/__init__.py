@@ -19,7 +19,11 @@
 # Suite 330, Boston, MA 02111-1307 USA
 
 """
-L{cimarron} is...
+Cimarrón is a framework for the construction of reusable GUI components, using
+(recursive) variations of the classic (NeXT-like) MVC pattern. Provided are a
+pretty basic set of views (it is trivial to add more, and more will be provided
+as the PAPO project advances), and a few controllers. Also provided is a small
+example.
 """
 import sys
 import logging
