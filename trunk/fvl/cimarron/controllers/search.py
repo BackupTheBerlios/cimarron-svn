@@ -176,6 +176,7 @@ class SearchEntry (ColumnAwareXmlMixin, Controller):
         """
         Show the value.
         """
+        super(SearchEntry, self).refresh()
         if self.value is not None:
             for i in xrange (len (self.entries)):
                 self.entries[i].value= self.columns[i].read (self.value)

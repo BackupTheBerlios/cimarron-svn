@@ -124,6 +124,7 @@ class FooController(Controller):
         """
         Put the Controller's value in the labels.
         """
+        super(FooController, self).refresh()
         if self.target is not None:
             self.label.text= str (self.target.get (self.entry.value, 'Not found'))
         else:
@@ -223,6 +224,7 @@ class BarController (Controller):
 #     value= property (_get_value, _set_value)
 
     def refresh (self):
+        super(BarController, self).refresh()
         self.foo.refresh ()
 
 class FooList(list):

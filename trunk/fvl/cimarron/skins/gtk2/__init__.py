@@ -181,9 +181,6 @@ class Button(GtkFocusableMixin, Control):
         skelargs['label'] = self.label
         return skelargs
 
-    def refresh (self):
-        pass
-
 class Checkbox(Button):
     """
     A Control that represents a boolean value.
@@ -197,10 +194,6 @@ class Checkbox(Button):
     def _set_checked(self, checked):
         self._widget.set_active(checked)
     checked = property(_get_checked, _set_checked)
-
-    def refresh (self):
-        pass
-
 
 class Entry(GtkFocusableMixin, Control):
     """
@@ -217,23 +210,22 @@ class Entry(GtkFocusableMixin, Control):
     def _get_value (self):
         return self.__value
     def _set_value (self, value):
-        # set the value only if:
-        # we haven't set any value yet OR
-        # NOT (our value is None AND the value to set is an empty string)
-        # if not hasattr (self, '__value') or not (self.__value is None and value==''):
         self.__value = value
-        self.refresh ()
+        self._gtkCommit()
     value= property (_get_value, _set_value, None, """""")
+
+    def _gtkCommit(self):
+        value = self.value
+        if value is None:
+            value = ''
+        self._widget.set_text(value)
 
     def refresh (self):
         """
         Show the value on the control.
         """
-        value= self.value
-        if value is None:
-            value= ''
-        self._widget.set_text (value)
-        self.is_dirty
+        super(Entry, self).refresh()
+        self._gtkCommit()
 
     def will_focus_out (self, *ignore):
         """
@@ -449,6 +441,7 @@ class Grid (ColumnAwareXmlMixin, Controller):
         return False
 
     def refresh (self):
+        super(Grid, self).refresh()
         if len (self.columns)>0:
             self._tvdata= gtk.ListStore (*self._dataspec)
         else:
@@ -563,10 +556,6 @@ class SelectionGrid (ColumnAwareXmlMixin, Controller):
         return ans
     value= property (_get_value, _set_value, None,
                      """The selected object. If no object is selected, it is None.""")
-
-    def refresh (self):
-        # the refresh is done in _set_data()
-        pass
 
 
 def _run():

@@ -337,6 +337,12 @@ class Control(Widget):
         # self.__initialized = True
         self.onAction= onAction
 
+    def refresh(self):
+        value = self.target
+        if self.target is not None and self.attribute is not None:
+            value = self.target.getattr(self.attribute)
+        self.value = value
+
     def newTarget (self, target=_placeholder):
         """
         Called when we need to propagate a change elsewere to the value.
@@ -349,13 +355,6 @@ class Control(Widget):
         """
         if target is not _placeholder:
             self.target = target
-        if self.target is not None and self.attribute is not None:
-            value = self.target.getattr(self.attribute)
-        else:
-            value = self.target
-        # print self.target, value
-        self.value= value
-        # if self.__initialized:
         self.refresh()
     def commitValue (self, value=_placeholder):
         """
@@ -368,29 +367,6 @@ class Control(Widget):
         else:
             self.target= self.value
         
-#     def _set_value(self, value):
-#         self.__value= value
-#     def _get_value(self):
-#         return self.__value
-#     value = property(_get_value, _set_value, doc="""""")
-
-#     def _set_target (self, target):
-#         self.__target= target
-#         self._change_value ()
-#     def _get_target (self):
-#         return self.__target
-#     target= property (_get_target, _set_target,
-#                       doc="""Holds the Model for the B{Control}.
-#         Note that the name is the same that the I{value} for B{Control}.
-#         That way, Controllers can act as Controls.""")
-
-#     def _set_attr (self, attr):
-#         self.__attr= attr
-#         self._change_value ()
-#     def _get_attr (self):
-#         return self.__attr
-#     attribute= property (_get_attr, _set_attr)
-
     def _get_on_action (self):
         return self.__on_action
     def _set_on_action (self, onAction):

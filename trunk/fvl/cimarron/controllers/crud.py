@@ -106,6 +106,7 @@ class CRUDController (WindowController):
 
     def refresh (self):
         # print 'here3', self.value
+        super(CRUDController, self).refresh()
         for editor in self.editors:
             editor.newTarget (self.value)
 
@@ -155,6 +156,7 @@ class CRUDController (WindowController):
 
 class Editor (Controller):
     def refresh (self, *ignore):
+        super(Editor, self).refresh()
         # print 'here 4', self.target, self.value
         try:
             for entry in self.entries.children:
