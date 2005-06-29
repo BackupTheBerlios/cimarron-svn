@@ -327,21 +327,23 @@ class Control(Widget):
 
     def __init__(self, onAction=None, target=None, attribute=None, value=None,
                  **kw):
-        # self.__initialized = False
         super(Control, self).__init__(**kw)
-        self.target= target
-        self.attribute= attribute
+        self.target = target
+        self.attribute = attribute
         self.value = value
         if value is None and target is not None:
             self.newTarget()
-        # self.__initialized = True
-        self.onAction= onAction
+        self.onAction = onAction
 
-    def refresh(self):
+    def targetValue(self):
         value = self.target
         if self.target is not None and self.attribute is not None:
             value = self.target.getattr(self.attribute)
-        self.value = value
+        return value
+    targetValue = property(targetValue)
+
+    def refresh(self):
+        self.value = self.targetValue
 
     def newTarget (self, target=_placeholder):
         """
