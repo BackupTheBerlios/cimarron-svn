@@ -510,11 +510,13 @@ class SelectionGrid (ColumnAwareXmlMixin, Controller):
     def _set_data (self, data):
         # the model data
         self._data= data
-
+        self.refreshFromData ()
+	
+    def refreshFromData (self):
         if len (self._columns)>0:
             self._tvdata= gtk.ListStore (*self._dataspec)
-        if data is not None:
-            for i in data:
+        if self.data is not None:
+            for i in self.data:
                 # build a ListStore w/ al the values
                 # NOTE: this forces the data to be read.
                 self._tvdata.append ([j.read (i) for j in self._columns])
