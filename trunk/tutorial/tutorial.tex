@@ -125,13 +125,13 @@ wellcome contributions for additional engines, including engines to
 enable \Cimarron{} programs to run on proprietary platforms.}.
 
 The rest of the code is the main application. Every \Cimarron{} program
-needs an instance of \class{App} (or of a custom subclass of it) to take
-care of interaction with the user. After storing the instance of
-\class{App} in \var{app}, the program creates an instance of
+needs an instance of \class{Application} (or of a custom subclass of it)
+to take care of interaction with the user. After storing the instance of
+\class{Application} in \var{app}, the program creates an instance of
 \class{MainWindowController} and puts it on screen with a call to its
-\method{show()} method. It then calls \class{App}'s \method{run()}
-method to handle user events. This method exits when the user closes the
-last (and in this case only) window.
+\method{show()} method. It then calls \class{Application}'s
+\method{run()} method to handle user events. This method exits when the
+user closes the last (and in this case only) window.
 
 As an exercise, we suggest that you attempt to modify the code above in
 such a way that \class{MainWindowController}'s constructor accepts a
@@ -141,7 +141,7 @@ program to display two (or more) windows with different titles.
 
 \section{Actions}
 
-To get the program to do soemthing more interesting than just displaying
+To get the program to do something more interesting than just displaying
 widgets, we can use the \class{Button}'s action. All \Cimarron{}
 controls can have an action associated with them. The action is a
 callable object that will be invoked by the control whenever it is
