@@ -206,7 +206,7 @@ class Entry(GtkFocusableMixin, Control):
         super(Entry, self).__init__(**kw)
         self.refresh ()
         self._widget.connect ('activate', self._activate)
-        self._widget.connect ('key-press-event', self._keypressed)
+        self._widget.connect ('key-release-event', self._keyreleased)
         self.delegates.append (self)
 
     def _get_value (self):
@@ -238,23 +238,28 @@ class Entry(GtkFocusableMixin, Control):
         self.value= self._widget.get_text ()
         return Unknown
 
-    def _activate (self, *ignore):
+    def _activate(self, widget=None):
         """
         Called when <Enter> is hit. 
         Copies the shown value to the value property.
         Do not call directly.
         """
-        self.value= self._widget.get_text ()
-        super (Entry, self)._activate ()
-    def _keypressed (self, widget, key_event, *ignore):
+        if widget is None:
+            widget = self._widget
+        self.value = widget.get_text()
+        widget.modify_bg(gtk.STATE_NORMAL, None)
+        super(Entry, self)._activate()
+    def _keyreleased (self, widget, key_event):
         """
         Called whenever a key is hit.
         If that key is <Esc>, undo the edition.
         Do not call directly.
         """
-        if key_event.keyval==gtk.keysyms.Escape:
+        if key_event.keyval == gtk.keysyms.Escape:
             # esc; `reset' the value
             self.refresh()
+            
+
 
 class VBox(Container):
     """
@@ -344,7 +349,7 @@ class Grid (ColumnAwareXmlMixin, Controller):
         self._widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
         self._widget.add (self._tv)
 
-        self._tv.connect ('key-press-event', self._keypressed)
+        self._tv.connect ('key-release-event', self._keyreleased)
 
         super (Grid, self).__init__ (**kw)
         # this was not done because it was initializing
@@ -407,7 +412,7 @@ class Grid (ColumnAwareXmlMixin, Controller):
         # a) rollbacks the value or
         # b) leaves it with wrong value, so the user can edit it (preferred)
         return False
-    def _keypressed (self, widget, key_event, *ignore):
+    def _keyreleased (self, widget, key_event, *ignore):
         last= self.value is None or len (self.value)==0 or self.index==len (self.value)-1
         # print `self.value`, `self._tv.get_cursor ()`, last
 
@@ -482,12 +487,12 @@ class SelectionGrid (ColumnAwareXmlMixin, Controller):
             c.add_attribute (crt, 'text', i)
             self._tv.append_column (c)
 
-        self._tv.connect ('key-press-event', self._keypressed)
+        self._tv.connect ('key-release-event', self._keyreleased)
         self._tv.connect ('cursor_changed', self._cursor_changed)
 
         super (SelectionGrid, self).__init__ (**kw)
 
-    def _keypressed (self, widget, key_event, *ignore):
+    def _keyreleased (self, widget, key_event, *ignore):
         if key_event.keyval==gtk.keysyms.Return:
             self.onAction ()
             return True

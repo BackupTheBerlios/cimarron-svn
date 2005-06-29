@@ -399,7 +399,7 @@ class Control(Widget):
         """A callable that is called when the action (whatever that means
         for the particluar Control) is issued.""")
 
-    def _activate(self, *ignore):
+    def _activate(self, widget=None):
         self.commitValue()
         if self.onAction is not None:
             self.onAction()
