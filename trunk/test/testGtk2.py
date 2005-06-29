@@ -154,6 +154,17 @@ class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
         self.widget._widget.set_text('bar')
         self.assertEqual(self.widget.is_dirty, True)
 
+    def testEntryChangesWhenDirty(self):
+        w = self.widget._widget
+        self.widget.value = 'foo'
+        s = w.get_style()
+        clean = (s.fg, s.bg, s.text)
+        w.set_text('bar')
+        self.widget.is_dirty
+        s = w.get_style()
+        dirty = (s.fg, s.bg, s.text)
+        self.assertNotEqual(clean, dirty)
+
 class TestGtkWindow(testGtkVisibility, TestWindow):
     pass
 

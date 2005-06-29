@@ -233,6 +233,8 @@ class Entry(GtkFocusableMixin, Control):
         if value is None:
             value= ''
         self._widget.set_text (value)
+        self.is_dirty
+
     def will_focus_out (self, *ignore):
         """
         Called when the focus goes out the Entry.
@@ -252,8 +254,8 @@ class Entry(GtkFocusableMixin, Control):
         if widget is None:
             widget = self._widget
         self.value = widget.get_text()
-        widget.modify_bg(gtk.STATE_NORMAL, None)
         super(Entry, self)._activate()
+
     def _keyreleased (self, widget, key_event):
         """
         Called whenever a key is hit.
@@ -263,9 +265,16 @@ class Entry(GtkFocusableMixin, Control):
         if key_event.keyval == gtk.keysyms.Escape:
             # esc; `reset' the value
             self.refresh()
-            
+            widget.select_region(0,-1)
+        self.is_dirty
+
     def _is_dirty(self):
-        return self.value != self._widget.get_text()
+        is_dirty = self.value != self._widget.get_text()
+        if is_dirty:
+            self._widget.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse('red'))
+        else:
+            self._widget.modify_bg(gtk.STATE_NORMAL, None)
+        return is_dirty
     is_dirty = property(_is_dirty)
 
 class VBox(Container):
