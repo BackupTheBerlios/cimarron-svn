@@ -110,6 +110,7 @@ class Label(Widget):
     """
     A Label is a piece of uneditable static text.
     """
+    is_dirty = False
     def __init__(self, text='', **kw):
         """
         @param text: The static test.
@@ -128,24 +129,26 @@ class Label(Widget):
     text = property(_get_text, _set_text, None, """The static test.""")
 
 class Image(Widget):
-	"""
-	A Image is a Static Picture loaded from a file
-	"""
-	def __init__(self,aFile=None,**kw):
-		self._widget = gtk.Image()
-		super(Image,self).__init__(**kw)
-		self.imgFile = self.aFile = aFile
+    """
+    A Image is a Static Picture loaded from a file
+    """
+    is_dirty = False
 
-	def show(self):
-		self._widget.show()
-		
-	def _set_file(self,aFile):
-		self._widget.set_from_file(aFile)
-	
-	def _get_file(self):
-		return self.aFile
+    def __init__(self,aFile=None,**kw):
+        self._widget = gtk.Image()
+        super(Image,self).__init__(**kw)
+        self.imgFile = self.aFile = aFile
 
-	imgFile = property(_get_file, _set_file, None, """The static test.""")
+    def show(self):
+        self._widget.show()
+
+    def _set_file(self,aFile):
+        self._widget.set_from_file(aFile)
+
+    def _get_file(self):
+        return self.aFile
+
+    imgFile = property(_get_file, _set_file, None, """The static test.""")
 	
 		
 
@@ -154,6 +157,8 @@ class Button(GtkFocusableMixin, Control):
     A Button is a Control that can be pressed, and when it does,
     it fires the action.
     """
+    is_dirty = False
+
     def __init__(self, label='', **kw):
         """
         @param label: text that is shown in the middle of the button.
@@ -259,7 +264,9 @@ class Entry(GtkFocusableMixin, Control):
             # esc; `reset' the value
             self.refresh()
             
-
+    def _is_dirty(self):
+        return self.value != self._widget.get_text()
+    is_dirty = property(_is_dirty)
 
 class VBox(Container):
     """

@@ -301,6 +301,13 @@ class Container(Widget):
             child.skeleton(skel)
         return skel
 
+    def _is_dirty(self):
+        for i in self.children:
+            if i.is_dirty:
+                return True
+        return False
+    is_dirty = property(_is_dirty)
+
 class _placeholder(object):
     """A distinctive placeholder object"""
 

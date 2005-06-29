@@ -200,3 +200,7 @@ class abstractTestControl(abstractTestWidget):
             # the widget has no mainWidget
             pass
 
+    def testControlKnowsDirtyness(self):
+        # something that might actually fail (instead of passing xor
+        # erroring) would be cool
+        self.widget.is_dirty

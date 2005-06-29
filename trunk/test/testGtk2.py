@@ -149,6 +149,11 @@ class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
         self.target= getattr (self.target, self.attribute)
         super (TestGtkEntry, self).testValueIsTargetWhenNoAttr ()
 
+    def testEntryKnowsIfDirty(self):
+        self.widget.value = 'foo'
+        self.widget._widget.set_text('bar')
+        self.assertEqual(self.widget.is_dirty, True)
+
 class TestGtkWindow(testGtkVisibility, TestWindow):
     pass
 
