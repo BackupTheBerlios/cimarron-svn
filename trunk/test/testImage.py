@@ -25,19 +25,19 @@ from testCommon import abstractTestWidget
 __all__=('TestImage',)
 
 class TestImage(abstractTestWidget):
-	def setUp(self):
-		super(TestImage, self).setUp()
-		self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
-		self.widget = self.image = cimarron.skin.Image(aFile='./dummy.jpg',parent=self.win) #the method doesn't care if the file exists or it's an image
+    def setUp(self):
+        super(TestImage, self).setUp()
+        self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
+        self.widget = self.image = cimarron.skin.Image(aFile='./dummy.jpg',parent=self.win) #the method doesn't care if the file exists or it's an image
 
-	def testImage(self):
-		getFileResult=self.widget.imgFile 
-		self.assertEqual(getFileResult, './dummy.jpg')
+    def testImage(self):
+        getFileResult=self.widget.imgFile 
+        self.assertEqual(getFileResult, './dummy.jpg')
 
-	def testSet_from_file(self):
-		setImgResult= self.widget._set_file('testDummy.jpg')
-		self.assertEqual(setImgResult, None)
+    def testSet_from_file(self):
+        setImgResult= self.widget._set_file('testDummy.jpg')
+        self.assertEqual(setImgResult, None)
 
-	def testShow(self):
-		self.win.show()
-		#self.app.run()
+    def testShow(self):
+        self.win.show()
+        #self.app.run()
