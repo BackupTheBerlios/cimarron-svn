@@ -5,7 +5,7 @@ cimarron.config()
 class PersonEditor(cimarron.skin.WindowController):
     def __init__(self, target=None, **kw):
         super(PersonEditor, self).__init__(**kw)
-        self.win.title = 'Main Window'
+        self.win.title = 'Person Editor'
         outer_vbox = cimarron.skin.VBox(parent=self.win)
         hbox = cimarron.skin.HBox(parent=outer_vbox)
         vbox = cimarron.skin.VBox(parent=hbox)
@@ -22,7 +22,7 @@ class PersonEditor(cimarron.skin.WindowController):
             self.newTarget(target)
 
     def checkValues(self, sender):
-       print "Mr/Ms %s, %s" % (self.target.surname, self.target.name)
+        print "Mr/Ms %s, %s" % (self.target.surname, self.target.name)
 
     def newTarget(self, *a, **kw):
         super(PersonEditor, self).newTarget(*a, **kw)
