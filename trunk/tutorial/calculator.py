@@ -34,20 +34,21 @@ class CalculatorController(cimarron.skin.WindowController):
         self.resetInput = True
 
     def operate(self, sender=None):
-        if self.op == None:
-            self.X = float(self.display.text)
-        else:
-            if self.op == '+':
-                self.X = self.X + float(self.display.text)
-            elif self.op == '-':
-                self.X = self.X - float(self.display.text)
-            elif self.op == '*':
-                self.X = self.X * float(self.display.text)
-            elif self.op == '/':
-                self.X = self.X / float(self.display.text)
+        if not self.resetInput:
+            if self.op == None:
+                self.X = float(self.display.text)
+            else:
+                if self.op == '+':
+                    self.X = self.X + float(self.display.text)
+                elif self.op == '-':
+                    self.X = self.X - float(self.display.text)
+                elif self.op == '*':
+                    self.X = self.X * float(self.display.text)
+                elif self.op == '/':
+                    self.X = self.X / float(self.display.text)
+                self.display.text = str(self.X)
+                self.resetInput = True
         self.op = sender.label
-        self.display.text = str(self.X)
-        self.resetInput = True
 
 app = cimarron.skin.Application()
 w = CalculatorController(parent=app)
