@@ -31,7 +31,7 @@ class Button(GtkFocusableMixin, Control):
     A Button is a Control that can be pressed, and when it does,
     it fires the action.
     """
-    is_dirty = False
+    dirty = staticmethod(bool)
 
     def __init__(self, label='', **kw):
         """
@@ -73,32 +73,20 @@ class Entry(GtkFocusableMixin, Control):
     """
     The simplest text input control.
     """
-    def __init__(self, value='', **kw):
+    def __init__(self, **kw):
         self._widget = gtk.Entry()
-        super(Entry, self).__init__(value=value, **kw)
+        super(Entry, self).__init__(**kw)
         self.refresh ()
         self._widget.connect ('activate', self._activate)
         self._widget.connect ('key-release-event', self._keyreleased)
         self.delegates.append (self)
 
     def _get_value (self):
-        value = self._widget.get_text()
-        if '_given_value' in self.__dict__:
-            logger.error('using workaround :(')
-            if self._used_value == value:
-                return self._given_value
-        return value
+        return self._widget.get_text() or None
     def _set_value (self, value):
-        if not isinstance(value, basestring):
-            logger.error('provided non-string value to gtk2 entry')
-            logger.error('using workaround -- FOR NOW!')
-            self._given_value = value
-            self._used_value = value = unicode(value)
-        elif '_given_value' in self.__dict__:
-            logger.error('string provided, cleaning up workaround')
-            del self._given_value
-            del self._used_value
-        self._widget.set_text(value)
+        if value is None:
+            value = ''
+        self._widget.set_text(unicode(value))
     value= property (_get_value, _set_value, None, """""")
 
     def will_focus_out (self, *ignore):
@@ -108,7 +96,8 @@ class Entry(GtkFocusableMixin, Control):
         Do not call directly.
         """
         # is not the same as _activate ()
-        self.value= self._widget.get_text ()
+        self.commitValue()
+        self.dirty()
         return Unknown
 
     def _activate(self, widget=None):
@@ -132,13 +121,12 @@ class Entry(GtkFocusableMixin, Control):
             # esc; `reset' the value
             self.refresh()
             widget.select_region(0,-1)
-        self.is_dirty
+        self.dirty()
 
-    def _is_dirty(self):
-        is_dirty = self.targetValue != self._widget.get_text()
-        if is_dirty:
+    def dirty(self):
+        dirty = self.targetValue != self._widget.get_text()
+        if dirty:
             self._widget.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse('red'))
         else:
             self._widget.modify_bg(gtk.STATE_NORMAL, None)
-        return is_dirty
-    is_dirty = property(_is_dirty)
+        return dirty

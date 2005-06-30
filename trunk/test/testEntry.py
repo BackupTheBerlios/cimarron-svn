@@ -39,6 +39,8 @@ class TestEntry(abstractTestControl):
     def testSetValue (self):
         raise NotImplementedError, 'you should subclass testEntry'
 
+#    def testValueFromNone(self):
+#        self.assertRaises(TypeError, self.widget.newTarget, None)
 
 class TestEntrySomeMore(unittest.TestCase):
     def setUp(self):

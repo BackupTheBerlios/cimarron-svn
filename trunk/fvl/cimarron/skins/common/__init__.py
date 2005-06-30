@@ -301,12 +301,11 @@ class Container(Widget):
             child.skeleton(skel)
         return skel
 
-    def _is_dirty(self):
+    def dirty(self):
         for i in self.children:
-            if i.is_dirty:
+            if i.dirty():
                 return True
         return False
-    is_dirty = property(_is_dirty)
 
 class _placeholder(object):
     """A distinctive placeholder object"""
@@ -325,8 +324,7 @@ class Control(Widget):
         return attrs+['onAction']
     attributesToConnect= classmethod (attributesToConnect)
 
-    def __init__(self, onAction=None, target=None, attribute=None, value=None,
-                 **kw):
+    def __init__(self, onAction=None, target=None, attribute=None, value=None, **kw):
         super(Control, self).__init__(**kw)
         self.target = target
         self.attribute = attribute
@@ -358,6 +356,7 @@ class Control(Widget):
         if target is not _placeholder:
             self.target = target
         self.refresh()
+
     def commitValue (self, value=_placeholder):
         """
         Called when we need to propagate a change value to the target.

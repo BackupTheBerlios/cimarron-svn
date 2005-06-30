@@ -23,4 +23,3 @@ class Model(object):
         return getattr(self, attr)
     def setattr(self, attr, value):
         return setattr(self, attr, value)
-

@@ -18,7 +18,7 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-from base import Model
+from fvl.cimarron.model.base import Model
 
 class Country (Model):
     def __init__ (self, name='', phone='', iso2='', iso3='', un=''):

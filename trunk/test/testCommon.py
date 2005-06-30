@@ -162,12 +162,11 @@ class abstractTestControl(abstractTestWidget):
     def testWriteValueAttribute (self):
         self.testValueWithAttribute ()
         
-        self.widget.value= None
-        
-        self.widget.value= self.value
+        self.widget.value = None
+        self.widget.value = self.value
 
         # if self.attribute:
-        # self.assertEqual (getattr (self.target, self.attribute), self.value)
+        #self.assertEqual (getattr(self.target, self.attribute), self.widget.value)
 
     def testOnAction (self):
         self.widget.onAction= self.notify
@@ -203,4 +202,4 @@ class abstractTestControl(abstractTestWidget):
     def testControlKnowsDirtyness(self):
         # something that might actually fail (instead of passing xor
         # erroring) would be cool
-        self.widget.is_dirty
+        self.widget.dirty()

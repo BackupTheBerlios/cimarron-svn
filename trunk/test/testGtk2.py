@@ -49,7 +49,6 @@ __all__ = ('TestGtkEntry',
 	   'TestImage',
            'TestGtkButton',
            'TestGtkCheckbox',
-           'TestGtkEntry',
            'TestGtkBoxes',
            'TestGtkNotebook',
            'TestGtkSelectionGrid',
@@ -152,7 +151,7 @@ class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
     def testEntryKnowsIfDirty(self):
         self.widget.value = 'foo'
         self.widget._widget.set_text('bar')
-        self.assertEqual(self.widget.is_dirty, True)
+        self.assertEqual(self.widget.dirty(), True)
 
     def testEntryChangesWhenDirty(self):
         w = self.widget._widget
@@ -160,7 +159,7 @@ class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
         s = w.get_style()
         clean = (s.fg, s.bg, s.text)
         w.set_text('bar')
-        self.widget.is_dirty
+        self.widget.dirty()
         s = w.get_style()
         dirty = (s.fg, s.bg, s.text)
         self.assertNotEqual(clean, dirty)

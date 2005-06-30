@@ -22,7 +22,7 @@ COLORIZER ?= tools/ppython
 EPYDOC ?= epydoc
 EPYDOC_OPTS ?=
 
-EPYDOC_FILES=$(shell find fvl -type f -name \*.py)
+PYTHON_FILES=$(shell find fvl -type f -name \*.py)
 
 all: docs
 
@@ -31,19 +31,26 @@ clean:
 	$(MAKE) -C html clean
 
 distclean: clean
-	find '(' -name '*.py[co]' -o -name '*~' ')' -print0 | xargs -0 -r $(RM)
+	find '(' -name '*.py[co]' -o -name '*~' -o -name '*,cover' ')' -print0 | xargs -0 -r $(RM)
 	$(PYTHON) setup.py clean
-	$(RM) -r build dist MANIFEST
+	$(RM) -r build dist MANIFEST .coverage
 	$(MAKE) -C tutorial distclean
 	$(MAKE) -C html clean
 
 test: epytest unittest
 
 epytest:
-	$(EPYDOC) --check $(EPYDOC_FILES)
+	$(EPYDOC) --check $(PYTHON_FILES)
 
 unittest:
 	PYTHONPATH=.:./examples/person:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS) 2>&1 | $(COLORIZER)
+
+.coverage: $(PYTHON_FILES)
+	PYTHONPATH=.:./examples/person:$$PYTHONPATH $(PYTHON) tools/coverage.py -x test/run.py --test-all || true
+	$(PYTHON) tools/coverage.py -a $(PYTHON_FILES)
+
+coverage: .coverage
+	$(PYTHON) tools/coverage.py -r -m $(PYTHON_FILES)
 
 install:
 	$(PYTHON) setup.py install
@@ -56,4 +63,4 @@ tutorial:
 html: tutorial
 	$(MAKE) -C html
 
-.PHONY: test epytest unittest docs tutorial all clean distclean api
+.PHONY: test epytest unittest docs tutorial all clean distclean api coverage

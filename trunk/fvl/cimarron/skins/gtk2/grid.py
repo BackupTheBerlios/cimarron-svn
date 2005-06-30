@@ -32,6 +32,7 @@ class Grid (ColumnAwareXmlMixin, Controller):
     """
     Grids are used for editing a list of objects.
     """
+
     def __init__ (self, columns=[], klass=None, **kw):
         """
         @param columns: a list of B{Column}s that describe
@@ -157,6 +158,7 @@ class SelectionGrid (ColumnAwareXmlMixin, Controller):
     SelectionGrids are used for showing a list of objects,
     and for selecting one among those.
     """
+
     def __init__ (self, data=[], columns=[], **kw):
         """
         @param data: the list of objects to be shown.

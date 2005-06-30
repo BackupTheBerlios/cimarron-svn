@@ -29,7 +29,7 @@ class Label(Widget):
     """
     A Label is a piece of uneditable static text.
     """
-    is_dirty = False
+    dirty = staticmethod(bool)
     def __init__(self, text='', **kw):
         """
         @param text: The static test.
@@ -51,7 +51,7 @@ class Image(Widget):
     """
     A Image is a Static Picture loaded from a file
     """
-    is_dirty = False
+    dirty = staticmethod(bool)
 
     def __init__(self,aFile=None,**kw):
         self._widget = gtk.Image()

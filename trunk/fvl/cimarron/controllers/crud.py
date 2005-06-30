@@ -153,20 +153,22 @@ class CRUDController (WindowController):
         return (self, attrs, idDict)
     fromXmlObj = classmethod(fromXmlObj)
         
-
 class Editor (Controller):
     def refresh (self, *ignore):
         super(Editor, self).refresh()
         # print 'here 4', self.target, self.value
         try:
-            for entry in self.entries.children:
-                # print entry, entry.attribute,
-                entry.newTarget (self.value)
-                # print entry.target, entry.value
+            entries = self.entries.children
         except AttributeError, e:
             # the entries are not there yet
             # print 'ups', e
             pass
+        else:
+            value = self.value
+            for entry in entries:
+                # print entry, entry.attribute,
+                entry.newTarget (value)
+                # print entry.target, entry.value
 
     def modifyModel (self, control, *ignore):
         try:
