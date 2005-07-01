@@ -44,12 +44,14 @@ def _quit():
     if gtk.main_level():
         gtk.main_quit()
 
-def _schedule(timeout, callback, repeat=False):
-    def cb():
-        gobject.timeout_add(timeout, callback)
-        if repeat:
-            cb()
-    cb()
+def _schedule(timeout, callback, repeat=0):
+    if repeat:
+        def cb():
+            callback()
+            gobject.timeout_add(timeout, cb)
+    else:
+        cb = callback
+    gobject.timeout_add(timeout, cb)
 
 def concreteParenter(parent, child):
     """
