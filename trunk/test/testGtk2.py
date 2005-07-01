@@ -165,7 +165,21 @@ class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
         self.assertNotEqual(clean, dirty)
 
 class TestGtkWindow(testGtkVisibility, TestWindow):
-    pass
+    def testWindowCanScreenshot(self):
+        from tempfile import NamedTemporaryFile
+        import Image
+        import time
+        
+        f = NamedTemporaryFile()
+        self.win.show()
+        while gtk.events_pending():
+            gtk.main_iteration()
+        time.sleep(1)
+        while gtk.events_pending():
+            gtk.main_iteration()
+        self.win.screenshot(f.name)
+        i = Image.open(f.name)
+        self.assertEqual(i.format, 'PNG')
 
 class TestGtkLabel(testGtkParenting, TestLabel):
     def testSetLabel(self):
