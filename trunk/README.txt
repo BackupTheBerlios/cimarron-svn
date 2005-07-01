@@ -57,23 +57,35 @@ been able to run all the tests on 2.2 yet), libxml2_ and, for default
 (and currently only) skin, pygtk_ 2. Also, we use zope3_'s
 zope.interface and zope.schema packages, so you'll need those too.
 
-We've tested it on Debian_ Sarge_ (python 2.3.5, libxml2 2.6.16, pygtk
-2.6.1), Mandrake_ 10.1_ (python 2.3, libxml2 2.6.13, pygtk 2.3.96),
-and Ubuntu_ Hoary_ (python 2.4.1, libxml2 2.6.17, pygtk 2.6.1).
-
 .. _python: http://www.python.org/
 .. _libxml2: http://xmlsoft.org/
 .. _pygtk: http://www.pygtk.org/
 .. _zope3: http://www.zope.org/DevHome/Wikis/DevSite/Projects/ComponentArchitecture/FrontPage
+
+If you want your windows to be able to take screenshots of themselves
+(for documentation purposes, for example) you'll need the ImageMagick_
+utilities (specifically, the 'import' tool); for the tests of this
+functionality to pass you'll need the `python imaging library`_.
+
+.. _ImageMagick: http://www.imagemagick.org/
+.. _python imaging library: http://www.pythonware.com/products/pil/
+
+To generate the documentation you'll need the `python docutils`_ and
+epydoc_; to run the tests you'll need epydoc_.
+
+.. _python docutils: http://docutils.sourceforge.net/
+.. _epydoc: http://epydoc.sourceforge.net/
+
+We've tested it on Debian_ Sarge_ (python 2.3.5, libxml2 2.6.16, pygtk
+2.6.1), Mandrake_ 10.1_ (python 2.3, libxml2 2.6.13, pygtk 2.3.96),
+and Ubuntu_ Hoary_ (python 2.4.1, libxml2 2.6.17, pygtk 2.6.1).
+
 .. _debian: http://www.debian.org/
 .. _sarge: http://www.debian.org/releases/sarge/
 .. _mandrake: http://www.mandrivalinux.com/
 .. _10.1: http://www.google.com/
 .. _ubuntu: http://www.ubuntulinux.org/
 .. _hoary: http://us.releases.ubuntu.com/releases/5.04/
-.. _epydoc: http://epydoc.sourceforge.net/
-
-To run the tests and create the API reference you'll need epydoc_.
 
 Quickstart
 ----------
