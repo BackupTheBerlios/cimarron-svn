@@ -170,7 +170,7 @@ class TestGtkWindow(testGtkVisibility, TestWindow):
         import Image
         import time
         
-        f = NamedTemporaryFile()
+        f = NamedTemporaryFile(suffix='.png')
         self.win.show()
         while gtk.events_pending():
             gtk.main_iteration()
