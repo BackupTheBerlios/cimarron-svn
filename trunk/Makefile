@@ -21,6 +21,7 @@ PYTHON ?= python
 COLORIZER ?= tools/ppython
 EPYDOC ?= epydoc
 EPYDOC_OPTS ?=
+TESTOPTS ?=
 
 PYTHON_FILES=$(shell find fvl -type f -name \*.py)
 
@@ -46,7 +47,7 @@ unittest:
 	PYTHONPATH=.:./examples/person:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS) 2>&1 | $(COLORIZER)
 
 .coverage: $(PYTHON_FILES)
-	PYTHONPATH=.:./examples/person:$$PYTHONPATH $(PYTHON) tools/coverage.py -x test/run.py --test-all || true
+	PYTHONPATH=.:./examples/person:$$PYTHONPATH $(PYTHON) tools/coverage.py -x test/run.py $(TESTOPTS) || true
 	$(PYTHON) tools/coverage.py -a $(PYTHON_FILES)
 
 coverage: .coverage
