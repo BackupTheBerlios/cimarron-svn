@@ -18,6 +18,8 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+import os
+import inspect
 import logging
 logger = logging.getLogger('fvl.cimarron.skins.gtk2.window')
 
@@ -55,3 +57,21 @@ class Window(GtkVisibilityMixin, Container):
         return self._widget.get_title()
     title = property(_get_title, _set_title, None, """The title for the window.""")
 
+    def screenshot(self, filename=None, frame=True):
+        """
+        Take a screenshot of the window, format it as a PNG file,
+        store it in file <filename>.
+
+        If <frame> is true, include the windowmanager frames.
+
+        If <filename> isn't given, use the filename of the caller with
+        '.png' appended.
+        """
+        xid = self._widget.window.xid
+        if filename is None:
+            filename = inspect.stack()[1][1] + '.png'
+        if frame:
+            cmd = 'import -frame -window %d %s'
+        else:
+            cmd = 'import -window %d %s'
+        os.system(cmd % (xid, filename))
