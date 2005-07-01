@@ -39,6 +39,7 @@ class Button(GtkFocusableMixin, Control):
         """
         if not '_widget' in self.__dict__:
             self._widget = gtk.Button()
+            self._widget.set_use_underline(True)
         super(Button, self).__init__(**kw)
         self.label = label
         self._widget.connect('clicked', self._activate)

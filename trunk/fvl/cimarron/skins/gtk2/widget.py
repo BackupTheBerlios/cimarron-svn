@@ -42,7 +42,7 @@ class Label(Widget):
         self._widget.show()
 
     def _set_text(self, text):
-        self._widget.set_text(text)
+        self._widget.set_text_with_mnemonic(text)
     def _get_text(self):
         return self._widget.get_text()
     text = property(_get_text, _set_text, None, """The static test.""")
