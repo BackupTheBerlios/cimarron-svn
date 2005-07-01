@@ -59,13 +59,15 @@ class Window(GtkVisibilityMixin, Container):
 
     def screenshot(self, filename=None, frame=True):
         """
-        Take a screenshot of the window, format it as a PNG file,
-        store it in file <filename>.
+        Take a screenshot of the window.
 
-        If <frame> is true, include the windowmanager frames.
+        Store the image in file <filename>.
 
         If <filename> isn't given, use the filename of the caller with
         '.png' appended.
+
+        If <frame> is true, include the windowmanager frames.
+
         """
         xid = self._widget.window.xid
         if filename is None:
