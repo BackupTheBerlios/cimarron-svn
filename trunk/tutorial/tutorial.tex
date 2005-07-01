@@ -174,6 +174,27 @@ a \class{VBox}, to as many levels as you want. You could have a
 \class{VBox} inside a \class{VBox}, but of course it would be rather
 pointless.
 
+\section{A four-function simple calculator}
+
+Here's an attempt at constructing a somewhat useful program using what
+we know so far about \Cimarron:
+
+\verbatiminput{calculator.py}
+
+As usual, we have a controller for the window, whose constructor method
+builds the window's contents from the outside in. We use a label to
+display the calculator's input and result, because we want the user to
+input data only thorugh the numeric keypad directly below it, and not
+using the keyboard. The keypad itself is made up of four columns of
+buttons, which we set up using data from a list of key labels and
+methods to call. The actual functionality of the calculator is then
+implemented in three simple methods that modify the calculator's state
+based on the user's actions.
+
+The code above has a bug: it allows the user to input a number with more
+than one decimal point. Try to find a few different ways of getting rid
+of that bug.
+
 \section{Interacting with a model}
 
 \Cimarron{} is meant to help implement applications organized around the
@@ -184,9 +205,7 @@ actions that must occur when something is triggered. The widgets also
 know how to interact with a model, to keep track of the values of
 particular attributes. To illustrate, we'll use the following trivial
 model, which implements all the methods that are needed to interact with
-\Cimarron{} widgets. It is important to note that attributes that are to
-be under the control of a \Cimarron{} widget must be declared as
-properties.
+\Cimarron{} widgets.
 
 \verbatiminput{simpleperson.py}
 
@@ -196,21 +215,25 @@ the user.
 
 \verbatiminput{simplepersoneditor.py}
 
-As you can see, the bulk of the code is concerned with creating and
-packing the widgets. Note that the \class{Entry} widgets have don't have
-an associated action. The controller specifies the model's attribute
-that will be controlled by the widget instead. Note that a widget can
-have both an action and an attribute associated with it: the action
-establishes a communications channel back to the controller, while the
-attribute acts as a forward communication with the model.
+As you can see, again the bulk of the code is concerned with creating
+and packing the widgets. Note that the \class{Entry} widgets have don't
+have an associated action. The controller specifies the model's
+attribute that will be controlled by the widget instead. Note that a
+widget can have both an action and an attribute associated with it: the
+action establishes a communications channel back to the controller,
+while the attribute acts as a forward communication with the model. For
+\class{Entry} instances, the action is invoked only if the user presses
+\kbd{Enter}, but the value in the model is always updated. In order to
+see this in action, you may want to edit the contents in the window's
+fields and compare the result of leaving the field with \kbd{Enter} with
+that of leaving the field with \kbd{Tab} or with the mouse.
 
 Once the window is all set up, it is \class{PersonEditor}'s
-\member{setTarget()} method's responsibility to inform each widget which
-concrete instance they are to interact with at any given moment. The
-\member{checkValues()} method, invoked every time you press the
-``Ckeck'' button, is meant to show that the actual \class{Person}
-object's values are being modified through the widgets. Note that this
-example defines the \member{target} attribute as a property just for
-consistency's sake.
+\member{newTarget()} method's responsibility to inform each widget which
+concrete instance they are to interact with at any given moment. From
+them on, it's the widget's responsibility to keep its value in sync with
+the model. The \member{checkValues()} method, invoked every time you
+press the ``Check'' button, is meant to show that the actual
+\class{Person} object's values are being modified through the widgets.
 
 \end{document}

@@ -13,17 +13,21 @@ class PersonEditor(cimarron.skin.WindowController):
         cimarron.skin.Label(parent=vbox, text='Surname:')
         vbox = cimarron.skin.VBox(parent=hbox)
         self.nameWidget = \
-            cimarron.skin.Entry(parent=vbox, attribute="name")
+            cimarron.skin.Entry(parent=vbox, attribute="name",
+                                onAction=self.checkValues)
         self.surnameWidget = \
-            cimarron.skin.Entry(parent=vbox, attribute="surname")
+            cimarron.skin.Entry(parent=vbox, attribute="surname",
+                                onAction=self.checkValues)
         cimarron.skin.Button(parent=outer_vbox, label='Check', 
 	     onAction = self.checkValues)
-        self.label = cimarron.skin.Label(parent=outer_vbox, text="<nothing yet>")
+        self.label = cimarron.skin.Label(parent=outer_vbox,
+                                         text="<nothing yet>")
         if target is not None:
             self.newTarget(target)
 
     def checkValues(self, sender=None):
-        self.label.text = "Mr/Ms %s, %s" % (self.target.surname, self.target.name)
+        self.label.text = "Mr/Ms %s, %s" % \
+                          (self.target.surname, self.target.name)
 
     def newTarget(self, *a, **kw):
         super(PersonEditor, self).newTarget(*a, **kw)

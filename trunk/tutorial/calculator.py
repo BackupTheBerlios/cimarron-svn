@@ -46,7 +46,7 @@ class CalculatorController(cimarron.skin.WindowController):
             val = float(self.display.text)
             if self.op is not None:
                 val = self.op(self.X, val)
-                self.display.text = str(val)
+            self.display.text = str(val)
             self.resetInput = True
             self.X = val
         self.op = self.operations[sender.label]
