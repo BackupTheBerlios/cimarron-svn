@@ -73,7 +73,8 @@ class Entry(GtkFocusableMixin, Control):
     """
     The simplest text input control.
     """
-    def __init__(self, **kw):
+    def __init__(self, emptyValue=None, **kw):
+        self.emptyValue = emptyValue
         self._widget = gtk.Entry()
         super(Entry, self).__init__(**kw)
         self.refresh ()
@@ -82,7 +83,7 @@ class Entry(GtkFocusableMixin, Control):
         self.delegates.append (self)
 
     def _get_value (self):
-        return self._widget.get_text() or None
+        return self._widget.get_text() or self.emptyValue
     def _set_value (self, value):
         if value is None:
             value = ''
