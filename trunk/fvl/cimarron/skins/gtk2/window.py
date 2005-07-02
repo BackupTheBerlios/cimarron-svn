@@ -25,6 +25,7 @@ logger = logging.getLogger('fvl.cimarron.skins.gtk2.window')
 
 from zope import interface
 import gtk
+import pango
 
 from fvl.cimarron.skins.common import Container
 from fvl.cimarron.interfaces import IWindow
@@ -37,7 +38,7 @@ class Window(GtkVisibilityMixin, Container):
     """
     interface.implements(IWindow)
     
-    def __init__(self, title='', **kw):
+    def __init__(self, title='', size=(-1,-1), **kw):
         """
         @param title: the title for the window.
         """
@@ -50,6 +51,7 @@ class Window(GtkVisibilityMixin, Container):
 
         self._widget.connect('delete-event', delete_callback)
         self.title = title
+        self.size = size
 
     def _set_title(self, title):
         self._widget.set_title(title)
@@ -77,3 +79,24 @@ class Window(GtkVisibilityMixin, Container):
         else:
             cmd = 'import -window %d %s'
         os.system(cmd % (xid, filename))
+
+    def _get_cell_size(self):
+        ctx = self._widget.get_pango_context()
+        metrics = ctx.get_metrics(ctx.get_font_description())
+        cell = ( float(metrics.get_approximate_char_width()) / pango.SCALE,
+                 float(metrics.get_ascent() + metrics.get_descent()) / pango.SCALE )
+        return cell
+
+    def _get_size(self):
+        size = self._widget.get_default_size()
+        if size != (-1,-1):
+            cell = self._get_cell_size()
+            size = int(size[0] / cell[0]), int(size[1] / cell[1])
+        return size
+    def _set_size(self, (width, height)):
+        if (width, height) != (-1,-1):
+            cell = self._get_cell_size()
+            width = int(width * cell[0])
+            height = int(height * cell[1])
+        self._widget.set_default_size(width, height)
+    size = property(_get_size, _set_size)

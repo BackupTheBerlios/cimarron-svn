@@ -149,17 +149,19 @@ class Widget(XmlMixin):
     L{Widget} is ...
     """
 
-    def __init__(self, parent=None, **kw):
+    def __init__(self, parent=None, expand=True, fill=True, border=0, **kw):
         """
         @param parent: the parent of the widget (you don't say!)
         @type parent: L{Widget}
         """
         super (Widget, self).__init__ (**kw)
         self.delegates = []
+        self.expand = expand
+        self.fill = fill
+        self.border = border
         self.parent = parent
         for k, v in kw.items ():
             setattr (self, k, v)
-
 
     def _set_parent(self, parent):
         if parent is not None and self.parent is parent:
