@@ -18,8 +18,7 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-from model.person import Person
-from model.address import Address
+from model.person import Person, Address
 
 Persons= [
 	    Person ("Freeman", "Newman", [Address (text="San luis 870"), Address (text="San luis 594 2D")]),
