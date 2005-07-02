@@ -77,13 +77,12 @@ epydoc_; to run the tests you'll need epydoc_.
 .. _epydoc: http://epydoc.sourceforge.net/
 
 We've tested it on Debian_ Sarge_ (python 2.3.5, libxml2 2.6.16, pygtk
-2.6.1), Mandrake_ 10.1_ (python 2.3, libxml2 2.6.13, pygtk 2.3.96),
+2.6.1), Mandrake_ 10.1 (python 2.3, libxml2 2.6.13, pygtk 2.3.96),
 and Ubuntu_ Hoary_ (python 2.4.1, libxml2 2.6.17, pygtk 2.6.1).
 
 .. _debian: http://www.debian.org/
 .. _sarge: http://www.debian.org/releases/sarge/
 .. _mandrake: http://www.mandrivalinux.com/
-.. _10.1: http://www.google.com/
 .. _ubuntu: http://www.ubuntulinux.org/
 .. _hoary: http://us.releases.ubuntu.com/releases/5.04/
 
