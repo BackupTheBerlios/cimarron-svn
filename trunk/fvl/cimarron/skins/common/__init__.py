@@ -172,14 +172,14 @@ class Widget(XmlMixin):
             else:
                 raise NotImplementedError, 'Cannot reparent'
         if parent is not None:
-            parent.concreteParenter(self)
+            parent._concreteParenter(self)
             parent._children.append(self)
         self.__parent = parent
 
         # re-link missed parentizations
         try:
             for child in self._childrenToParent:
-                self.concreteParenter (child)
+                self._concreteParenter (child)
             del self._childrenToParent
         except AttributeError:
             # no dangling children, ignore
