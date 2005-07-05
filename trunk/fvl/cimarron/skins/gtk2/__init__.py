@@ -53,7 +53,7 @@ def _schedule(timeout, callback, repeat=0):
         cb = callback
     gobject.timeout_add(timeout, cb)
 
-def concreteParenter(parent, child):
+def _concreteParenter(parent, child):
     """
     Does the skin-specific magic that `glues' a child with its parent.
     Do not call directly.
@@ -79,6 +79,6 @@ def concreteParenter(parent, child):
                     parent._childrenToParent= [child]
             else:
                 # print 'forwarded to', parent.parent
-                parent.parent.concreteParenter (child)
+                parent.parent._concreteParenter (child)
 
 moduleProvides(ISkin)

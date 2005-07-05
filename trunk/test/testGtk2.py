@@ -185,7 +185,7 @@ class TestGtkWindow(testGtkVisibility, TestWindow):
         self.win.size = (80, 25)
         cell = self.win._get_cell_size()
         expected = int(80*cell[0]), int(25*cell[1])
-        self.assertEqual(self.win._widget.get_default_size(), expected)
+        self.assertEqual(self.win._widget.get_size(), expected)
 
 class TestGtkLabel(testGtkParenting, TestLabel):
     def testSetLabel(self):

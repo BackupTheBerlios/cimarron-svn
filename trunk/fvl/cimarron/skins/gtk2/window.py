@@ -88,7 +88,7 @@ class Window(GtkVisibilityMixin, Container):
         return cell
 
     def _get_size(self):
-        size = self._widget.get_default_size()
+        size = self._widget.get_size()
         if size != (-1,-1):
             cell = self._get_cell_size()
             size = int(size[0] / cell[0]), int(size[1] / cell[1])
@@ -98,5 +98,5 @@ class Window(GtkVisibilityMixin, Container):
             cell = self._get_cell_size()
             width = int(width * cell[0])
             height = int(height * cell[1])
-        self._widget.set_default_size(width, height)
+        self._widget.set_size_request(width, height)
     size = property(_get_size, _set_size)

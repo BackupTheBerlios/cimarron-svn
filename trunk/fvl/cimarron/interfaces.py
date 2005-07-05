@@ -18,13 +18,115 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-from zope import interface, schema
+from zope.interface import Attribute, Interface
+from zope.schema import Object
 
-class IWindow(interface.Interface):
-    def __init__(title, **kw): pass
-    title = interface.Attribute('')
+class IModel(Interface):
+    def getattr(attr):
+        """
+        return the value of attribute 'attr'.
+        """
+    def setattr(attr, value):
+        """
+        set the value of attribute 'attr'  to 'value'.
+        """
 
-class ISkin(interface.Interface):
+class ISelectionModel(IModel):
+    def fetch(**qualifier):
+        """
+        return a generator of objects, filtered by 'qualifier'
+        (e.g. {'name': 'foo*'})
+        """
+
+class IWidget(Interface):
+    expand = Attribute("Whether the widget is given extra space")
+    fill = Attribute("Whether the widget grows to occupy all the extra space")
+    border = Attribute("The extra space around the widget")
+    parent = Attribute("The parent of the widget")
+
+    def delegate(message, *args):
+        """
+        Request delegates' consensus over whether a certain action should be
+        performed.
+
+        L{Control}s (L{Button <skins.gtk2.Button>}, L{Entry
+        <skins.gtk2.Entry>}, L{Controller <controllers.Controller>} itself,
+        etc.)  have a purpose in life, and that purpose is to react to a given
+        action when acted on. You press a button, and bam! the action is shot
+        out (for example, 'Close'). The connection is direct and unequivocal;
+        if the button is enabled the action will be carried out.
+
+        However, other kinds of interaction are possible as is the example of
+        closing a window: in these cases the manipulation is more direct,
+        while the process of deciding if the action should be carried out is
+        more subtle, and the actors involved might be spread out over the
+        L{Controller <controllers.Controller>} hierarchy. Delegation is a
+        means of permitting these concensus-like desicions processes to occur,
+        while leaving the logic for the decisions themselves next to the
+        decision makers.
+
+        Every object that delegates actions has a list of delegates. When an
+        action occurs the C{delegates} list is traversed, asking each delegate
+        what they think of the action. Based on the opinion of the delegates,
+        the action is carried out or vetoed.
+
+        The delegates that care about an action must have a method named after
+        the action (for example, if a delegate cares about 'hide' events it
+        would have a 'will_hide' method). The method will be called to querie
+        the delegate about the action, and the delegate must return one of the
+        following:
+
+          - L{ForcedNo}: halt traversal, do not perform the action.
+          - L{No}: 'I vote no'; traversal continues.
+          - L{Unknown}: same as not having the method: ignore this vote.
+          - L{Yes}: 'I vote yes'; traversal continues.
+          - L{ForcedYes}: halt traversal, perform the action.
+
+        a single 'Yes' in a chain full of 'No's is a 'Yes' (in other
+        words, a list of non-forced results is ORed).
+
+        """
+
+    def _concreteParenter(child):
+        """
+        Does the skin-specific magic that `glues' a child with its parent.
+        Do not call directly.
+        """
+    def _connectWith (other):
+        """
+        Connects the widget with someone else. This is used for loading
+        from XML files/objects.
+        """
+        
+
+class IContainer(IWidget):
+    children = Attribute("The list of children. It contains both"
+                                   " graphical and non-grafical objects.")
+
+    def show(): pass
+    def hide(): pass
+    def skeleton(parent=None): pass
+    def dirty(): pass
+
+class IWindow(IContainer):
+    title = Attribute('')
+    size = Attribute('')
+
+    def screenshot(filename=None, frame=True):
+        """
+        Take a screenshot of the window.
+
+        Store the image in file <filename>.
+
+        If <filename> isn't given, use the filename of the caller
+        with '.png' appended.
+
+        If <frame> is true, include the windowmanager frames.
+
+        """
+    
+
+class ISkin(Interface):
     def _run():
         """
         _run() is called from Application.run, to set in motion whatever
@@ -44,14 +146,14 @@ class ISkin(interface.Interface):
         scheduling of the delayed action.
         """
 
-    def concreteParenter(parent, child):
+    def _concreteParenter(parent, child):
         """
-        concreteParenter dos the skin-specific magic that `glues' a
+        _concreteParenter dos the skin-specific magic that `glues' a
         child with its parent.
         """
 
     # thanks to Stephan Richter <srichter@cosmos.phy.tufts.edu>
-    Window = schema.Object(
+    Window = Object(
         schema = IWindow,
         title = u'Window',
         required = True,

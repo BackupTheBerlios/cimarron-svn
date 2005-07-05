@@ -205,47 +205,6 @@ class Widget(XmlMixin):
                     doc="the skin")
 
     def delegate(self, message, *args):
-        """
-        Request delegates' consensus over whether a certain action should be
-        performed.
-
-        L{Control}s (L{Button <skins.gtk2.Button>}, L{Entry
-        <skins.gtk2.Entry>}, L{Controller <controllers.Controller>} itself,
-        etc.)  have a purpose in life, and that purpose is to react to a given
-        action when acted on. You press a button, and bam! the action is shot
-        out (for example, 'Close'). The connection is direct and unequivocal;
-        if the button is enabled the action will be carried out.
-
-        However, other kinds of interaction are possible as is the example of
-        closing a window: in these cases the manipulation is more direct,
-        while the process of deciding if the action should be carried out is
-        more subtle, and the actors involved might be spread out over the
-        L{Controller <controllers.Controller>} hierarchy. Delegation is a
-        means of permitting these concensus-like desicions processes to occur,
-        while leaving the logic for the decisions themselves next to the
-        decision makers.
-
-        Every object that delegates actions has a list of delegates. When an
-        action occurs the C{delegates} list is traversed, asking each delegate
-        what they think of the action. Based on the opinion of the delegates,
-        the action is carried out or vetoed.
-
-        The delegates that care about an action must have a method named after
-        the action (for example, if a delegate cares about 'hide' events it
-        would have a 'will_hide' method). The method will be called to querie
-        the delegate about the action, and the delegate must return one of the
-        following:
-
-          - L{ForcedNo}: halt traversal, do not perform the action.
-          - L{No}: 'I vote no'; traversal continues.
-          - L{Unknown}: same as not having the method: ignore this vote.
-          - L{Yes}: 'I vote yes'; traversal continues.
-          - L{ForcedYes}: halt traversal, perform the action.
-
-        a single 'Yes' in a chain full of 'No's is a 'Yes' (in other
-        words, a list of non-forced results is ORed).
-
-        """
         if self.delegates:
             av= Unknown
             for i in self.delegates:
@@ -259,18 +218,10 @@ class Widget(XmlMixin):
             return av
         return True
 
-    def concreteParenter (self, child):
-        """
-        Does the skin-specific magic that `glues' a child with its parent.
-        Do not call directly.
-        """
-        cimarron.skin.concreteParenter (self, child)
+    def _concreteParenter (self, child):
+        cimarron.skin._concreteParenter (self, child)
 
     def _connectWith (self, other):
-        """
-        Connects the widget with someone else. This is used for loading
-        from XML files/objects.
-        """
         pass
 
 
@@ -293,9 +244,7 @@ class Container(Widget):
 
     def _get_children(self):
         return tuple(self._children)
-    children = property(_get_children, None, None,
-        """The list of children. It contains both graphical and
-        non-grafical objects.""")
+    children = property(_get_children)
 
     def skeleton(self, parent=None):
         skel = super(Container, self).skeleton(parent)
