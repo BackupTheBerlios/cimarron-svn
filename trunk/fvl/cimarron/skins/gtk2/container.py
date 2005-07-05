@@ -73,8 +73,8 @@ class Notebook (Container):
         if 0<=pageNo and pageNo<len (self._children) and self.delegate ('will_change_page'):
             self._widget.set_current_page (pageNo)
 
-    def concreteParenter (self, child):
-        super (Notebook, self).concreteParenter (child)
+    def _concreteParenter (self, child):
+        super (Notebook, self)._concreteParenter (child)
         if getattr (child, '_widget', None):
             label= gtk.Label()
             label.set_text (child.label)
