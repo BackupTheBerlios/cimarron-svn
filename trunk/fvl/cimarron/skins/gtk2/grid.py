@@ -198,8 +198,14 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
 
         self._tv.connect('key-release-event', self._keyreleased)
         self._tv.connect('cursor_changed', self._cursor_changed)
+        self._tv.connect('row-activated',self._double_click)
 
         super (SelectionGrid, self).__init__(**kw)
+
+
+    def _double_click(self, widget,*ignore):
+        self.onAction ()
+        return True
 
     def _keyreleased(self, widget, key_event, *ignore):
         if key_event.keyval==gtk.keysyms.Return:

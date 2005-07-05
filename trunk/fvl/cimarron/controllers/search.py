@@ -37,7 +37,7 @@ class SelectionWindow (Controller):
         super (SelectionWindow, self).__init__ (**kw)
         self.win= cimarron.skin.Window (
             parent= self.parent,
-            title= 'Select',
+            title= 'Select',size=(30,5)
             )
         v= cimarron.skin.VBox (parent=self.win)
         self.grid= cimarron.skin.SelectionGrid (
@@ -45,7 +45,7 @@ class SelectionWindow (Controller):
             columns= columns,
             onAction= self.onOk,
         )
-        h= cimarron.skin.HBox (parent=v)
+        h= cimarron.skin.HBox (parent=v,expand=False)
         self.ok= cimarron.skin.Button (
             parent= h,
             label= 'Ok',
@@ -105,7 +105,7 @@ class SearchEntry (ColumnAwareXmlMixin, Controller):
         """
         super (SearchEntry, self).__init__ (**kw)
         self.entries= []
-        self.h= cimarron.skin.HBox (parent= self)
+        self.h= cimarron.skin.HBox (parent= self,expand=False)
         self.columns= columns
         self.value= None
         self.searcher= searcher

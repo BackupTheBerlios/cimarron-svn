@@ -49,7 +49,7 @@ class CRUDController (WindowController):
 
         self.new= cimarron.skin.Button (
             parent= self.firstTab,
-            label= 'New',
+            label= 'New',expand=False
             )
 
         self.klass= klass
@@ -224,7 +224,7 @@ class Editor (Controller):
             xmlObj= xmlObj.next
 
         # save/discard buttons
-        hbox= cimarron.skin.HBox (parent=vbox)
+        hbox= cimarron.skin.HBox (parent=vbox, expand=False)
         save= cimarron.skin.Button (
             parent= hbox,
             label= 'Save',

@@ -122,3 +122,7 @@ class TestSelectionGrid (abstractTestControl):
         self.setUpControl (target=None, attr=None)
         self.testIndex ()
         self.testValue ()
+
+    #def testDoubleClickSelection(self):
+    #    self.widget._widget.scroll_to_point(1,2)
+    #    self.widget._widget.row_activated()
