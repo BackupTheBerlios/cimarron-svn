@@ -93,6 +93,7 @@ class TestSelectionGrid (abstractTestControl):
             parent= self.parent,
             columns= columns,
             data= self.list,
+            onAction=self.dummyAction
             )
 
         target= DummyTarget (self.list[0])
@@ -123,6 +124,11 @@ class TestSelectionGrid (abstractTestControl):
         self.testIndex ()
         self.testValue ()
 
-    #def testDoubleClickSelection(self):
-    #    self.widget._widget.scroll_to_point(1,2)
-    #    self.widget._widget.row_activated()
+    def testDoubleClickSelection(self):
+        self.widget.index=1
+        self.widget._double_click(widget=self.widget._widget)
+        self.assertEquals(self.dummyDCValue,self.widget.data[self.widget.index],
+                                    """Double click did not sent the values""") 
+
+    def dummyAction(self,sender): #action to test double click functioning
+        self.dummyDCValue = sender.data[sender.index]
