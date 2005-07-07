@@ -202,10 +202,11 @@ Model-View-Controller pattern. The previous examples have shown
 interaction between a controller (\class{MainWindowController}), whose
 job is to set up a view (the window and its widgets), complete with the
 actions that must occur when something is triggered. The widgets also
-know how to interact with a model, to keep track of the values of
-particular attributes. To illustrate, we'll use the following trivial
-model, which implements all the methods that are needed to interact with
-\Cimarron{} widgets.
+know how to interact with a model, over a simple API, to keep track of
+the values of particular attributes. The \class{Model} class can be
+derived to create classes that automatically implement this API. To
+illustrate, we'll use the following trivial model, which implements all
+the methods that are needed to interact with \Cimarron{} widgets.
 
 \verbatiminput{simpleperson.py}
 

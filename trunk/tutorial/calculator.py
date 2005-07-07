@@ -1,5 +1,4 @@
 import operator
-
 from fvl import cimarron
 cimarron.config()
 
@@ -10,17 +9,25 @@ class CalculatorController(cimarron.skin.WindowController):
         vbox = cimarron.skin.VBox(parent=self.win)
         self.display = cimarron.skin.Label(parent=vbox, text='0')
         hbox = cimarron.skin.HBox(parent=vbox)
-        for aRow in ((('7', self.numberButton), ('4', self.numberButton),
-                      ('1', self.numberButton), ('C', self.clear)),
-                     (('8', self.numberButton), ('5', self.numberButton),
-                      ('2', self.numberButton), ('0', self.numberButton)),
-                     (('9', self.numberButton), ('6', self.numberButton), 
-                      ('3', self.numberButton), ('.', self.numberButton)),
-                     (('+', self.operate), ('-', self.operate), 
-                      ('*', self.operate),  ('/', self.operate))):
+        for aRow in (({'label': '7', 'onAction': self.numberButton},
+                      {'label': '4', 'onAction': self.numberButton},
+                      {'label': '1', 'onAction': self.numberButton},
+                      {'label': 'C', 'onAction': self.clear}),
+                     ({'label': '8', 'onAction': self.numberButton},
+                      {'label': '5', 'onAction': self.numberButton},
+                      {'label': '2', 'onAction': self.numberButton},
+                      {'label': '0', 'onAction': self.numberButton}),
+                     ({'label': '9', 'onAction': self.numberButton},
+                      {'label': '6', 'onAction': self.numberButton},
+                      {'label': '3', 'onAction': self.numberButton},
+                      {'label': '.', 'onAction': self.numberButton}),
+                     ({'label': '+', 'onAction': self.operate, 'calcOp': operator.add},
+                      {'label': '-', 'onAction': self.operate, 'calcOp': operator.sub},
+                      {'label': '*', 'onAction': self.operate, 'calcOp': operator.mul},
+                      {'label': '/', 'onAction': self.operate, 'calcOp': operator.div})):
             vbox = cimarron.skin.VBox(parent=hbox)
-            for aLabel, anAction in aRow:
-                cimarron.skin.Button(parent=vbox, label=aLabel, onAction=anAction)
+            for parms in aRow:
+                cimarron.skin.Button(parent=vbox, **parms)
         self.clear()
 
     def numberButton(self, sender=None):
@@ -36,20 +43,19 @@ class CalculatorController(cimarron.skin.WindowController):
         self.X = 0
         self.resetInput = True
 
-    operations = { '+': operator.add,
-                   '-': operator.sub,
-                   '*': operator.mul,
-                   '/': operator.div }
-
     def operate(self, sender=None):
-        if not self.resetInput:
-            val = float(self.display.text)
-            if self.op is not None:
-                val = self.op(self.X, val)
-            self.display.text = str(val)
-            self.resetInput = True
-            self.X = val
-        self.op = self.operations[sender.label]
+        try:
+            if not self.resetInput:
+                val = float(self.display.text)
+                if self.op is not None:
+                    val = self.op(self.X, val)
+                self.display.text = str(val)
+                self.X = val
+                self.resetInput = True
+            self.op = sender.calcOp
+        except:
+            self.clear()
+            self.display.text = '-- Error --'
 
 app = cimarron.skin.Application()
 w = CalculatorController(parent=app)
