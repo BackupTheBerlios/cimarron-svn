@@ -40,6 +40,7 @@ to implement the Gtk2 'skin' so far.
       license='GPL',
       packages=['fvl',
                 'fvl.cimarron',
+                'fvl.cimarron.model',
                 'fvl.cimarron.skins',
                 'fvl.cimarron.skins.common',
                 'fvl.cimarron.skins.gtk2',
