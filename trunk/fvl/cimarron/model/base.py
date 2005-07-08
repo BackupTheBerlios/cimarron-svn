@@ -18,8 +18,17 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+from fvl.cimarron.tools import traverse
+
 class Model(object):
     def getattr(self, attr):
-        return getattr(self, attr)
+        return traverse(self, attr)
     def setattr(self, attr, value):
-        return setattr(self, attr, value)
+        pos = attr.rfind('.')
+        if pos > -1:
+            path = attr[:pos]
+            attr = attr[pos+1:]
+            obj = traverse(self, path)
+        else:
+            obj = self
+        return setattr(obj, attr, value)

@@ -24,7 +24,7 @@ from optparse import OptionParser
 import libxml2
 libxml2.debugMemory(1)
 
-moduleNames = ['testSkin', 'hello',
+moduleNames = ['testSkin', 'hello', 'testModel',
                'testController', 'testSearch'] #, 'testSkeleton']
 
 testnames = ('focus-events', 'delegations')
