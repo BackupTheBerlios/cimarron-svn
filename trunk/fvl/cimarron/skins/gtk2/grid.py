@@ -89,7 +89,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
             self._tv.set_cursor((index, ))
     def _get_index(self):
         cursor = self._tv.get_cursor()
-        if cursor:
+        if cursor and cursor[0]:
             return int(cursor[0][0])
         else:
             # the cursor is not set
@@ -99,15 +99,16 @@ class Grid(ColumnAwareXmlMixin, Controller):
                      If no object is selected, it is None.""")
 
     def _cell_edited(self, cell, path, text, colNo, *ignore):
-        write = self.columns[colNo].write
+        attribute = self.columns[colNo].attribute
         # modify the ListStore model...
         self._tvdata[path][colNo] = text
         # ... and our model
-        try:
-            write (self.value[int(path)], text)
-        except(TypeError, IndexError):
-            # we're editing the new value
-            write(self.new, text)
+        value = self.value
+        if value is not None:
+            value = value[int(path)]
+        else:
+            value = self.new
+        value.setattr(attribute, text)
             
         # coming soon: our models will (should) suport the generic TreeModel protocol
         # also: if write() returns false, the entry flashes and
@@ -120,17 +121,17 @@ class Grid(ColumnAwareXmlMixin, Controller):
 
         if key_event.keyval==gtk.keysyms.Down and last:
             try:
-                if self.new.isDirty:
-                    if self.value is None:
-                        self.value = [self.new]
-                    else:
-                        self.value.append(self.new)
-                    self.new = self.klass()
-                    self._tvdata.append ([j.read(self.new) for j in self.columns])
+                new = self.new
             except AttributeError:
-                # print 'self.new does not exist. so, go create it'
-                self.new = self.klass()
-                self._tvdata.append ([j.read(self.new) for j in self.columns])
+                pass
+            else:
+                if new.isDirty:
+                    if self.value is None:
+                        self.value = [new]
+                    else:
+                        self.value.append(new)
+            self.new = self.klass()
+            self._tvdata.append([self.new.getattr(j.attribute) for j in self.columns])
             
         return False
 
@@ -143,11 +144,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
         # print 'Grid.refresh:', `self.value`, self.columns
         if self.value is not None:
             for i in self.value:
-                # add all the values
-                # NOTE: this forces the data to be read.
-                data = [j.read(i) for j in self.columns]
-                # print 'Grid: adding', data
-                self._tvdata.append(data)
+                self._tvdata.append([i.getattr(j.attribute) for j in self.columns])
             self.index = 0
         else:
             self.index = None
@@ -225,7 +222,7 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
             for i in self.data:
                 # build a ListStore w/ al the values
                 # NOTE: this forces the data to be read.
-                self._tvdata.append ([j.read(i) for j in self._columns])
+                self._tvdata.append([i.getattr(j.attribute) for j in self._columns])
         self._tv.set_model(self._tvdata)
     def _get_data(self):
         return self._data

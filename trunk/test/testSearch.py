@@ -21,57 +21,57 @@
 from fvl import cimarron
 
 from testCommon import abstractTestControl
-from testGrid import Person
+from model.person import Person
 
 __all__=('TestSearch',)
 
-class TestSearch (abstractTestControl):
-    def setUp (self):
-        super (TestSearch, self).setUp ()
+class TestSearch(abstractTestControl):
+    def setUp(self):
+        super (TestSearch, self).setUp()
         self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
-        columns= (
-            cimarron.skin.Column (name='Nombre', read=Person.getName, write=Person.setName),
-            cimarron.skin.Column (name='Apellido', read=Person.getSurname, write=Person.setSurname),
+        columns = (
+            cimarron.skin.Column(name='Nombre', attribute='name'),
+            cimarron.skin.Column(name='Apellido', attribute='surname'),
             )
-        self.widget= cimarron.skin.SearchEntry (
-            parent= self.parent,
-            columns= columns,
-            searcher= Person,
+        self.widget = cimarron.skin.SearchEntry(
+            parent = self.parent,
+            columns = columns,
+            searcher = Person,
             )
-        Person.__values__= self.data= [
-            Person ('jose', 'perez'),
-            Person ('marcos', 'dione'),
-            Person ('john', 'lenton'),
-            Person ('pedro', 'dargenio'),
+        Person.__values__ = self.data = [
+            Person('jose', 'perez'),
+            Person('marcos', 'dione'),
+            Person('john', 'lenton'),
+            Person('pedro', 'dargenio'),
             ]
         
-        self.setUpControl (target=self.data[0], attr=None)
+        self.setUpControl(target=self.data[0], attr=None)
 
-    def testNoneInEmptyFound (self):
+    def testNoneInEmptyFound(self):
         # here we 'plant' the data, but real Search's will fetch its own data
-        # self.widget.data= []
-        Person.__values__= []
-        self.widget.doSearch ()
-        self.assertEqual (self.widget.value, None)
+        # self.widget.data = []
+        Person.__values__ = []
+        self.widget.doSearch()
+        self.assertEqual(self.widget.value, None)
 
-    def testNoneMatchesFound (self):
+    def testNoneMatchesFound(self):
         # here we 'plant' the data, but real Search's will fetch its own data
-        # self.widget.data= self.data
-        Person.__values__= self.data
-        searchingValues= (
+        # self.widget.data = self.data
+        Person.__values__ = self.data
+        searchingValues = (
             ('martin', ''),
             ('', 'rezk'),
             )
 
-        for i in xrange (len (searchingValues)):
-            for j in xrange (len (searchingValues[i])):
-                self.widget.entries[j].value= searchingValues[i][j]
-            self.widget.doSearch ()
-            self.assertEqual (self.widget.value, None)
+        for i in xrange (len(searchingValues)):
+            for j in xrange (len(searchingValues[i])):
+                self.widget.entries[j].value = searchingValues[i][j]
+            self.widget.doSearch()
+            self.assertEqual(self.widget.value, None)
 
-    def testOneFound (self):
-        self.widget.data= self.data
-        searchingValues= (
+    def testOneFound(self):
+        self.widget.data = self.data
+        searchingValues = (
             ('jos', ''),
             ('', 'pe'),
             ('m', ''),
@@ -81,12 +81,12 @@ class TestSearch (abstractTestControl):
             ('p', ''),
             ('', 'da'),
             )
-        for i in xrange (len (searchingValues)):
-            for j in xrange (len (searchingValues[i])):
-                self.widget.entries[j].value= searchingValues[i][j]
-            self.widget.doSearch ()
-            self.assertEqual (self.widget.value, self.data[i/2])
+        for i in xrange (len(searchingValues)):
+            for j in xrange (len(searchingValues[i])):
+                self.widget.entries[j].value = searchingValues[i][j]
+            self.widget.doSearch()
+            self.assertEqual(self.widget.value, self.data[i/2])
 
-    def testOnAction (self):
-        self.widget.data= self.data
-        super (TestSearch, self).testOnAction ()
+    def testOnAction(self):
+        self.widget.data = self.data
+        super (TestSearch, self).testOnAction()

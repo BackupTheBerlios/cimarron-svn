@@ -31,7 +31,7 @@ from fvl.cimarron.skins.common import XmlMixin
 
 logger = logging.getLogger('fvl.cimarron.controllers.column')
 
-class ColumnAwareXmlMixin (object):
+class ColumnAwareXmlMixin(object):
     def fromXmlObj(klass, xmlObj, skin):
         """
         Helper function for loading a Cimarrón app from an xml file. (see
@@ -39,62 +39,57 @@ class ColumnAwareXmlMixin (object):
         """
         self = klass()
         self.fromXmlObjProps(xmlObj.properties)
-        attrs= {self: klass.attributesToConnect ()}
+        attrs = {self: klass.attributesToConnect()}
         try:
-            idDict= {self.id: self}
+            idDict = {self.id: self}
         except AttributeError:
-            idDict= {}
+            idDict = {}
 
-        columns= []
+        columns = []
         xmlObj = xmlObj.children
         while xmlObj:
-            (obj, attrsInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
+            (obj, attrsInChild, idDictInChild) = self.childFromXmlObj(xmlObj, skin)
             if obj is not None:
-                columns.append (obj)
-                attrs.update (attrsInChild)
+                columns.append(obj)
+                attrs.update(attrsInChild)
                 # print `attrs`
-                idDict.update (idDictInChild)
-            xmlObj= xmlObj.next
+                idDict.update(idDictInChild)
+            xmlObj = xmlObj.next
         if columns:
             # warn (if not?)
-            self.columns= columns
+            self.columns = columns
 
-        return (self, attrs, idDict)
+        return(self, attrs, idDict)
     fromXmlObj = classmethod(fromXmlObj)
 
 
-class Column (XmlMixin):
+class Column(XmlMixin):
     """
     A Column describes a field. This field can be used for both
     B{SearchEntry}s and B{Grid}s.
     """
-    def attributesToConnect (klass):
-        attrs= super (Column, klass).attributesToConnect ()
-        return attrs+['read', 'write']
-    attributesToConnect= classmethod (attributesToConnect)
+    def attributesToConnect(klass):
+        attrs = super (Column, klass).attributesToConnect()
+        return attrs+['attribute']
+    attributesToConnect = classmethod(attributesToConnect)
 
-    def __init__ (self, name='', read=None, write=None, entry=None):
+    def __init__(self, name='', attribute='', entry=None):
         """
         @param name: A text associated with the field.
             In the case of B{Grids}, it's the colunm header.
-
-        @param read: A callable that, given an object, returns the value
-            of that object for the field. Tipically, is an unbound getter
-            method from the object class.
-
-        @param write: A callable that, given an object and a new value,
-            modifies the object. Tipically, is an unbound setter method
-            from the object class.
         """
-        self.name= name
-        if read is not None and not callable (read):
-            raise ValueError, 'read parameter must be callable'
-        self.read= read
-        if write is not None and not callable (write):
-            raise ValueError, 'write parameter must be callable'
-        self.write= write
+#         @param read: A callable that, given an object, returns the value
+#             of that object for the field. Tipically, is an unbound getter
+#             method from the object class.
+
+#         @param write: A callable that, given an object and a new value,
+#             modifies the object. Tipically, is an unbound setter method
+#             from the object class.
+
+        self.name = name
+        self.attribute = attribute
         if entry is None:
             entry = cimarron.skin.Entry
-        self.entry= entry
+        self.entry = entry
 
 

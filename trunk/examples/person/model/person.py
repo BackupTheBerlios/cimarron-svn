@@ -20,138 +20,110 @@
 
 from fvl.cimarron.model.base import Model
 
-class Person (Model):
-    def __init__ (self, name='', surname='', addresses= []):
-        self.setName (name)
-        self.setSurname (surname)
-        self.addresses= addresses
-        self.isDirty= False
+class Person(Model):
+    def __init__(self, name='', surname='', addresses = []):
+        self.name = name
+        self.surname = surname
+        self.addresses = addresses
+        self.isDirty = False
         
-    def getName (self):
-        return self.__name
-    def setName (self, name):
-        self.__name= name
-        self.isDirty= True
-    name= property (getName, setName)
+    def setattr(self, attr, val):
+        rv = super(Person, self).setattr(attr, val)
+        self.isDirty = True
 
-    def getSurname (self):
-        return self.__surname
-    def setSurname (self, sn):
-        self.__surname= sn
-        self.isDirty= True
-    surname= property (getSurname, setSurname)
+    def save(self):
+        self.isDirty = False
 
-    def getAddresses (self):
-        return self.__addrs
-    def setAddresses (self, addrs):
-        self.__addrs= addrs
-    def addToAddresses (self, addr):
-        self.__addrs.append (addr)
-        self.isDirty= True
-    addresses= property (getAddresses, setAddresses)
+    def __str__(self):
+        return "Person(name=%r, surname=%r, addresses=%r)" \
+               % (self.name, self.surname, self.addresses)
 
-    def save (self):
-        self.isDirty= False
-
-    def __str__ (self):
-        return "Person (name='%s', surname='%s', addresses=%s)" % (
-            self.name,
-            self.surname,
-            str (self.addresses),
-            )
-
-    def search (klass, values):
-        name, surname= values[:2]
-        ans= []
+    def search(klass, values):
+        name, surname = values[:2]
+        ans = []
 
         for i in klass.__values__:
-            found= False
+            found = False
             if surname is None and name is None:
-                found= True
+                found = True
             else:
                 if name is not None:
-                    found= name in i.name
+                    found = name in i.name
                 if surname is not None:
                     if name is not None:
-                        found= found and surname in i.surname
+                        found = found and surname in i.surname
                     else:
-                        found= surname in i.surname
+                        found = surname in i.surname
 
             if found:
-                ans.append (i)
+                ans.append(i)
 
         return ans
-    search= classmethod (search)
+    search = classmethod(search)
 
 
-class Address (Model):
-    def __init__ (self, text=''):
-        self.text= text
-        self.isDirty= False
+class Address(Model):
+    def __init__(self, text=''):
+        self.text = text
+        self.isDirty = False
 
-    def getText (self):
-        return self.__text
-    def setText (self, text):
-        self.__text= text
-        self.isDirty= True
-    text= property (getText, setText)
-
-    def __str__ (self):
-        s= "Address (text='%s')" % self.text
+    def __str__(self):
+        s = "Address(text='%s')" % self.text
         if self.isDirty:
-            s= "* "+s
-        return 
+            s = "* "+s
+        return s
 
 
-Person.__values__= [
-    Person ("Freeman", "Newman", [Address (text="San luis 870"), Address (text="San luis 594 2D")]),
-    Person ("Roxanne", "Oneal"),
-    Person ("Ward", "Fischer"),
-    Person ("Philis", "Eggbert"),
-    Person ("September", "Gibson"),
-    Person ("Layton", "Albright"),
-    Person ("Janna", "Dimsdale"),
-    Person ("Lexia", "Canham"),
-    Person ("Jake", "Wickes"),
-    Person ("Mona", "Prevatt"),
-    Person ("Eugenia", "Sherlock"),
-    Person ("Lynnette", "Briggs"),
-    Person ("Adam", "Eisenman"),
-    Person ("Lloyd", "Bash"),
-    Person ("Ford", "Leslie"),
-    Person ("Perce", "Bellinger"),
-    Person ("Daly", "Ream"),
-    Person ("Katy", "Mcfall"),
-    Person ("Bryan", "Langston"),
-    Person ("Kerena", "Rowe"),
-    Person ("Elenora", "Moon"),
-    Person ("Bindy", "Foster"),
-    Person ("Toni", "Oppie"),
-    Person ("Driskoll", "Patterson"),
-    Person ("Roscoe", "Vanleer"),
-    Person ("Deemer", "Barrett"),
-    Person ("Dreda", "Siegrist"),
-    Person ("Carlyn", "Nash"),
-    Person ("Rexana", "Nehling"),
-    Person ("Robyn", "Green"),
-    Person ("Katelyn", "Fisher"),
-    Person ("Jilly", "Kifer"),
-    Person ("Reannon", "Craig"),
-    Person ("Anima", "Ironmonger"),
-    Person ("Willie", "Reese"),
-    Person ("Jemima", "Schrader"),
-    Person ("Ernie", "Stoddard"),
-    Person ("Judd", "Mcclymonds"),
-    Person ("Aaren", "Smith"),
-    Person ("Jonny", "Merryman"),
-    Person ("Sam", "Blaine"),
-    Person ("Hugh", "Zimmer"),
-    Person ("Kaylin", "Blessig"),
-    Person ("Earline", "Alliman"),
-    Person ("Barret", "Rifler"),
-    Person ("Hall", "Burnett"),
-    Person ("Avila", "Park"),
-    Person ("Ronnette", "Lalty"),
-    Person ("Lou", "Day"),
-    Person ("Bessie", "Robinson"),
+Person.__values__ = [
+    Person ("Freeman", "Newman",
+            [Address (text="San luis 870"), Address(text="San luis 594 2D")]),
+    Person("Roxanne", "Oneal"),
+    Person("Ward", "Fischer"),
+    Person("Philis", "Eggbert"),
+    Person("September", "Gibson"),
+    Person("Layton", "Albright"),
+    Person("Janna", "Dimsdale"),
+    Person("Lexia", "Canham"),
+    Person("Jake", "Wickes"),
+    Person("Mona", "Prevatt"),
+    Person("Eugenia", "Sherlock"),
+    Person("Lynnette", "Briggs"),
+    Person("Adam", "Eisenman"),
+    Person("Lloyd", "Bash"),
+    Person("Ford", "Leslie"),
+    Person("Perce", "Bellinger"),
+    Person("Daly", "Ream"),
+    Person("Katy", "Mcfall"),
+    Person("Bryan", "Langston"),
+    Person("Kerena", "Rowe"),
+    Person("Elenora", "Moon"),
+    Person("Bindy", "Foster"),
+    Person("Toni", "Oppie"),
+    Person("Driskoll", "Patterson"),
+    Person("Roscoe", "Vanleer"),
+    Person("Deemer", "Barrett"),
+    Person("Dreda", "Siegrist"),
+    Person("Carlyn", "Nash"),
+    Person("Rexana", "Nehling"),
+    Person("Robyn", "Green"),
+    Person("Katelyn", "Fisher"),
+    Person("Jilly", "Kifer"),
+    Person("Reannon", "Craig"),
+    Person("Anima", "Ironmonger"),
+    Person("Willie", "Reese"),
+    Person("Jemima", "Schrader"),
+    Person("Ernie", "Stoddard"),
+    Person("Judd", "Mcclymonds"),
+    Person("Aaren", "Smith"),
+    Person("Jonny", "Merryman"),
+    Person("Sam", "Blaine"),
+    Person("Hugh", "Zimmer"),
+    Person("Kaylin", "Blessig"),
+    Person("Earline", "Alliman"),
+    Person("Barret", "Rifler"),
+    Person("Hall", "Burnett"),
+    Person("Avila", "Park"),
+    Person("Ronnette", "Lalty"),
+    Person("Lou", "Day"),
+    Person("Bessie", "Robinson"),
 ]
