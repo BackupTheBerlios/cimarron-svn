@@ -125,11 +125,12 @@ class Grid(ColumnAwareXmlMixin, Controller):
             except AttributeError:
                 pass
             else:
-                if new.isDirty:
-                    if self.value is None:
-                        self.value = [new]
-                    else:
-                        self.value.append(new)
+                if not new.isDirty:
+                    return False
+                if self.value is None:
+                    self.value = [new]
+                else:
+                    self.value.append(new)
             self.new = self.klass()
             self._tvdata.append([self.new.getattr(j.attribute) for j in self.columns])
             
