@@ -25,7 +25,7 @@ cimarron.config
 from fvl.cimarron.skin import Column, Window, Grid, SelectionGrid
 
 from model.person import Person
-from fvl.cimarron.model.base import Model
+from fvl.cimarron.model import Model
 
 from testCommon import abstractTestControl
 

@@ -19,7 +19,7 @@
 # Suite 330, Boston, MA 02111-1307 USA
 
 import unittest
-from fvl.cimarron.model.base import Model
+from fvl.cimarron.model import Model
 
 class testModel(unittest.TestCase):
     def setUp(self):

@@ -1,4 +1,4 @@
-from fvl.cimarron.model.base import Model
+from fvl.cimarron.model import Model
 
 class Person(Model):
     def __init__(self, name=None, surname=None):
