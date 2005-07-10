@@ -27,12 +27,12 @@ from fvl.cimarron.skins.common import Widget
 
 class Label(Widget):
     """
-    A Label is a piece of uneditable static text.
+    A Label displays a piece of uneditable static text.
     """
     dirty = staticmethod(bool)
     def __init__(self, text='', **kw):
         """
-        @param text: The static test.
+        @param text: The text that will be displayed.
         """
         self._widget = gtk.Label()
         super(Label, self).__init__(**kw)
@@ -45,15 +45,18 @@ class Label(Widget):
         self._widget.set_text_with_mnemonic(text)
     def _get_text(self):
         return self._widget.get_text()
-    text = property(_get_text, _set_text, None, """The static test.""")
+    text = property(_get_text, _set_text, None, """The text to display""")
 
 class Image(Widget):
     """
-    A Image is a Static Picture loaded from a file
+    An Image widget displays a static picture loaded from a file
     """
     dirty = staticmethod(bool)
 
     def __init__(self,aFile=None,**kw):
+        """
+        @param aFile: The name of the file that contains the image.
+        """
         self._widget = gtk.Image()
         super(Image,self).__init__(**kw)
         self.imgFile = self.aFile = aFile
@@ -67,5 +70,5 @@ class Image(Widget):
     def _get_file(self):
         return self.aFile
 
-    imgFile = property(_get_file, _set_file, None, """The static test.""")
+    imgFile = property(_get_file, _set_file, None, """The filename of the image.""")
 	
