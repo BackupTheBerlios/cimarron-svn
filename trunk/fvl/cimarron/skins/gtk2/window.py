@@ -18,6 +18,8 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+__revision__ = int('$Rev$'[5:-1])
+
 import os
 import inspect
 import logging
@@ -29,8 +31,7 @@ import pango
 
 from fvl.cimarron.skins.common import Container
 from fvl.cimarron.interfaces import IWindow
-
-from mixin import GtkVisibilityMixin
+from fvl.cimarron.skins.gtk2.mixin import GtkVisibilityMixin
 
 class Window(GtkVisibilityMixin, Container):
     """
@@ -38,12 +39,12 @@ class Window(GtkVisibilityMixin, Container):
     """
     interface.implements(IWindow)
     
-    def __init__(self, title='', size=(-1,-1), **kw):
+    def __init__(self, title='', size=(-1,-1), **kwargs):
         """
         @param title: the title for the window.
         """
         self._widget = gtk.Window()
-        super(Window, self).__init__(**kw)
+        super(Window, self).__init__(**kwargs)
 
         def delete_callback(*a):
             self.hide()
@@ -57,7 +58,8 @@ class Window(GtkVisibilityMixin, Container):
         self._widget.set_title(title)
     def _get_title(self):
         return self._widget.get_title()
-    title = property(_get_title, _set_title, None, """The title for the window.""")
+    title = property(_get_title, _set_title,
+                     doc="""The title for the window.""")
 
     def screenshot(self, filename=None, frame=True):
         """
@@ -84,7 +86,8 @@ class Window(GtkVisibilityMixin, Container):
         ctx = self._widget.get_pango_context()
         metrics = ctx.get_metrics(ctx.get_font_description())
         cell = ( float(metrics.get_approximate_char_width()) / pango.SCALE,
-                 float(metrics.get_ascent() + metrics.get_descent()) / pango.SCALE )
+                 float(metrics.get_ascent()
+                       + metrics.get_descent()) / pango.SCALE )
         return cell
 
     def _get_size(self):
