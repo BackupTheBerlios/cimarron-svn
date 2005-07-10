@@ -24,10 +24,14 @@ Libre.
 
 All we actually do here right now is set up a logger.
 """
+
+__revision__ = '$Rev$'
+
 import logging
 
 handler = logging.StreamHandler()
-formatter = logging.Formatter("%(asctime)s %(name)40s:%(lineno)03d %(levelname)-8s %(message)s")
+formatter = logging.Formatter("%(asctime)s %(name)40s:%(lineno)03d"
+                              " %(levelname)-8s %(message)s")
 handler.setFormatter(formatter)
 logger = logging.getLogger('fvl')
 logger.addHandler(handler)

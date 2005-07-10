@@ -38,9 +38,6 @@ class Label(Widget):
         super(Label, self).__init__(**kw)
         self.text = text
 
-    def show(self):
-        self._widget.show()
-
     def _set_text(self, text):
         self._widget.set_text_with_mnemonic(text)
     def _get_text(self):
@@ -60,9 +57,6 @@ class Image(Widget):
         self._widget = gtk.Image()
         super(Image,self).__init__(**kw)
         self.imgFile = self.aFile = aFile
-
-    def show(self):
-        self._widget.show()
 
     def _set_file(self,aFile):
         self._widget.set_from_file(aFile)
