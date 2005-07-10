@@ -186,10 +186,13 @@ builds the window's contents from the outside in. We use a label to
 display the calculator's input and result, because we want the user to
 input data only thorugh the numeric keypad directly below it, and not
 using the keyboard. The keypad itself is made up of four columns of
-buttons, which we set up using data from a list of key labels and
-methods to call. The actual functionality of the calculator is then
-implemented in three simple methods that modify the calculator's state
-based on the user's actions.
+buttons, which we set up using data from a list of dictionaries, one for
+each key. Note that in the operation keys we use the fact that the
+initializer will accept undefined attributes to associate an operation
+to each button. This association is later used by the \method{operate()}
+method. The actual functionality of the calculator is then implemented
+in three simple methods that modify the calculator's state based on the
+user's actions.
 
 The code above has a bug: it allows the user to input a number with more
 than one decimal point. Try to find a few different ways of getting rid
