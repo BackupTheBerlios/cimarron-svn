@@ -173,15 +173,15 @@ class SearchEntry(Search):
         return super(SearchEntry, self)._get_columns()
     columns= property (_get_columns, _set_columns)
         
-    def doSearch (self, *ignore):
+    def search (self, *ignore):
         """
         Performs the abstract search, and handles the case
         when more than one object is found.
         """
-        super(SearchEntry, self).doSearch()
+        self.doSearch()
 
         # print 'searching', self.searcher, data
-        ans= self.value
+        ans = self.value
         if len(ans)==0:
             self.value = None
         elif len(ans)==1:
@@ -193,7 +193,7 @@ class SearchEntry(Search):
         else:
             self.onAction()
         return len(ans)
-    action = doSearch
+    action = search
 
     def selected(self, *ignore):
         """

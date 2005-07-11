@@ -51,7 +51,7 @@ class TestSearch(abstractTestControl):
         # here we 'plant' the data, but real Search's will fetch its own data
         # self.widget.data = []
         Person.__values__ = []
-        self.widget.doSearch()
+        self.widget.search()
         self.assertEqual(self.widget.value, None)
 
     def testNoneMatchesFound(self):
@@ -59,32 +59,36 @@ class TestSearch(abstractTestControl):
         # self.widget.data = self.data
         Person.__values__ = self.data
         searchingValues = (
-            ('martin', ''),
-            ('', 'rezk'),
+            {'name':'martin', 'surname':''},
+            {'name':'', 'surname':'rezk'},
             )
 
         for i in xrange (len(searchingValues)):
-            for j in xrange (len(searchingValues[i])):
-                self.widget.entries[j].value = searchingValues[i][j]
-            self.widget.doSearch()
+            j = 0
+            for k in searchingValues[i].keys():
+                self.widget.entries[j].value = searchingValues[i][k]
+                j =+ 1
+            self.widget.search()
             self.assertEqual(self.widget.value, None)
 
     def testOneFound(self):
         self.widget.data = self.data
         searchingValues = (
-            ('jos', ''),
-            ('', 'pe'),
-            ('m', ''),
-            ('', 'dio'),
-            ('john', ''),
-            ('', 'lenton'),
-            ('p', ''),
-            ('', 'da'),
+            {'name':'jos', 'surname':''},
+            {'name':'', 'surname':'pe'},
+            {'name':'m', 'surname':''},
+            {'name':'', 'surname':'dio'},
+            {'name':'john', 'surname':''},
+            {'name':'', 'surname':'lenton'},
+            {'name':'p', 'surname':''},
+            {'name':'', 'surname':'da'},
             )
         for i in xrange (len(searchingValues)):
-            for j in xrange (len(searchingValues[i])):
-                self.widget.entries[j].value = searchingValues[i][j]
-            self.widget.doSearch()
+            j = 0
+            for k in searchingValues[i].keys():
+                self.widget.entries[j].value = searchingValues[i][k]
+                j += 1
+            self.widget.search()
             self.assertEqual(self.widget.value, self.data[i/2])
 
     def testOnAction(self):
