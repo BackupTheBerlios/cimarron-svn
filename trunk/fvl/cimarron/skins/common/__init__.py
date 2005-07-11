@@ -33,7 +33,7 @@ import logging
 
 import libxml2
 
-from fvl.cimarron.tools import is_simple, traverse
+from fvl.cimarron.tools import traverse
 from fvl import cimarron
 
 __all__ = ('XmlMixin', 'Widget', 'Container', 'Control',
@@ -41,7 +41,7 @@ __all__ = ('XmlMixin', 'Widget', 'Container', 'Control',
 
 logger = logging.getLogger('fvl.cimarron.skins.common')
 
-def nullAction(*ignore, **ignore):
+def nullAction(*dummy, **ignore):
     """
     An action that does nothing. Kinda like 'C{pass}'.
     """

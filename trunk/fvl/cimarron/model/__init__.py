@@ -31,12 +31,6 @@ class Model(object):
     """
     Model provides a very basic model for cimarron.
     """
-    def __init__(self):
-        # we want to allow subclasses to be polite and user super(),
-        # but not allow instances of Model.
-        if type(self) is Model:
-            raise NotImplementedError, "You should subclass Model"
-
     def getattr(self, attr):
         """
         Find the attribute referred to by 'attr', and return it.

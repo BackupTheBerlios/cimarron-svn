@@ -27,7 +27,7 @@ import logging
 
 from fvl import cimarron
 from fvl.cimarron.skins.common import Unknown, ForcedYes
-from fv.cimarron.controllers.base import Controller
+from fvl.cimarron.controllers.base import Controller
 
 __all__ = ('Application',)
 

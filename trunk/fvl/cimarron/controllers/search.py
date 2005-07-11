@@ -25,7 +25,7 @@ __revision__ = int('$Rev$'[5:-1])
 
 import logging
 
-from fvl.cimarron.skin import Window, VBox, HBox, Button, SelectionGrid
+from fvl import cimarron
 from fvl.cimarron.controllers.base import Controller
 from fvl.cimarron.controllers.column import ColumnAwareXmlMixin
 
@@ -41,15 +41,16 @@ class SelectionWindow(Controller):
         if columns is None:
             columns = []
         super(SelectionWindow, self).__init__(**kwargs)
-        self.win = Window(parent=self.parent, title='Select', size=(30, 5))
-        vbox = VBox(parent=self.win)
-        self.grid = SelectionGrid(parent=vbox, columns=columns,
-                                  onAction=self.onOk)
-        hbox = HBox(parent=vbox, expand=False)
-        self.ok = Button(parent=hbox, label='Ok',
-                         onAction=self.onOk)
-        self.cancel = Button(parent=hbox, label='Cancel',
-                             onAction=self.onCancel)
+        self.win = cimarron.skin.Window(parent=self.parent,
+                                       title='Select', size=(30, 5))
+        vbox = cimarron.skin.VBox(parent=self.win)
+        self.grid = cimarron.skin.SelectionGrid(parent=vbox, columns=columns,
+                                               onAction=self.onOk)
+        hbox = cimarron.skin.HBox(parent=vbox, expand=False)
+        self.ok = cimarron.skin.Button(parent=hbox, label='Ok',
+                                      onAction=self.onOk)
+        self.cancel = cimarron.skin.Button(parent=hbox, label='Cancel',
+                                          onAction=self.onCancel)
 
     def show(self):
         # FIXME: explain this assignment to value from within show
@@ -109,7 +110,7 @@ class SearchEntry(ColumnAwareXmlMixin, Controller):
         """
         super(SearchEntry, self).__init__(**kwargs)
         self.entries = []
-        self.h = HBox(parent=self, expand=False)
+        self.h = cimarron.skin.HBox(parent=self, expand=False)
         self.columns = columns
         self.value = None
         self.searcher = searcher
@@ -123,7 +124,7 @@ class SearchEntry(ColumnAwareXmlMixin, Controller):
                     onAction = self.doSearch
                     ))
 
-            b = Button(
+            b = cimarron.skin.Button(
                 parent = self.h,
                 label = 'Search!',
                 onAction = self.doSearch,
