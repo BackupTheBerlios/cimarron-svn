@@ -18,6 +18,10 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+"""
+Here you'll find the gtk2 skin's Window class.
+"""
+
 __revision__ = int('$Rev$'[5:-1])
 
 import os
@@ -39,24 +43,35 @@ class Window(GtkVisibilityMixin, Container):
     """
     interface.implements(IWindow)
     
-    def __init__(self, title='', size=(-1,-1), **kwargs):
+    def __init__(self, title='', size=(-1, -1), **kwargs):
         """
         @param title: the title for the window.
         """
         self._widget = gtk.Window()
         super(Window, self).__init__(**kwargs)
 
-        def delete_callback(*a):
-            self.hide()
-            return True
-
-        self._widget.connect('delete-event', delete_callback)
+        self._widget.connect('delete-event', self._delete_callback)
         self.title = title
         self.size = size
 
+    def _delete_callback(self, *ignore):
+        """
+        Called when a window is deleted from the window manager.  We
+        should to hide the window, and stop gtk from destroying it.
+        """
+        self.hide()
+        return True
+
+
     def _set_title(self, title):
+        """
+        Set the window's title. C{title} must be a unicode object.
+        """
         self._widget.set_title(title)
     def _get_title(self):
+        """
+        Get the window's title.
+        """
         return self._widget.get_title()
     title = property(_get_title, _set_title,
                      doc="""The title for the window.""")
@@ -83,6 +98,11 @@ class Window(GtkVisibilityMixin, Container):
         os.system(cmd % (xid, filename))
 
     def _get_cell_size(self):
+        """
+        Try to guess the size of a character cell.
+
+        The window size is specified in cells.
+        """
         ctx = self._widget.get_pango_context()
         metrics = ctx.get_metrics(ctx.get_font_description())
         cell = ( float(metrics.get_approximate_char_width()) / pango.SCALE,
@@ -91,13 +111,21 @@ class Window(GtkVisibilityMixin, Container):
         return cell
 
     def _get_size(self):
+        """
+        Get the window size, in cells.
+        """
         size = self._widget.get_size()
-        if size != (-1,-1):
+        if size != (-1, -1):
             cell = self._get_cell_size()
             size = int(size[0] / cell[0]), int(size[1] / cell[1])
         return size
     def _set_size(self, (width, height)):
-        if (width, height) != (-1,-1):
+        """
+        Try to set the window size, in cells.
+
+        The window might not be able to change size.
+        """
+        if (width, height) != (-1, -1):
             cell = self._get_cell_size()
             width = int(width * cell[0])
             height = int(height * cell[1])

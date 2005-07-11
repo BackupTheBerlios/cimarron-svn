@@ -21,11 +21,13 @@
 In here you'll find the mithical L{Application}
 """
 
+__revision__ = int('$Rev$'[5:-1])
+
 import logging
 
 from fvl import cimarron
 from fvl.cimarron.skins.common import Unknown, ForcedYes
-from base import Controller
+from fv.cimarron.controllers.base import Controller
 
 __all__ = ('Application',)
 
@@ -47,9 +49,9 @@ class Application(Controller):
     An Application represents the main loop of the application.
     It is the C{parent} for the first B{Window}s.
     """
-    def __init__(self, **kw):
-        assert 'parent' not in kw, 'Application should have no parent'
-        super(Application, self).__init__(**kw)
+    def __init__(self, **kwargs):
+        assert 'parent' not in kwargs, 'Application should have no parent'
+        super(Application, self).__init__(**kwargs)
         self._children = WindowContainer(self)
 
     def run(self):
@@ -69,6 +71,9 @@ class Application(Controller):
         cimarron.skin._quit()
 
     def will_hide(self, window):
+        """
+        Somebody asked us to close the L{Window}. Can we?
+        """
         if len([i for i in self._children if i.visible])==1:
             self.quit()
             return ForcedYes
@@ -81,9 +86,13 @@ class Application(Controller):
         """
         return cimarron.skin._schedule(timeout, callback, repeat)
 
-    def concreteParenter (self, child):
-        pass
+    def _concreteParenter (self, child):
+        """
+        Dummy override of L{Widget._concreteParenter}.
+        """
 
     def refresh(self):
-        pass
+        """
+        Dummy override of L{Control.refresh}
+        """
 

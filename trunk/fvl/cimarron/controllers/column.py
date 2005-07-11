@@ -24,6 +24,8 @@ Columns aren't really L{Controller}s, but they are designed to work
 with them (and viceversa).
 """
 
+__revision__ = int('$Rev$'[5:-1])
+
 import logging
 
 from fvl import cimarron
@@ -32,14 +34,17 @@ from fvl.cimarron.skins.common import XmlMixin
 logger = logging.getLogger('fvl.cimarron.controllers.column')
 
 class ColumnAwareXmlMixin(object):
-    def fromXmlObj(klass, xmlObj, skin):
+    """
+    A Mixin for classes that want to load columns from XML.
+    """
+    def fromXmlObj(cls, xmlObj, skin):
         """
         Helper function for loading a Cimarrón app from an xml file. (see
         L{Controller.fromXmlFile}).
         """
-        self = klass()
+        self = cls()
         self.fromXmlObjProps(xmlObj.properties)
-        attrs = {self: klass.attributesToConnect()}
+        attrs = {self: cls.attributesToConnect()}
         try:
             idDict = {self.id: self}
         except AttributeError:
@@ -48,7 +53,8 @@ class ColumnAwareXmlMixin(object):
         columns = []
         xmlObj = xmlObj.children
         while xmlObj:
-            (obj, attrsInChild, idDictInChild) = self.childFromXmlObj(xmlObj, skin)
+            (obj, attrsInChild, idDictInChild) = \
+                  self.childFromXmlObj(xmlObj, skin)
             if obj is not None:
                 columns.append(obj)
                 attrs.update(attrsInChild)
@@ -68,8 +74,11 @@ class Column(XmlMixin):
     A Column describes a field. This field can be used for both
     B{SearchEntry}s and B{Grid}s.
     """
-    def attributesToConnect(klass):
-        attrs = super (Column, klass).attributesToConnect()
+    def attributesToConnect(cls):
+        """
+        See L{XmlMixin.attributesToConnect}
+        """
+        attrs = super (Column, cls).attributesToConnect()
         return attrs+['attribute']
     attributesToConnect = classmethod(attributesToConnect)
 

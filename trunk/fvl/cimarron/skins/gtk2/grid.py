@@ -18,7 +18,14 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-from itertools import izip, repeat
+"""
+In this module you will find two different kinds of grid: A writeable L{Grid}
+whose value is a list of objects, and a read-only L{SelectionGrid} whose value
+is the selected item from a list of possibilities.
+"""
+
+__revision__ = int('$Rev$'[5:-1])
+
 import logging
 logger = logging.getLogger('fvl.cimarron.skins.gtk2.grid')
 
@@ -33,7 +40,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
     Grids are used for editing a list of objects.
     """
 
-    def __init__(self, columns=None, klass=None, **kw):
+    def __init__(self, columns=None, cls=None, **kwargs):
         """
         @param columns: a list of B{Column}s that describe
             what to show in the grid, how obtain it from the
@@ -42,8 +49,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
         self._widget = self._tv = gtk.TreeView()
         # self.mainWidget = self
         self.columns = columns
-
-        self.klass = klass
+        self.cls = cls
 
         # put the TreeView in a scrolled window
         self._widget = gtk.ScrolledWindow()
@@ -52,23 +58,29 @@ class Grid(ColumnAwareXmlMixin, Controller):
 
         self._tv.connect('key-release-event', self._keyreleased)
 
-        super (Grid, self).__init__(**kw)
+        super(Grid, self).__init__(**kwargs)
         # this was not done because it was initializing
         # is this still true?
         self.refresh()
 
-    def attributesToConnect(klass):
-        return ['klass']+super (Grid, klass).attributesToConnect()
+    def attributesToConnect(cls):
+        """
+        See L{XmlMixin.attributesToConnect}
+        """
+        return ['cls'] + super(Grid, cls).attributesToConnect()
     attributesToConnect = classmethod(attributesToConnect)
 
     def _set_columns(self, columns):
+        """
+        Set the grid's columns. C{columns} should be a list of L{Column}-like
+        objects.
+        """
         self._columns = columns or []
         if columns:
             # build the tv columns and the data types tuple
-            (self._tvcolumns, self._dataspec) = izip(*izip(
-                [ gtk.TreeViewColumn(c.name) for c in columns ],
-                repeat(str)
-                ))
+            (self._tvcolumns, self._dataspec) = \
+                zip(*[ (gtk.TreeViewColumn(column.name), str)
+                       for column in columns ])
 
             # add the columns and attrs
             for i in xrange (len(columns)):
@@ -81,13 +93,23 @@ class Grid(ColumnAwareXmlMixin, Controller):
                 c.add_attribute(crt, 'text', i)
                 self._tv.append_column(c)
     def _get_columns(self):
+        """
+        Returns the L{Grid}'s columns.
+        """
         return self._columns
     columns = property(_get_columns, _set_columns)
         
     def _set_index(self, index):
+        """
+        If index is not None, select the grid's row #C{index}.
+        """
         if index is not None:
             self._tv.set_cursor((index, ))
     def _get_index(self):
+        """
+        Return the index of the selected row, or None if nothing is currently
+        selected.
+        """
         cursor = self._tv.get_cursor()
         if cursor and cursor[0]:
             return int(cursor[0][0])
@@ -99,6 +121,9 @@ class Grid(ColumnAwareXmlMixin, Controller):
                      If no object is selected, it is None.""")
 
     def _cell_edited(self, cell, path, text, colNo, *ignore):
+        """
+        A cell has been edited: keep the models in sync.
+        """
         attribute = self.columns[colNo].attribute
         # modify the ListStore model...
         self._tvdata[path][colNo] = text
@@ -110,16 +135,21 @@ class Grid(ColumnAwareXmlMixin, Controller):
             value = self.new
         value.setattr(attribute, text)
             
-        # coming soon: our models will (should) suport the generic TreeModel protocol
-        # also: if write() returns false, the entry flashes and
+        # coming soon: our models will (should) suport the generic TreeModel
+        # protocol. Also: if write() returns false, the entry flashes and
         # a) rollbacks the value or
         # b) leaves it with wrong value, so the user can edit it (preferred)
         return False
     def _keyreleased(self, widget, key_event, *ignore):
-        last = self.value is None or len (self.value)==0 or self.index==len(self.value)-1
+        """
+        A key has been released: the user might be wanting to insert a row...
+        """
+        last = self.value is None \
+               or len(self.value) == 0 \
+               or self.index == len(self.value)-1
         # print `self.value`, `self._tv.get_cursor ()`, last
 
-        if key_event.keyval==gtk.keysyms.Down and last:
+        if key_event.keyval == gtk.keysyms.Down and last:
             try:
                 new = self.new
             except AttributeError:
@@ -131,12 +161,16 @@ class Grid(ColumnAwareXmlMixin, Controller):
                     self.value = [new]
                 else:
                     self.value.append(new)
-            self.new = self.klass()
-            self._tvdata.append([self.new.getattr(j.attribute) for j in self.columns])
+            self.new = self.cls()
+            self._tvdata.append([self.new.getattr(j.attribute)
+                                 for j in self.columns])
             
         return False
 
     def refresh(self):
+        """
+        See L{Control.refresh}
+        """
         super(Grid, self).refresh()
         if len(self.columns)>0:
             self._tvdata = gtk.ListStore(*self._dataspec)
@@ -145,7 +179,8 @@ class Grid(ColumnAwareXmlMixin, Controller):
         # print 'Grid.refresh:', `self.value`, self.columns
         if self.value is not None:
             for i in self.value:
-                self._tvdata.append([i.getattr(j.attribute) for j in self.columns])
+                self._tvdata.append([i.getattr(j.attribute)
+                                     for j in self.columns])
             self.index = 0
         else:
             self.index = None
@@ -158,7 +193,7 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
     and for selecting one among those.
     """
 
-    def __init__(self, data=None, columns=None, **kw):
+    def __init__(self, data=None, columns=None, **kwargs):
         """
         @param data: the list of objects to be shown.
 
@@ -175,10 +210,9 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
 
         self._columns = columns
         # build the tv columns and the data types tuple
-        (self._tvcolumns, self._dataspec) = izip(*izip(
-            [ gtk.TreeViewColumn(c.name) for c in columns ],
-            repeat(str)
-            ))
+        (self._tvcolumns, self._dataspec) = \
+            zip(*[ (gtk.TreeViewColumn(column.name), str)
+                   for column in columns ])
         self.data = data
 
         # put the TreeView in a scrolled window
@@ -196,17 +230,23 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
 
         self._tv.connect('key-release-event', self._keyreleased)
         self._tv.connect('cursor_changed', self._cursor_changed)
-        self._tv.connect('row-activated',self._double_click)
+        self._tv.connect('row-activated', self._double_click)
 
-        super (SelectionGrid, self).__init__(**kw)
+        super (SelectionGrid, self).__init__(**kwargs)
 
 
     def _double_click(self, widget,*ignore):
+        """
+        The user double-clicked a row: fire the action.
+        """
         self.onAction ()
         return True
 
     def _keyreleased(self, widget, key_event, *ignore):
-        if key_event.keyval==gtk.keysyms.Return:
+        """
+        The user released a key: if it was Return, fire the action.
+        """
+        if key_event.keyval == gtk.keysyms.Return:
             self.onAction()
             return True
         return False
@@ -223,7 +263,8 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
             for i in self.data:
                 # build a ListStore w/ al the values
                 # NOTE: this forces the data to be read.
-                self._tvdata.append([i.getattr(j.attribute) for j in self._columns])
+                self._tvdata.append([i.getattr(j.attribute)
+                                     for j in self._columns])
         self._tv.set_model(self._tvdata)
     def _get_data(self):
         return self._data
@@ -231,18 +272,31 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
                     """The list of objects to be shown.""")
 
     def _cursor_changed(self, *ignore):
-        self.__index = int (self._tv.get_cursor()[0][0])
+        """
+        The user changed the highlighted row.
+        """
+        self.__index = int(self._tv.get_cursor()[0][0])
     def _set_index(self, index):
+        """
+        Change which row is highlighted, to the row who's index is C{index}.
+        """
         if index is not None:
             self._tv.set_cursor(index)
         self.__index = index
     def _get_index(self):
+        """
+        Get the index of the selected row.
+        """
         return self.__index
     index = property(_get_index, _set_index, None,
                      """The index of the object currently selected.
                      If no object is selected, it is None.""")
 
     def _set_value(self, value):
+        """
+        Set the value of the L{SelectionGrid} to C{value}. If C{value}
+        is not one of the possible values, the value is None.
+        """
         try:
             index = self.data.index(value)
         except(ValueError, AttributeError):
@@ -255,11 +309,16 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
         # print '-> value:', value, 'index:', index
         
     def _get_value(self):
+        """
+        Return the value of the L{SelectionGrid}, or None if nothing
+        is selected.
+        """
         ans = None
         if self.index is not None:
             ans = self.data[self.index]
         # print '<- value:', ans, 'index:', self.index
         return ans
-    value = property(_get_value, _set_value, None,
-                     """The selected object. If no object is selected, it is None.""")
+    value = property(_get_value, _set_value,
+                     doc="The selected object."
+                     " If no object is selected, it is None.")
 

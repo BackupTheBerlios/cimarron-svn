@@ -18,14 +18,34 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+"""
+In fvl.cimarron.model you will find classes that aid in building
+models that cooperate with cimarrón.
+"""
+
 __revision__ = int('$Rev$'[5:-1])
 
 from fvl.cimarron.tools import traverse
 
 class Model(object):
+    """
+    Model provides a very basic model for cimarron.
+    """
+    def __init__(self):
+        # we want to allow subclasses to be polite and user super(),
+        # but not allow instances of Model.
+        if type(self) is Model:
+            raise NotImplementedError, "You should subclass Model"
+
     def getattr(self, attr):
+        """
+        Find the attribute referred to by 'attr', and return it.
+        """
         return traverse(self, attr)
     def setattr(self, attr, value):
+        """
+        Find the attribute referred to by 'attr', and set it to 'value'.
+        """
         pos = attr.rfind('.')
         if pos > -1:
             path = attr[:pos]

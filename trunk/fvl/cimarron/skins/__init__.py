@@ -18,3 +18,13 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+"""
+Cimarrón will provide several skins that implement a same interface,
+allowing developers to build code that works on different toolkits
+without concerning themselves too much with the details of the toolkit
+itself.
+
+Those skins are all packages under this one.
+"""
+
+__revision__ = int('$Rev$'[5:-1])

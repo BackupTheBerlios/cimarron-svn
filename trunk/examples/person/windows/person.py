@@ -168,7 +168,7 @@ class PersonAddressesEditPage (cimarron.skin.Controller):
         self.addresses= cimarron.skin.Grid (
             parent= h,
             columns= (cimarron.skin.Column (read=Address.getText, write=Address.setText), ),
-            klass= Address,
+            cls= Address,
             data= self.value,
             )
 

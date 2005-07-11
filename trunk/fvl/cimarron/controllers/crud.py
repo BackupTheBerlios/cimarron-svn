@@ -21,10 +21,12 @@
 CRUD controllers and related junk.
 """
 
+__revision__ = int('$Rev$'[5:-1])
+
 import logging
 
 from fvl import cimarron
-from base import Controller, WindowController
+from fvl.cimarron.controllers.base import Controller, WindowController
 
 logger = logging.getLogger('fvl.cimarron.controllers.crud')
 
@@ -33,119 +35,145 @@ class CRUDController (WindowController):
     CRUD ('ABM' in spanish) Controller .
     see: http://c2.com/cgi/wiki?CrudScreen
     """
-    def attributesToConnect (klass):
-        attrs = super (CRUDController, klass).attributesToConnect ()
-        return attrs+['klass']
-    attributesToConnect= classmethod (attributesToConnect)
+    def attributesToConnect (cls):
+        """
+        See L{XmlMixin.attributesToConnect}
+        """
+        attrs = super(CRUDController, cls).attributesToConnect()
+        return attrs+['cls']
+    attributesToConnect = classmethod(attributesToConnect)
     
-    def __init__ (self, klass=None, searchColumns=[], editorKlass=None, filename=None, **kw):
-        self.editors= []
-        super (CRUDController, self).__init__ (**kw)
-        self.note= cimarron.skin.Notebook (parent=self.win)
+    def __init__ (self,
+                  cls=None, searchColumns=None, editorClass=None, filename=None,
+                  **kwargs):
+        self.editors = []
+        super(CRUDController, self).__init__(**kwargs)
+        self.note = cimarron.skin.Notebook(parent=self.win)
 
         # first tab
-        self.firstTab= cimarron.skin.VBox (label='Search')
-        self.firstTab.parent= self.note
+        self.firstTab = cimarron.skin.VBox(label='Search')
+        self.firstTab.parent = self.note
 
-        self.new= cimarron.skin.Button (
-            parent= self.firstTab,
-            label= 'New',expand=False
-            )
-
-        self.klass= klass
+        self.new = cimarron.skin.Button (parent=self.firstTab,
+                                         label='New',
+                                         expand=False)
+        self.cls = cls
 
         if searchColumns:
             # add the Search thing
-            self.search= cimarron.skin.Search (
-                parent= self.firstTab,
-                columns= searchColumns,
-                onAction= self.changeModel,
-                )
+            self.search= cimarron.skin.Search (parent=self.firstTab,
+                                               columns=searchColumns,
+                                               onAction=self.changeModel)
 
         # second tab
-        if editorKlass is not None:
+        if editorClass is not None:
             if filename is not None:
-                modelEditor= editorKlass.fromXmlFile (filename)
+                modelEditor = editorClass.fromXmlFile(filename)
             else:
-                # let's hope the editorKlass knows what to do
-                modelEditor= editorKlass ()
-            modelEditor.parent= self.note
-            self.editors.append (modelEditor)
-            self.mainWidget= modelEditor
+                # let's hope the editorClass knows what to do
+                modelEditor = editorClass()
+            modelEditor.parent = self.note
+            self.editors.append(modelEditor)
+            self.mainWidget = modelEditor
 
         # more tabs?
 
-    def _set_klass (self, klass):
-        if klass is not None:
-            self.new.onAction= lambda control, *ignore: self.newModel (control, klass, *ignore)
-        self._klass= klass
-    def _get_klass (self):
-        return self._klass
-    klass= property (_get_klass, _set_klass)
+    def _set_cls (self, cls):
+        """
+        Sets the CRUD's 'class'. This is, the callable used to create
+        a new object of the type the CRUD is editing.
+        """
+        if cls is not None:
+            def onAction(control, *ignore):
+                return self.newModel(control, cls, *ignore)
+            self.new.onAction = onAction
+        self._cls = cls
+    def _get_cls (self):
+        """
+        Gets the CRUD's 'class'.
+        """
+        return self._cls
+    cls = property(_get_cls, _set_cls)
         
-    def newModel (self, control, klass, *ignore):
-        self.changeModel (control, klass ())
+    def newModel(self, control, cls, *ignore):
+        """
+        Create a new object and point the CRUD at it.
+        """
+        self.changeModel(control, cls())
 
-    def changeModel (self, control, model=None):
+    def changeModel(self, control, model=None):
+        """
+        Updates the CRUD's currently-in-edition object.
+        """
         if model is None:
-            value= self.search.value
+            value = self.search.value
         else:
-            value= model
+            value = model
         # print 'here1'
-        self.commitValue (value)
-        self.refresh ()
+        self.commitValue(value)
+        self.refresh()
 
-        # print 'CRUD.changeModel', `model`, model is None, self.search.value, self.value
+        # print 'CRUD.changeModel', `model`, model is None, \
+        # self.search.value, self.value
         if value is not None:
-            self.note.activate (1)
+            self.note.activate(1)
             # and this?
             # self.editor.focus ()
 
     def save (self, *ignore):
-        self.onAction ()
+        """
+        FIXME: wtf?
+        """
+        self.onAction()
 
     def refresh (self):
-        # print 'here3', self.value
+        """
+        See L{Control.refresh}
+        """
         super(CRUDController, self).refresh()
         for editor in self.editors:
-            editor.newTarget (self.value)
+            editor.newTarget(self.value)
 
-    def fromXmlObj (klass, xmlObj, skin):
-        self = klass()
-        root= xmlObj
-        attrs= {self: klass.attributesToConnect ()}
-        idDict= {}
+    def fromXmlObj (cls, xmlObj, skin):
+        """
+        See L{XmlMixin.fromXmlObj}
+        """
+        self = cls()
+        root = xmlObj
+        attrs = {self: cls.attributesToConnect()}
+        idDict = {}
 
         xmlObj = xmlObj.children
-        first= True
-        second= False
+        first = True
+        second = False
         while xmlObj:
-            (obj, attrsInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
+            (obj, attrsInChild, idDictInChild) = \
+                  self.childFromXmlObj(xmlObj, skin)
             if obj is not None:
                 if first:
-                    obj.parent= self.firstTab
-                    self.search= obj
-                    first= False
-                    second= True
+                    obj.parent = self.firstTab
+                    self.search = obj
+                    first = False
+                    second = True
                 else:
-                    obj.parent= self.note
-                    self.editors.append (obj)
+                    obj.parent = self.note
+                    self.editors.append(obj)
                     if second:
-                        self.mainWidget= obj
-                        obj.onAction= self.save
-                        second= False
+                        self.mainWidget = obj
+                        obj.onAction = self.save
+                        second = False
 
                 # luckily we got rid of those; they would be a PITA
                 # when defining the dtd.
                 # attrsInChild[obj]+= ['read', 'write']
-                attrs.update (attrsInChild)
-            idDict.update (idDictInChild)
-            xmlObj= xmlObj.next
+                attrs.update(attrsInChild)
+            idDict.update(idDictInChild)
+            xmlObj = xmlObj.next
 
         # at this time, so it has time to do the <import>s
         self.fromXmlObjProps(root.properties)
         try:
-            idDict[self.id]= self
+            idDict[self.id] = self
         except AttributeError:
             # have no id, ignore
             pass
@@ -191,52 +219,49 @@ class Editor (Controller):
     def will_focus_out (self, control, *ignore):
         self.modifyModel (control)
 
-    def fromXmlObj (klass, xmlObj, skin):
-        self = klass()
+    def fromXmlObj (cls, xmlObj, skin):
+        self = cls()
         self.fromXmlObjProps(xmlObj.properties)
         try:
-            idDict= {self.id: self}
+            idDict = {self.id: self}
         except AttributeError:
-            idDict= {}
+            idDict = {}
 
         # main containers
-        vbox= cimarron.skin.VBox (parent=self, label=self.label)
-        hbox= cimarron.skin.HBox (parent=vbox)
-        labels= cimarron.skin.VBox (parent=hbox)
-        self.entries= cimarron.skin.VBox (parent=hbox)
+        vbox = cimarron.skin.VBox(parent=self, label=self.label)
+        hbox = cimarron.skin.HBox(parent=vbox)
+        labels = cimarron.skin.VBox(parent=hbox)
+        self.entries = cimarron.skin.VBox(parent=hbox)
 
         # load children
-        attrs= {self: klass.attributesToConnect ()}
+        attrs = {self: cls.attributesToConnect()}
         xmlObj = xmlObj.children
         while xmlObj:
-            (obj, attrsInChild, idDictInChild)= self.childFromXmlObj (xmlObj, skin)
-            if obj!=None:
-                if xmlObj.name=="Label":
-                    obj.parent= labels
+            (obj, attrsInChild, idDictInChild) = \
+                  self.childFromXmlObj(xmlObj, skin)
+            if obj is not None:
+                if xmlObj.name == "Label":
+                    obj.parent = labels
                 else:
-                    obj.parent= self.entries
-                    obj.onAction= self.modifyModel
-                    obj.delegates.append (self)
-                    attrsInChild[obj]+= ['read', 'write']
-                attrs.update (attrsInChild)
-            idDict.update (idDictInChild)
+                    obj.parent = self.entries
+                    obj.onAction = self.modifyModel
+                    obj.delegates.append(self)
+                    attrsInChild[obj] += ['read', 'write']
+                attrs.update(attrsInChild)
+            idDict.update(idDictInChild)
             
-            xmlObj= xmlObj.next
+            xmlObj = xmlObj.next
 
         # save/discard buttons
-        hbox= cimarron.skin.HBox (parent=vbox, expand=False)
-        save= cimarron.skin.Button (
-            parent= hbox,
-            label= 'Save',
-            onAction= self.save,
-            )
+        hbox = cimarron.skin.HBox(parent=vbox, expand=False)
+        save = cimarron.skin.Button(parent=hbox,
+                                    label='Save',
+                                    onAction=self.save)
         # so tests passes
-        self.mainWidget= save
-        discard= cimarron.skin.Button (
-            parent= hbox,
-            label= 'Discard',
-            onAction= self.discard,
-            )
+        self.mainWidget = save
+        discard = cimarron.skin.Button (parent=hbox,
+                                        label='Discard',
+                                        onAction=self.discard)
 
         return (self, attrs, idDict)
     fromXmlObj = classmethod(fromXmlObj)

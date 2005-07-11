@@ -18,12 +18,18 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+"""
+L{Control}s are L{Widget}s the user can interact with.
+"""
+
+__revision__ = int('$Rev$'[5:-1])
+
 import logging
 logger = logging.getLogger('fvl.cimarron.skins.gtk2.control')
 
 import gtk
 
-from mixin import GtkFocusableMixin
+from fvl.cimarron.skins.gtk2.mixin import GtkFocusableMixin
 from fvl.cimarron.skins.common import Control, Unknown
 
 class Button(GtkFocusableMixin, Control):
@@ -33,25 +39,36 @@ class Button(GtkFocusableMixin, Control):
     """
     dirty = staticmethod(bool)
 
-    def __init__(self, label='', **kw):
+    def __init__(self, label='', **kwargs):
         """
         @param label: text that is shown in the middle of the button.
         """
         if not '_widget' in self.__dict__:
             self._widget = gtk.Button()
             self._widget.set_use_underline(True)
-        super(Button, self).__init__(**kw)
+        super(Button, self).__init__(**kwargs)
         self.label = label
         self._widget.connect('clicked', self._activate)
 
     def _set_label(self, label):
+        """
+        Set the button's label.
+
+        label must be a unicode object.
+        """
         self._widget.set_label(label)
     def _get_label(self):
+        """
+        Get the button's label.
+        """
         return self._widget.get_label()
     label = property(_get_label, _set_label, None,
                      """See the C{label} parameter for the constructor.""")
 
     def skelargs(self):
+        """
+        See L{XmlMixin.skelargs}
+        """
         skelargs = super(Button, self).skelargs()
         skelargs['label'] = self.label
         return skelargs
@@ -60,13 +77,21 @@ class Checkbox(Button):
     """
     A Control that represents a boolean value.
     """
-    def __init__(self, checked=False, **kw):
+    def __init__(self, checked=False, **kwargs):
         self._widget = gtk.CheckButton()
-        super(Checkbox, self).__init__(**kw)
+        super(Checkbox, self).__init__(**kwargs)
         self.checked = checked
     def _get_checked(self):
+        """
+        Get the value of the checkbox.
+
+        FIXME: shouldn't this just be the value?
+        """
         return self._widget.get_active()
     def _set_checked(self, checked):
+        """
+        Set the value of the checkbox.
+        """
         self._widget.set_active(checked)
     checked = property(_get_checked, _set_checked)
 
@@ -74,22 +99,28 @@ class Entry(GtkFocusableMixin, Control):
     """
     The simplest text input control.
     """
-    def __init__(self, emptyValue=None, **kw):
+    def __init__(self, emptyValue=None, **kwargs):
         self.emptyValue = emptyValue
         self._widget = gtk.Entry()
-        super(Entry, self).__init__(**kw)
+        super(Entry, self).__init__(**kwargs)
         self.refresh ()
         self._widget.connect ('activate', self._activate)
         self._widget.connect ('key-release-event', self._keyreleased)
         self.delegates.append (self)
 
     def _get_value (self):
+        """
+        Get the C{entry}'s value.
+        """
         return self._widget.get_text() or self.emptyValue
     def _set_value (self, value):
+        """
+        Set the C{Entry}'s value. C{value} must be a unicode object.
+        """
         if value is None:
             value = ''
         self._widget.set_text(unicode(value))
-    value= property (_get_value, _set_value, None, """""")
+    value = property (_get_value, _set_value)
 
     def will_focus_out (self, *ignore):
         """
@@ -122,10 +153,13 @@ class Entry(GtkFocusableMixin, Control):
         if key_event.keyval == gtk.keysyms.Escape:
             # esc; `reset' the value
             self.refresh()
-            widget.select_region(0,-1)
+            widget.select_region(0, -1)
         self.dirty()
 
     def dirty(self):
+        """
+        has the user modified the C{Entry}'s value?
+        """
         dirty = self.targetValue != self._widget.get_text()
         if dirty:
             self._widget.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse('red'))

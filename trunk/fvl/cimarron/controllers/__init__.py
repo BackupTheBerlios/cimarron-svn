@@ -20,6 +20,9 @@
 """
 This is where you'll find all the L{Controller}s.
 """
+
+__revision__ = int('$Rev$'[5:-1])
+
 from base import Controller, WindowController, DelayedTraversal
 from app import Application
 from search import SearchEntry, Search

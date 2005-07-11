@@ -38,11 +38,11 @@ class Person(Model):
         return "Person(name=%r, surname=%r, addresses=%r)" \
                % (self.name, self.surname, self.addresses)
 
-    def search(klass, values):
+    def search(cls, values):
         name, surname = values[:2]
         ans = []
 
-        for i in klass.__values__:
+        for i in cls.__values__:
             found = False
             if surname is None and name is None:
                 found = True

@@ -18,6 +18,12 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+"""
+The default (and currently only) skin, based on Gtk version 2.4 or above.
+"""
+
+__revision__ = int('$Rev$'[5:-1])
+
 import logging
 logger = logging.getLogger('fvl.cimarron.skins.gtk2')
 
@@ -38,13 +44,22 @@ from window import *
 from grid import *
 
 def _run():
+    """
+    Fills the hook for L{Application.run}
+    """
     gtk.main()
 
 def _quit():
+    """
+    Fills the hook for L{Application.quit}
+    """
     if gtk.main_level():
         gtk.main_quit()
 
 def _schedule(timeout, callback, repeat=0):
+    """
+    Fills the hook for L{Application.schedule}
+    """
     if repeat:
         def cb():
             callback()
@@ -76,7 +91,7 @@ def _concreteParenter(parent, child):
                 try:
                     parent._childrenToParent.append (child)
                 except AttributeError:
-                    parent._childrenToParent= [child]
+                    parent._childrenToParent = [child]
             else:
                 # print 'forwarded to', parent.parent
                 parent.parent._concreteParenter (child)

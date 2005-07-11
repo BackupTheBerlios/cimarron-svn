@@ -49,7 +49,7 @@ class TestGrid(abstractTestControl):
         self.parent = self.win = Window(title='Test', parent=self.app)
         self.widget = self.grid = Grid(parent = self.parent,
                                        columns = columns,
-                                       klass = Person,
+                                       cls = Person,
                                        )
 
         target = DummyTarget(self.list)

@@ -53,7 +53,7 @@ class Country (Model):
     def getUn (self):
         return self.un
 
-    def search (klass, values):
+    def search (cls, values):
         # this is what I don't want: the search alg is tied
         # to what-the-screen needs. that sucks. may be, now
         # that we have (almost) fields in Entries and Searches,
@@ -61,7 +61,7 @@ class Country (Model):
         iso2, name= values[:2]
         ans= []
 
-        for i in klass.__values__:
+        for i in cls.__values__:
             found= False
 
             if iso2 is None and name is None:
@@ -100,11 +100,11 @@ class State (Model):
     def getCountry (self):
         return self.country
 
-    def search (klass, values):
+    def search (cls, values):
         name= values[0]
         ans= []
 
-        for i in klass.__values__:
+        for i in cls.__values__:
             found= False
             if name is not None:
                 found= name in i.name

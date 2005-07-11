@@ -21,52 +21,53 @@
 L{Search}es and related junk.
 """
 
+__revision__ = int('$Rev$'[5:-1])
+
 import logging
 
-from fvl import cimarron
-from base import Controller
-from column import ColumnAwareXmlMixin
+from fvl.cimarron.skin import Window, VBox, HBox, Button, SelectionGrid
+from fvl.cimarron.controllers.base import Controller
+from fvl.cimarron.controllers.column import ColumnAwareXmlMixin
 
 logger = logging.getLogger('fvl.cimarron.controllers.search')
 
 class SelectionWindow(Controller):
     """
     Not public. Please Ignore :)
+
+    XXX: why isn't this inheriting from WindowController?
     """
-    def __init__(self, columns=[], **kw):
-        super (SelectionWindow, self).__init__(**kw)
-        self.win = cimarron.skin.Window(
-            parent = self.parent,
-            title = 'Select',size=(30,5)
-            )
-        v = cimarron.skin.VBox(parent=self.win)
-        self.grid = cimarron.skin.SelectionGrid(
-            parent = v,
-            columns = columns,
-            onAction = self.onOk,
-        )
-        h = cimarron.skin.HBox(parent=v,expand=False)
-        self.ok = cimarron.skin.Button(
-            parent = h,
-            label = 'Ok',
-            onAction = self.onOk,
-            )
-        self.cancel = cimarron.skin.Button(
-            parent = h,
-            label = 'Cancel',
-            onAction = self.onCancel,
-        )
+    def __init__(self, columns=None, **kwargs):
+        if columns is None:
+            columns = []
+        super(SelectionWindow, self).__init__(**kwargs)
+        self.win = Window(parent=self.parent, title='Select', size=(30, 5))
+        vbox = VBox(parent=self.win)
+        self.grid = SelectionGrid(parent=vbox, columns=columns,
+                                  onAction=self.onOk)
+        hbox = HBox(parent=vbox, expand=False)
+        self.ok = Button(parent=hbox, label='Ok',
+                         onAction=self.onOk)
+        self.cancel = Button(parent=hbox, label='Cancel',
+                             onAction=self.onCancel)
 
     def show(self):
+        # FIXME: explain this assignment to value from within show
         self.value = None
         self.win.show()
 
     def onOk(self, *ignore):
+        """
+        onAction for 'Ok' button.
+        """
         self.value = self.grid.value
         self.win.hide()
         self.onAction()
 
     def onCancel(self, *ignore):
+        """
+        onAction for 'Cancel' button
+        """
         self.value = None
         self.win.hide()
         self.onAction()
@@ -93,19 +94,22 @@ class SearchEntry(ColumnAwareXmlMixin, Controller):
 
     When one object is found or selected, it calls the action.
     """
-    def attributesToConnect(klass):
-        attrs = super (SearchEntry, klass).attributesToConnect()
+    def attributesToConnect(cls):
+        """
+        See L{XmlMixin.attributesToConnect}
+        """
+        attrs = super (SearchEntry, cls).attributesToConnect()
         return attrs+['searcher']
     attributesToConnect = classmethod(attributesToConnect)
     
-    def __init__(self, columns=None, searcher=None, **kw):
+    def __init__(self, columns=None, searcher=None, **kwargs):
         """
         @param columns: A list of Columns. Only the C{read} attribute
             needs to be set.
         """
-        super (SearchEntry, self).__init__(**kw)
+        super(SearchEntry, self).__init__(**kwargs)
         self.entries = []
-        self.h = cimarron.skin.HBox(parent = self,expand=False)
+        self.h = HBox(parent=self, expand=False)
         self.columns = columns
         self.value = None
         self.searcher = searcher
@@ -119,7 +123,7 @@ class SearchEntry(ColumnAwareXmlMixin, Controller):
                     onAction = self.doSearch
                     ))
 
-            b = cimarron.skin.Button(
+            b = Button(
                 parent = self.h,
                 label = 'Search!',
                 onAction = self.doSearch,
@@ -177,12 +181,15 @@ class SearchEntry(ColumnAwareXmlMixin, Controller):
         Show the value.
         """
         super(SearchEntry, self).refresh()
+        entries = self.entries
         if self.value is not None:
-            for i in xrange(len(self.entries)):
-                self.entries[i].value = self.value.getattr(self.columns[i].attribute)
+            value_getattr = self.value.getattr
+            columns = self.columns
+            for i in xrange(len(entries)):
+                entries[i].value = value_getattr(columns[i].attribute)
         else:
-            for i in xrange (len(self.entries)):
-                self.entries[i].value = ''
+            for i in xrange(len(entries)):
+                entries[i].value = ''
 
 
 class Search(SearchEntry):
