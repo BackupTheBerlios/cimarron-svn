@@ -82,7 +82,7 @@ class Column(XmlMixin):
         return attrs+['attribute']
     attributesToConnect = classmethod(attributesToConnect)
 
-    def __init__(self, name='', attribute='', entry=None):
+    def __init__(self, name='', attribute='', readOnly=False, entry=None):
         """
         @param name: A text associated with the field.
             In the case of B{Grids}, it's the colunm header.
@@ -100,5 +100,4 @@ class Column(XmlMixin):
         if entry is None:
             entry = cimarron.skin.Entry
         self.entry = entry
-
-
+        self.readOnly = readOnly

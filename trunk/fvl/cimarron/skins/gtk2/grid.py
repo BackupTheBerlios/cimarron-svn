@@ -28,6 +28,7 @@ __revision__ = int('$Rev$'[5:-1])
 
 import logging
 logger = logging.getLogger('fvl.cimarron.skins.gtk2.grid')
+# logger.setLevel(logging.DEBUG)
 
 from zope import interface
 import gtk
@@ -39,7 +40,6 @@ class Grid(ColumnAwareXmlMixin, Controller):
     """
     Grids are used for editing a list of objects.
     """
-
     def __init__(self, columns=None, cls=None, **kwargs):
         """
         @param columns: a list of B{Column}s that describe
@@ -87,8 +87,9 @@ class Grid(ColumnAwareXmlMixin, Controller):
                 c = self._tvcolumns[i]
                 crt = gtk.CellRendererText()
                 # editable
-                crt.set_property('editable', True)
-                crt.connect('edited', self._cell_edited, i)
+                if not self._columns[i].readOnly:
+                    crt.set_property('editable', True)
+                    crt.connect('edited', self._cell_edited, i)
                 c.pack_start(crt, True)
                 c.add_attribute(crt, 'text', i)
                 self._tv.append_column(c)
@@ -149,7 +150,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
                or self.index == len(self.value)-1
         # print `self.value`, `self._tv.get_cursor ()`, last
 
-        if key_event.keyval == gtk.keysyms.Down and last:
+        if key_event.keyval == gtk.keysyms.Down and last and self.cls is not None:
             try:
                 new = self.new
             except AttributeError:
@@ -164,7 +165,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
             self.new = self.cls()
             self._tvdata.append([self.new.getattr(j.attribute)
                                  for j in self.columns])
-            
+                    
         return False
 
     def refresh(self):
@@ -176,7 +177,9 @@ class Grid(ColumnAwareXmlMixin, Controller):
             self._tvdata = gtk.ListStore(*self._dataspec)
         else:
             self._tvdata = gtk.ListStore(str)
+
         # print 'Grid.refresh:', `self.value`, self.columns
+        logger.debug(`self.value`)
         if self.value is not None:
             for i in self.value:
                 self._tvdata.append([i.getattr(j.attribute)

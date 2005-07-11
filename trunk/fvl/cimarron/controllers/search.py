@@ -30,6 +30,7 @@ from fvl.cimarron.controllers.base import Controller
 from fvl.cimarron.controllers.column import ColumnAwareXmlMixin
 
 logger = logging.getLogger('fvl.cimarron.controllers.search')
+# logger.setLevel(logging.DEBUG)
 
 class SelectionWindow(Controller):
     """
@@ -79,7 +80,7 @@ class SelectionWindow(Controller):
     def refresh(self):
         self.grid.refresh()
 
-class SearchEntry(ColumnAwareXmlMixin, Controller):
+class Search(ColumnAwareXmlMixin, Controller):
     """
     Abstract class for searching. Consist of a widget
     with one Entry for each Column.
@@ -108,7 +109,7 @@ class SearchEntry(ColumnAwareXmlMixin, Controller):
         @param columns: A list of Columns. Only the C{read} attribute
             needs to be set.
         """
-        super(SearchEntry, self).__init__(**kwargs)
+        super(Search, self).__init__(**kwargs)
         self.entries = []
         self.h = cimarron.skin.HBox(parent=self, expand=False)
         self.columns = columns
@@ -116,24 +117,20 @@ class SearchEntry(ColumnAwareXmlMixin, Controller):
         self.searcher = searcher
 
     def _set_columns(self, columns):
+        logger.debug (`columns`)
         if columns is not None:
             for c in columns:
+                cimarron.skin.Label(text=c.name+":", parent=self.h)
                 entryConstr = c.entry
                 self.entries.append (entryConstr(
                     parent = self.h,
-                    onAction = self.doSearch
+                    onAction = self.action
                     ))
 
             b = cimarron.skin.Button(
                 parent = self.h,
                 label = 'Search!',
-                onAction = self.doSearch,
-                )
-            
-            # build the selection window
-            self.selwin = SelectionWindow(
-                columns = columns,
-                onAction = self.selected,
+                onAction = self.action,
                 )
             
             self.mainWidget = b
@@ -147,16 +144,44 @@ class SearchEntry(ColumnAwareXmlMixin, Controller):
         Performs the abstract search, and handles the case
         when more than one object is found.
         """
-        data = []
-        for e in self.entries:
-            if e.value=='':
+        data = {}
+        for i in xrange(len(self.columns)):
+            e= self.entries[i]
+            c= self.columns[i]
+            if e.value!='':
                 # '' means `don't filter by me'
-                data.append(None)
-            else:
-                data.append(e.value)
+                data[c.attribute] = e.value
 
         # print 'searching', self.searcher, data
-        ans = self.searcher.search(data)
+        self.value= self.searcher.search (**data)
+        return len(self.value)
+    def search (self, *ignore):
+        ans= self.doSearch()
+        self.onAction()
+        return ans
+    action = search
+
+class SearchEntry(Search):
+    def _set_columns(self, columns):
+        logger.debug (`columns`)
+        super(SearchEntry,self)._set_columns(columns)
+        if columns is not None:
+            # build the selection window
+            self.selwin= SelectionWindow (columns= columns,
+                                          onAction= self.selected,)
+    def _get_columns(self):
+        return super(SearchEntry, self)._get_columns()
+    columns= property (_get_columns, _set_columns)
+        
+    def doSearch (self, *ignore):
+        """
+        Performs the abstract search, and handles the case
+        when more than one object is found.
+        """
+        super(SearchEntry, self).doSearch()
+
+        # print 'searching', self.searcher, data
+        ans= self.value
         if len(ans)==0:
             self.value = None
         elif len(ans)==1:
@@ -167,6 +192,8 @@ class SearchEntry(ColumnAwareXmlMixin, Controller):
             self.selwin.show()
         else:
             self.onAction()
+        return len(ans)
+    action = doSearch
 
     def selected(self, *ignore):
         """
@@ -191,7 +218,3 @@ class SearchEntry(ColumnAwareXmlMixin, Controller):
         else:
             for i in xrange(len(entries)):
                 entries[i].value = ''
-
-
-class Search(SearchEntry):
-    pass

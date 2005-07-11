@@ -22,24 +22,22 @@
   <import from="model.person" what="Person" id="Person"/>
   <import from="model.person" what="Address" id="Address"/>
 
-  <Search onAction="Crud.changeModel" searcher="Person">
+  <SearchEntry onAction="Crud.changeModel" searcher="Person">
     <Column name="name" read="Person.getName"/>
     <Column name="surname" read="Person.getSurname"/>
-  </Search>
+  </SearchEntry>
 
   <Editor label="Edit" id="mainEditor">
     <Label text="name"/>
-    <!-- Entry read="mainEditor.value.getName" write="mainEditor.value.setName"/ -->
-    <Entry target="mainEditor.target" attribute="name"/>
+    <Entry attribute="name"/>
     <Label text="surname"/>
-    <!-- Entry read="mainEditor.value.getSurname" write="mainEditor.value.setSurname"/ -->
-    <Entry target="mainEditor.target" attribute="surname"/>
+    <Entry attribute="surname"/>
   </Editor>
 
   <Editor label="Addresses" attribute="addresses" id="Addrs">
     <Label text="Addresses"/>
     <Grid>
-      <Column name="address" read="Address.getText" write="Address.setText"/>
+      <Column name="address" read="Address.getValue" write="Address.setValue"/>
     </Grid>
   </Editor>
 </CrUDController>
