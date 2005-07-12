@@ -53,8 +53,8 @@ def config(skin_name=DEFAULT_SKIN_NAME):
     This Cimarrón is at this time much leaner than its previous incarnation,
     and thus the only work done by L{config} is the choosing of the
     appropriate skin (and loading thereof). Expect this to change as the
-    L{Controller <cimarron.controllers.Controller>}s and L{Widget
-    <cimarron.skins.common.Widget>}s are filled out.
+    L{Controller <fvl.cimarron.controllers.Controller>}s and L{Widget
+    <fvl.cimarron.skins.common.Widget>}s are filled out.
 
     @param skin_name: the name of the skin to load
     @type skin_name: str

@@ -26,6 +26,5 @@ __revision__ = int('$Rev$'[5:-1])
 from base import Controller, WindowController, DelayedTraversal
 from app import Application
 from search import SearchEntry, Search
-from grid import Grid
 from crud import CRUDController, Editor
 from column import Column, ColumnAwareXmlMixin

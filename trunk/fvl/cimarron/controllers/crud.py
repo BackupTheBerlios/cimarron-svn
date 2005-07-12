@@ -37,7 +37,8 @@ class CRUDController (WindowController):
     """
     def attributesToConnect (cls):
         """
-        See L{XmlMixin.attributesToConnect}
+        See L{XmlMixin.attributesToConnect
+        <fvl.cimarron.skins.common.XmlMixin.attributesToConnect>}
         """
         attrs = super(CRUDController, cls).attributesToConnect()
         return attrs+['cls']
@@ -128,7 +129,7 @@ class CRUDController (WindowController):
 
     def refresh (self):
         """
-        See L{Control.refresh}
+        See L{Control.refresh <fvl.cimarron.skins.common.Control.refresh>}
         """
         super(CRUDController, self).refresh()
         for editor in self.editors:
@@ -136,7 +137,8 @@ class CRUDController (WindowController):
 
     def fromXmlObj (cls, xmlObj, skin):
         """
-        See L{XmlMixin.fromXmlObj}
+        See L{XmlMixin.fromXmlObj
+        <fvl.cimarron.skins.common.XmlMixin.fromXmlObj>}
         """
         self = cls()
         root = xmlObj

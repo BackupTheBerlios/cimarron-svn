@@ -98,7 +98,8 @@ class Search(ColumnAwareXmlMixin, Controller):
     """
     def attributesToConnect(cls):
         """
-        See L{XmlMixin.attributesToConnect}
+        See L{XmlMixin.attributesToConnect
+        <fvl.cimarron.skins.common.XmlMixin.attributesToConnect>}
         """
         attrs = super (SearchEntry, cls).attributesToConnect()
         return attrs+['searcher']

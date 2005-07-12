@@ -72,7 +72,8 @@ class Application(Controller):
 
     def will_hide(self, window):
         """
-        Somebody asked us to close the L{Window}. Can we?
+        Somebody asked us to close the
+        L{Window<fvl.cimarron.skins.gtk2.Window>}. Can we?
         """
         if len([i for i in self._children if i.visible])==1:
             self.quit()
@@ -88,11 +89,13 @@ class Application(Controller):
 
     def _concreteParenter (self, child):
         """
-        Dummy override of L{Widget._concreteParenter}.
+        Dummy override of L{Widget._concreteParenter
+        <fvl.cimarron.skins.common.Widget._concreteParenter>}.
         """
 
     def refresh(self):
         """
-        Dummy override of L{Control.refresh}
+        Dummy override of L{Control.refresh
+        <fvl.cimarron.skins.common.Control.refresh>}
         """
 

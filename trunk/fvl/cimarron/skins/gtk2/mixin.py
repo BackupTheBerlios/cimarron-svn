@@ -19,7 +19,7 @@
 # Suite 330, Boston, MA 02111-1307 USA
 
 """
-From http://c2.com/cgi/wiki?MixIn:
+From http://c2.com/cgi/wiki?MixIn::
 
     A mixin class is a parent class that is inherited from - but not
     as a means of specialization. Typically, the mixin will export

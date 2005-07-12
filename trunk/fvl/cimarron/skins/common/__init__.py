@@ -179,7 +179,8 @@ class XmlMixin (object):
 
 class Widget(XmlMixin):
     """
-    L{Widget}s are everything that the user sees of an L{Application}.
+    L{Widget}s are everything that the user sees of an L{Application
+    <fvl.cimarron.controllers.Application>}.
     """
 
     def __init__(self, parent=None, expand=True, fill=True, border=0, **kwargs):
@@ -466,7 +467,7 @@ class Control(Widget):
                          " (whatever that means for the particluar Control) "
                          "is issued.")
 
-    def _activate(self, dummy=None):
+    def _activate(self, widget=None):
         """
         The user activated the L{Control}. In other words, she hit enter, or
         double-clicked it, or selected it, or whatever action means a

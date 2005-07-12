@@ -83,14 +83,12 @@ class Checkbox(Button):
         self.checked = checked
     def _get_checked(self):
         """
-        Get the value of the checkbox.
-
-        FIXME: shouldn't this just be the value?
+        Get whether the checkbox is checked.
         """
         return self._widget.get_active()
     def _set_checked(self, checked):
         """
-        Set the value of the checkbox.
+        Set the checkedness of the checkbox.
         """
         self._widget.set_active(checked)
     checked = property(_get_checked, _set_checked)
