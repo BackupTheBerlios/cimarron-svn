@@ -213,9 +213,14 @@ the methods that are needed to interact with \Cimarron{} widgets.
 
 \verbatiminput{simpleperson.py}
 
-Given this model, here's how a program can set up widgets in such a way
-that they can reflect the model's status, and modify it as instructed by
-the user.
+In this case, we define \class{Person} as a subclass of \class{Model}
+because the latter provides a trivial implementation of the
+\class{IModel} interface, which defines how widgets interact with the
+objects they display. Your classes can provide custom implementations of
+this interface to accomodate for special needs.
+
+Here's how we can write a program that displays and edits a
+\class{Person} instance:
 
 \verbatiminput{simplepersoneditor.py}
 

@@ -53,7 +53,7 @@ class CalculatorController(cimarron.skin.WindowController):
                 self.X = val
                 self.resetInput = True
             self.op = sender.calcOp
-        except:
+        except (ArithmeticError, ValueError):
             self.clear()
             self.display.text = '-- Error --'
 
