@@ -105,7 +105,7 @@ class Search(ColumnAwareXmlMixin, Controller):
         return attrs+['searcher']
     attributesToConnect = classmethod(attributesToConnect)
     
-    def __init__(self, columns=None, searcher=None, **kwargs):
+    def __init__(self, columns=None, transaction=None, searcher=None, **kwargs):
         """
         @param columns: A list of Columns. Only the C{read} attribute
             needs to be set.
@@ -116,6 +116,7 @@ class Search(ColumnAwareXmlMixin, Controller):
         self.columns = columns
         self.value = None
         self.searcher = searcher
+        self.trans = transaction
 
     def _set_columns(self, columns):
         logger.debug (`columns`)
@@ -154,7 +155,7 @@ class Search(ColumnAwareXmlMixin, Controller):
                 data[c.attribute] = e.value
 
         # print 'searching', self.searcher, data
-        self.value= self.searcher.search (**data)
+        self.value= self.searcher.search (self.trans, **data)
         return len(self.value)
     def search (self, *ignore):
         ans= self.doSearch()
