@@ -130,7 +130,8 @@ class Grid(ColumnAwareXmlMixin, Controller):
         self._tvdata[path][colNo] = text
         # ... and our model
         value = self.value
-        if value is not None:
+        print `value`, `path`
+        if value is not None and int(path)<len(value):
             value = value[int(path)]
         else:
             value = self.new
@@ -147,25 +148,29 @@ class Grid(ColumnAwareXmlMixin, Controller):
         """
         last = self.value is None \
                or len(self.value) == 0 \
-               or self.index == len(self.value)-1
-        # print `self.value`, `self._tv.get_cursor ()`, last
+               or self.index == len(self.value)-1 \
+               or self.index == len(self.value)
+        # print self.index, `self.value`, last
 
         if key_event.keyval == gtk.keysyms.Down and last and self.cls is not None:
+            if self.value is None:
+                self.value = []
             try:
                 new = self.new
             except AttributeError:
                 pass
             else:
                 if not new.isDirty:
+                    # print 'not making new till new.isDirty'
                     return False
-                if self.value is None:
-                    self.value = [new]
-                else:
-                    self.value.append(new)
+                # print 'appending new'
+                self.value.append(new)
             self.new = self.cls()
             self._tvdata.append([self.new.getattr(j.attribute)
                                  for j in self.columns])
-                    
+            self.index = len(self.value)
+            # print 'making new', self.index
+            
         return False
 
     def refresh(self):

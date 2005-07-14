@@ -101,7 +101,7 @@ class Search(ColumnAwareXmlMixin, Controller):
         See L{XmlMixin.attributesToConnect
         <fvl.cimarron.skins.common.XmlMixin.attributesToConnect>}
         """
-        attrs = super (SearchEntry, cls).attributesToConnect()
+        attrs = super (Search, cls).attributesToConnect()
         return attrs+['searcher']
     attributesToConnect = classmethod(attributesToConnect)
     

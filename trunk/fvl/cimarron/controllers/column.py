@@ -74,27 +74,11 @@ class Column(XmlMixin):
     A Column describes a field. This field can be used for both
     B{SearchEntry}s and B{Grid}s.
     """
-    def attributesToConnect(cls):
-        """
-        See L{XmlMixin.attributesToConnect}
-        """
-        attrs = super (Column, cls).attributesToConnect()
-        return attrs+['attribute']
-    attributesToConnect = classmethod(attributesToConnect)
-
     def __init__(self, name='', attribute='', readOnly=False, entry=None):
         """
         @param name: A text associated with the field.
             In the case of B{Grids}, it's the colunm header.
         """
-#         @param read: A callable that, given an object, returns the value
-#             of that object for the field. Tipically, is an unbound getter
-#             method from the object class.
-
-#         @param write: A callable that, given an object and a new value,
-#             modifies the object. Tipically, is an unbound setter method
-#             from the object class.
-
         self.name = name
         self.attribute = attribute
         if entry is None:
