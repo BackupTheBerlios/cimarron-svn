@@ -12,16 +12,14 @@ class PersonEditor(cimarron.skin.WindowController):
         cimarron.skin.Label(parent=vbox, text='Name:')
         cimarron.skin.Label(parent=vbox, text='Surname:')
         vbox = cimarron.skin.VBox(parent=hbox)
-        self.nameWidget = \
-            cimarron.skin.Entry(parent=vbox, attribute="name",
-                                onAction=self.checkValues)
-        self.surnameWidget = \
-            cimarron.skin.Entry(parent=vbox, attribute="surname",
-                                onAction=self.checkValues)
+        self.widgets = \
+            (cimarron.skin.Entry(parent=vbox, attribute="name",
+                                 onAction=self.checkValues),
+             cimarron.skin.Entry(parent=vbox, attribute="surname",
+                                 onAction=self.checkValues))
         cimarron.skin.Button(parent=outer_vbox, label='Check', 
 	     onAction = self.checkValues)
-        self.label = cimarron.skin.Label(parent=outer_vbox,
-                                         text="<nothing yet>")
+        self.label = cimarron.skin.Label(parent=outer_vbox, text="")
         if target is not None:
             self.newTarget(target)
 
@@ -29,14 +27,10 @@ class PersonEditor(cimarron.skin.WindowController):
         self.label.text = "Mr/Ms %s, %s" % \
                           (self.target.surname, self.target.name)
 
-    def newTarget(self, *a, **kw):
-        super(PersonEditor, self).newTarget(*a, **kw)
-        self.nameWidget.newTarget(self.target)
-        self.surnameWidget.newTarget(self.target)
-
-    def refresh(self):
-        self.nameWidget.refresh()
-        self.surnameWidget.refresh()
+    def newTarget(self, target):
+        super(PersonEditor, self).newTarget(target)
+        for w in self.widgets:
+            w.newTarget(self.value)
         self.checkValues(self)
 
 app = cimarron.skin.Application()

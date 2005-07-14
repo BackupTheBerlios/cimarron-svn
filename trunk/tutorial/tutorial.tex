@@ -225,12 +225,14 @@ Here's how we can write a program that displays and edits a
 \verbatiminput{simplepersoneditor.py}
 
 As you can see, again the bulk of the code is concerned with creating
-and packing the widgets. Note that the \class{Entry} widgets have don't
-have an associated action. The controller specifies the model's
-attribute that will be controlled by the widget instead. Note that a
-widget can have both an action and an attribute associated with it: the
-action establishes a communications channel back to the controller,
-while the attribute acts as a forward communication with the model. For
+and packing the widgets. Note that the \class{Entry} widgets' associated
+action doesn't update any information. In fact, the widgets don't even
+need to have any action at all in order to be able to interact with the
+model. The controller specifies the model's attribute that will be
+controlled by the widget instead. As shown in the code, a widget can
+have both an action and an attribute associated with it: the action
+establishes a communications channel back to the controller, while the
+attribute acts as a forward communication with the model. For
 \class{Entry} instances, the action is invoked only if the user presses
 \kbd{Enter}, but the value in the model is always updated. In order to
 see this in action, you may want to edit the contents in the window's
@@ -239,10 +241,15 @@ that of leaving the field with \kbd{Tab} or with the mouse.
 
 Once the window is all set up, it is \class{PersonEditor}'s
 \member{newTarget()} method's responsibility to inform each widget which
-concrete instance they are to interact with at any given moment. From
-them on, it's the widget's responsibility to keep its value in sync with
-the model. The \member{checkValues()} method, invoked every time you
-press the ``Check'' button, is meant to show that the actual
-\class{Person} object's values are being modified through the widgets.
+concrete instance they are to interact with at any given moment. To that
+end, \class(PersonEditor) instances keep a list of the widgets that it
+needs to update when its target changes. Once a widget's target is set,
+it's the widget's responsibility to keep its value in sync with the
+model.
+
+The \member{checkValues()} method, invoked every time you press the
+``Check'' button or trigger the action of an \class{Entry} by pressing
+\kbd{Enter}, is meant to show that the actual \class{Person} object's
+values are being modified through the widgets.
 
 \end{document}
