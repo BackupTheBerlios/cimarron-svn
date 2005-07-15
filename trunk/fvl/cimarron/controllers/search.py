@@ -148,17 +148,18 @@ class Search(ColumnAwareXmlMixin, Controller):
         """
         data = {}
         for i in xrange(len(self.columns)):
-            e= self.entries[i]
-            c= self.columns[i]
-            if e.value!='':
+            e = self.entries[i]
+            c = self.columns[i]
+            if e.value != '':
                 # '' means `don't filter by me'
                 data[c.attribute] = e.value
 
         # print 'searching', self.searcher, data
-        self.value= self.searcher.search (self.trans, **data)
+        # self.value= self.searcher.search (self.trans, **data)
+        self.value = self.searcher.values(self.trans, **data)
         return len(self.value)
     def search (self, *ignore):
-        ans= self.doSearch()
+        ans = self.doSearch()
         self.onAction()
         return ans
     action = search

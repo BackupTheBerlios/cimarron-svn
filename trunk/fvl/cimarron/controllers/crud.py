@@ -62,9 +62,9 @@ class CRUDController (WindowController):
 
         if searchColumns:
             # add the Search thing
-            self.search= cimarron.skin.Search (parent=self.firstTab,
-                                               columns=searchColumns,
-                                               onAction=self.changeModel)
+            self.search = cimarron.skin.Search (parent=self.firstTab,
+                                                columns=searchColumns,
+                                                onAction=self.changeModel)
 
         # second tab
         if editorClass is not None:

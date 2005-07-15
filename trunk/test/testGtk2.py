@@ -269,68 +269,71 @@ class TestGtkGrid (testGtkParenting, TestGrid):
         event.keyval= gtk.keysyms.Down
         self.widget._keyreleased (self.widget, event)
 
+# rethink 'em all
     ######################
     # tests from no-value
-    def testNew (self):
-        self.widget.value= None
-        self.triggerNew ()
+#     def testNew (self):
+#         self.widget.value= None
+#         self.triggerNew ()
 
-        # tests:
-        # right type
-        self.assertEqual (type (self.widget.new), Person)
-        # not on the value yet
-        self.assert_ (self.widget.value is None)
+#         # tests:
+#         # right type
+#         # self.assertEqual (type (self.widget.new), Person)
+#         # not on the value yet
+#         # self.assert_ (self.widget.value is None)
 
-    def testNewEditable (self):
-        self.widget.value= None
-        self.testNew ()
-        # is editable
-        self.testWrite ()
+#     def testNewEditable (self):
+#         self.widget.value= None
+#         self.testNew ()
+#         # is editable
+#         self.testWrite ()
 
-    def testNewNew (self):
-        self.widget.value= None
-        self.testNew ()
-        old= self.widget.new
+# self.widget.new is *gone*
+#     def testNewNew (self):
+#         self.widget.value= None
+#         self.testNew ()
+#         old= self.widget.new
 
-        self.triggerNew ()
+#         self.triggerNew ()
 
-        # tests:
-        # nothing went to the value
-        self.assert_ (self.widget.value is None)
-        # no new obejct was created
-        self.assertEqual (self.widget.new, old)
+#         # tests:
+#         # nothing went to the value
+#         self.assert_ (self.widget.value is None)
+#         # no new obejct was created
+#         self.assertEqual (self.widget.new, old)
 
-    def testNewEditedNew (self):
-        self.widget.value= None
-        self.testNewEditable ()
-        old= self.widget.new
+#     def testNewEditedNew (self):
+#         self.widget.value= None
+#         self.testNewEditable ()
+#         old= self.widget.new
 
-        self.triggerNew ()
+#         self.triggerNew ()
 
-        # tests:
-        # right type
-        self.assertEqual (type (self.widget.new), Person)
-        # the other one got into the value
-        # this should not be the behaviour
-        self.assertEqual (type (self.widget.value), list)
-        self.assertEqual (len (self.widget.value), 1)
-        self.assertEqual (self.widget.value[0], old)
+#         # tests:
+#         # right type
+#         self.assertEqual (type (self.widget.new), Person)
+#         # the other one got into the value
+#         # this should not be the behaviour
+#         self.assertEqual (type (self.widget.value), list)
+#         self.assertEqual (len (self.widget.value), 1)
+#         self.assertEqual (self.widget.value[0], old)
 
     ########################
     # test from some-values
-    def testSomethingNew (self):
-        """
-        Tests that, having some values already loaded,
-        we can add more.
-        """
-        l= len(self.widget.value)
-        self.widget.index= l-1
-        self.triggerNew ()
+#     def testSomethingNew (self):
+#         """
+#         Tests that, having some values already loaded,
+#         we can add more.
+#         """
+#         l= len(self.widget.value)
+#         self.widget.index= l-1
+#         self.triggerNew ()
         
-        # tests:
-        # right type
-        self.assertEqual (type (self.widget.new), Person)
-        # the other one got into the value
-        # this should not be the behaviour
-        self.assertEqual (type (self.widget.value), list)
-        self.assertEqual (len (self.widget.value), l)
+#         # tests:
+#         # right type
+#         # no more new attr
+#         # self.assertEqual (type (self.widget.new), Person)
+#         # the other one got into the value
+#         # this should not be the behaviour
+#         self.assertEqual (type (self.widget.value), list)
+#         self.assertEqual (len (self.widget.value), l)

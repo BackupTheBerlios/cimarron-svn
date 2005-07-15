@@ -45,6 +45,10 @@ class Grid(ColumnAwareXmlMixin, Controller):
         @param columns: a list of B{Column}s that describe
             what to show in the grid, how obtain it from the
             objects, and eventually how to save data back to.
+
+        @param cls: a class for building new objects. if this is None,
+            the grid won't be able to create more objects, but still
+            will be able to edit the existing ones.
         """
         self._widget = self._tv = gtk.TreeView()
         # self.mainWidget = self
@@ -58,7 +62,19 @@ class Grid(ColumnAwareXmlMixin, Controller):
 
         self._tv.connect('key-release-event', self._keyreleased)
 
+        # make pylint (more like crud puppy now) happy
+        self._tvdata = None
+        self._tvdatalen = 0
+        # pylint will be ignored on these.
+        # they're set to the proper values elsewhere
+        # self._columns = []
+        # self._dataspec = None
+        # self._tvcolumns = None
+        self.index = None
+
         super(Grid, self).__init__(**kwargs)
+        # if self.value is None:
+        #     self.value = []
         # this was not done because it was initializing
         # is this still true?
         self.refresh()
@@ -78,21 +94,23 @@ class Grid(ColumnAwareXmlMixin, Controller):
         self._columns = columns or []
         if columns:
             # build the tv columns and the data types tuple
+            # i don't find a socking way to tell the focusing to skip
+            # readOnly columns.
             (self._tvcolumns, self._dataspec) = \
                 zip(*[ (gtk.TreeViewColumn(column.name), str)
                        for column in columns ])
 
             # add the columns and attrs
             for i in xrange (len(columns)):
-                c = self._tvcolumns[i]
+                column = self._tvcolumns[i]
                 crt = gtk.CellRendererText()
                 # editable
                 if not self._columns[i].readOnly:
                     crt.set_property('editable', True)
                     crt.connect('edited', self._cell_edited, i)
-                c.pack_start(crt, True)
-                c.add_attribute(crt, 'text', i)
-                self._tv.append_column(c)
+                column.pack_start(crt, True)
+                column.add_attribute(crt, 'text', i)
+                self._tv.append_column(column)
     def _get_columns(self):
         """
         Returns the L{Grid}'s columns.
@@ -105,7 +123,13 @@ class Grid(ColumnAwareXmlMixin, Controller):
         If index is not None, select the grid's row #C{index}.
         """
         if index is not None:
-            self._tv.set_cursor((index, ))
+            # focus the right column
+            # or the first if there's no column focused yet
+            # which is the case when tehre were no rows.
+            column = self._tv.get_cursor()[1]
+            if column is None:
+                column = self._tvcolumns[0]
+            self._tv.set_cursor((index, ), column)
     def _get_index(self):
         """
         Return the index of the selected row, or None if nothing is currently
@@ -130,11 +154,14 @@ class Grid(ColumnAwareXmlMixin, Controller):
         self._tvdata[path][colNo] = text
         # ... and our model
         value = self.value
-        print `value`, `path`
+        # print `value`, `path`
         if value is not None and int(path)<len(value):
             value = value[int(path)]
         else:
-            value = self.new
+            # we're editing the empty row, so go build an object
+            # to give back up that row.
+            value = self.cls()
+            self.value.append(value)
         value.setattr(attribute, text)
             
         # coming soon: our models will (should) suport the generic TreeModel
@@ -146,31 +173,28 @@ class Grid(ColumnAwareXmlMixin, Controller):
         """
         A key has been released: the user might be wanting to insert a row...
         """
+        # bugs will come to haunt you at night if you delete this
+        # and don't fix the socking but that is elsewhere
+        # (I whish at least where does he hide, the little frak)
+        if self.value is None:
+            self.value = []
+        # conditions that assert we're in the fscking last row of data.
+        valueLen = len(self.value)
         last = self.value is None \
-               or len(self.value) == 0 \
-               or self.index == len(self.value)-1 \
-               or self.index == len(self.value)
+               or valueLen == 0 \
+               or self.index == valueLen-1
+               
         # print self.index, `self.value`, last
-
-        if key_event.keyval == gtk.keysyms.Down and last and self.cls is not None:
-            if self.value is None:
-                self.value = []
-            try:
-                new = self.new
-            except AttributeError:
-                pass
-            else:
-                if not new.isDirty:
-                    # print 'not making new till new.isDirty'
-                    return False
-                # print 'appending new'
-                self.value.append(new)
-            self.new = self.cls()
-            self._tvdata.append([self.new.getattr(j.attribute)
-                                 for j in self.columns])
-            self.index = len(self.value)
+        if key_event.keyval == gtk.keysyms.Down and last and \
+               self.cls is not None and self._tvdatalen == valueLen:
+            # right conditions; insert a new row in the TreeView
+            # without changing the value yet.
+            self._tvdata.append(['' for j in self.columns])
+            self._tvdatalen += 1
+            self.index = valueLen
             # print 'making new', self.index
             
+        # print self._tv.get_cursor()
         return False
 
     def refresh(self):
@@ -189,6 +213,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
             for i in self.value:
                 self._tvdata.append([i.getattr(j.attribute)
                                      for j in self.columns])
+            self._tvdatalen = len(self.value)
             self.index = 0
         else:
             self.index = None
@@ -243,7 +268,7 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
         super (SelectionGrid, self).__init__(**kwargs)
 
 
-    def _double_click(self, widget,*ignore):
+    def _double_click(self, widget, *ignore):
         """
         The user double-clicked a row: fire the action.
         """
@@ -329,4 +354,3 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
     value = property(_get_value, _set_value,
                      doc="The selected object."
                      " If no object is selected, it is None.")
-
