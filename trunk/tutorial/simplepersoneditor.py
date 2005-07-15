@@ -1,6 +1,5 @@
 from fvl import cimarron
 from simpleperson import Person
-cimarron.config()
 
 class PersonEditor(cimarron.skin.WindowController):
     def __init__(self, target=None, **kw):

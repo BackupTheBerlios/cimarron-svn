@@ -1,4 +1,4 @@
-% Copyright 2005 Fundación Via Libre
+% Copyright 2005 FundaciÃ³n Via Libre
 %
 % This file is part of PAPO.
 %
@@ -25,10 +25,10 @@
 %\usepackage[spanish]{babel}
 \usepackage[latin1]{inputenc}
 
-\newcommand{\Cimarron}[0]{Cimarrón}
+\newcommand{\Cimarron}[0]{CimarrÃ³n}
 
 \title{\Cimarron Tutorial}
-\author{Marcos Dione and Federico Heinz\\Fundación Vía Libre}
+\author{Marcos Dione and Federico Heinz\\FundaciÃ³n VÃ­a Libre}
 \authoraddress{\email{mdione@vialibre.org.ar}\\\email{fheinz@vialibre.org.ar}}
 %\release{0.00}
 
@@ -78,7 +78,7 @@ the following command sequence should do the trick:
 Here is the Python code to produce the GUI equivalent of the ``Hello
 Word'' program using \Cimarron. Just paste the code into an instance of
 Python to get a single window with a single button in it. The window's
-title is ``Main Window'', and the button reads ``Hello''.
+title is ``Hello World Demo'', and the button reads ``Hello''.
 
 \verbatiminput{helloworld.py}
 
@@ -240,16 +240,31 @@ fields and compare the result of leaving the field with \kbd{Enter} with
 that of leaving the field with \kbd{Tab} or with the mouse.
 
 Once the window is all set up, it is \class{PersonEditor}'s
-\member{newTarget()} method's responsibility to inform each widget which
+\method{newTarget()} method's responsibility to inform each widget which
 concrete instance they are to interact with at any given moment. To that
 end, \class(PersonEditor) instances keep a list of the widgets that it
 needs to update when its target changes. Once a widget's target is set,
 it's the widget's responsibility to keep its value in sync with the
 model.
 
-The \member{checkValues()} method, invoked every time you press the
+The \method{checkValues()} method, invoked every time you press the
 ``Check'' button or trigger the action of an \class{Entry} by pressing
 \kbd{Enter}, is meant to show that the actual \class{Person} object's
 values are being modified through the widgets.
+
+\section{A more involved model}
+
+Since allowing for user interaction to edit a network of objects is what
+\Cimarron{} is all about, we'll need a more elaborate model to play
+with. From this section on, we will be using the following data model:
+
+\verbatiminput{model.py}
+
+Note that \class{Address} overrides the \method{getattr()} method in
+order to set the \member{isDirty} flag every time an attribute of an
+instance is modified as a result of the user changing the value
+displayed in a widget. This is required by \class{Grid}'s current
+implementation, in future versions it will not be needed any longer.
+
 
 \end{document}

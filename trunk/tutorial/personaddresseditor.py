@@ -1,6 +1,5 @@
 from fvl import cimarron
 from model import Person, Address
-cimarron.config()
 
 class PersonAddressEditor(cimarron.skin.WindowController):
     def __init__(self, target=None, **kw):

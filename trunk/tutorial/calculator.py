@@ -1,11 +1,11 @@
 import operator
 from fvl import cimarron
-cimarron.config()
 
 class CalculatorController(cimarron.skin.WindowController):
     def __init__(self, **kw):
         super(CalculatorController, self).__init__(**kw)
         self.win.title = 'Calculator'
+        self.win.size = (40, 15)
         vbox = cimarron.skin.VBox(parent=self.win)
         self.display = cimarron.skin.Label(parent=vbox, text='0')
         hbox = cimarron.skin.HBox(parent=vbox)

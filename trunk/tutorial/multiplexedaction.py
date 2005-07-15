@@ -1,10 +1,10 @@
 from fvl import cimarron
-cimarron.config()
 
 class MainWindowController(cimarron.skin.WindowController):
    def __init__(self, **kw):
        super(MainWindowController, self).__init__(**kw)
-       self.win.title = 'Main Window'
+       self.win.title = 'Multiplexed Action Demo'
+       self.win.size = (40, 10)
        vbox = cimarron.skin.VBox(parent=self.win)
        cimarron.skin.Button(parent=vbox, label='Pleasure',
            onAction = self.doSomething)
