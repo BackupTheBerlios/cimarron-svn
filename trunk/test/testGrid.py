@@ -21,7 +21,6 @@
 import unittest
 
 from fvl import cimarron
-cimarron.config
 from fvl.cimarron.skin import Column, Window, Grid, SelectionGrid
 
 from model.person import Person

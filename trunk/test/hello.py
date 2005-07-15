@@ -19,9 +19,7 @@
 # Suite 330, Boston, MA 02111-1307 USA
 
 import unittest
-from fvl import cimarron
-cimarron.config()
-skin = cimarron.skin
+from fvl.cimarron import skin
 
 __all__ = ('TestHelloWorld',)
 

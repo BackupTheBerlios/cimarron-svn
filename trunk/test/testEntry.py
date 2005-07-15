@@ -20,7 +20,6 @@
 
 import unittest
 from fvl import cimarron
-cimarron.config()
 
 from testCommon import abstractTestControl
 from model.country import Country

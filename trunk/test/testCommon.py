@@ -27,7 +27,6 @@ from model.country import Country
 
 class abstractTestBasic(unittest.TestCase, object):
     def setUp(self):
-        cimarron.config()
         self.app = cimarron.skin.Application()
         super (abstractTestBasic, self).setUp ()
     def testSkinArgv(self):

@@ -29,6 +29,7 @@ example.
 __revision__ = int('$Rev$'[5:-1])
 
 import sys
+import new
 import logging
 
 from zope.schema import Object
@@ -40,7 +41,7 @@ logger = logging.getLogger('fvl.cimarron')
 
 DEFAULT_SKIN_NAME = 'gtk2'
 
-def config(skin_name=DEFAULT_SKIN_NAME):
+def _config(skin_name=DEFAULT_SKIN_NAME):
     """
 
     Although currently a function, L{config} will probably become a class
@@ -60,21 +61,36 @@ def config(skin_name=DEFAULT_SKIN_NAME):
     @type skin_name: str
     """
     global skin
-    try:
-        skin
-        logger.debug('reusing previously imported skin')
-    except NameError:
-        logger.debug('importing skin')
-        skin = __import__('fvl.cimarron.skins.' + skin_name,
-                          globals(), locals(), skin_name)
+    logger.debug('importing skin')
+    skin = __import__('fvl.cimarron.skins.' + skin_name,
+                      globals(), locals(), skin_name)
 
-        logger.debug('verifying skin meets ISkin interface:')
-        verifyObject(ISkin, skin)
-        logger.debug(' + %s provides ISkin', skin.__name__)
-        for name, desc in ISkin.namesAndDescriptions(1):
-            if isinstance(desc, Object):
-                verifyClass(desc.schema, getattr(skin, name))
-                logger.debug(' +  %s provides %s', name, desc.schema.__name__)
+    logger.debug('verifying skin meets ISkin interface:')
+    verifyObject(ISkin, skin)
+    logger.debug(' + %s provides ISkin', skin.__name__)
+    for name, desc in ISkin.namesAndDescriptions(1):
+        if isinstance(desc, Object):
+            verifyClass(desc.schema, getattr(skin, name))
+            logger.debug(' +  %s provides %s', name, desc.schema.__name__)
 
-        logger.debug('enabling "from fvl.cimarron.skin import Foo"')
-        sys.modules['fvl.cimarron.skin'] = skin
+    logger.debug('enabling "from fvl.cimarron.skin import Foo"')
+    sys.modules['fvl.cimarron.skin'] = skin
+
+class skin_module(new.module):
+    def __repr__(self):
+        return '<skin lazymodule %r>' % self.__name__
+    def __init__(self, *a, **kw):
+        super(skin_module, self).__init__(*a, **kw)
+    def __getattr__(self, attr):
+        # are we a hack, or what?
+        _config()
+        for k in self.__dict__:
+            if k not in skin.__dict__:
+                del self.__dict__[k]
+        for k, v in skin.__dict__.items():
+            self.__dict__[k] = v
+        return getattr(skin, attr)
+
+skin = skin_module('fvl.cimarron.skin')
+sys.modules['fvl.cimarron.skin'] = skin
+print skin
