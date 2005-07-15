@@ -44,7 +44,7 @@ DEFAULT_SKIN_NAME = 'gtk2'
 def _config(skin_name=DEFAULT_SKIN_NAME):
     """
 
-    Although currently a function, L{config} will probably become a class
+    Although currently a function, L{_config} will probably become a class
     because we strongly suspect people will want to actually do some
     configuration loading here. In fact, one thing we learned while
     implementing the first Cimarrón is that a lot of functionality is actually
@@ -52,7 +52,7 @@ def _config(skin_name=DEFAULT_SKIN_NAME):
     somewhere (an example of this is, of course, the default skin name).
 
     This Cimarrón is at this time much leaner than its previous incarnation,
-    and thus the only work done by L{config} is the choosing of the
+    and thus the only work done by L{_config} is the choosing of the
     appropriate skin (and loading thereof). Expect this to change as the
     L{Controller <fvl.cimarron.controllers.Controller>}s and L{Widget
     <fvl.cimarron.skins.common.Widget>}s are filled out.
@@ -76,21 +76,18 @@ def _config(skin_name=DEFAULT_SKIN_NAME):
     logger.debug('enabling "from fvl.cimarron.skin import Foo"')
     sys.modules['fvl.cimarron.skin'] = skin
 
-class skin_module(new.module):
-    def __repr__(self):
-        return '<skin lazymodule %r>' % self.__name__
-    def __init__(self, *a, **kw):
-        super(skin_module, self).__init__(*a, **kw)
+class _lazy_skin_module(new.module):
+    """
+    An instance of _lazy_skin_module stands in for the real skin
+    module, and becomes a Borg of the real skin as soon as an unknown
+    attribute is requested (i.e., as soon as __getattr__ is called).
+    """
     def __getattr__(self, attr):
-        # are we a hack, or what?
         _config()
-        for k in self.__dict__:
-            if k not in skin.__dict__:
-                del self.__dict__[k]
-        for k, v in skin.__dict__.items():
-            self.__dict__[k] = v
+        self.__dict__.clear()
+        self.__dict__.update(skin.__dict__)
         return getattr(skin, attr)
 
-skin = skin_module('fvl.cimarron.skin')
+skin = _lazy_skin_module('<lazy>')
 sys.modules['fvl.cimarron.skin'] = skin
-print skin
+
