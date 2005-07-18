@@ -51,5 +51,5 @@ class Model(object):
 
     def values(cls, trans, **qual):
         ans = trans.search(cls, **qual)
-    return ans
+        return ans
     values = classmethod(values)
