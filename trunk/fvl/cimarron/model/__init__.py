@@ -50,5 +50,6 @@ class Model(object):
         return setattr(obj, attr, value)
 
     def values(cls, trans, **qual):
-        trans.search(cls, **qual)
+        ans = trans.search(cls, **qual)
+    return ans
     values = classmethod(values)
