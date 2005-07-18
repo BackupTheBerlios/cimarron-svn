@@ -48,3 +48,7 @@ class Model(object):
         else:
             obj = self
         return setattr(obj, attr, value)
+
+    def values(cls, trans, **qual):
+        trans.search(cls, **qual)
+    values = classmethod(values)

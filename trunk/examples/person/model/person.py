@@ -63,6 +63,7 @@ class Person(Model):
 
         return ans
     search = classmethod(search)
+    values = search
 
 
 class Address(Model):
