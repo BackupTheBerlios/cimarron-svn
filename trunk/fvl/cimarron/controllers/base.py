@@ -86,7 +86,7 @@ class Controller(Control, Container):
         hasId = xmlObj.prop('id') or None
 
         if import_from is not None:
-            obj = __import__(import_from, None, None, True)
+            obj = __import__(import_from, None, None, 'x')
             if import_what is not None:
                 obj = getattr(obj, import_what)
         else:
