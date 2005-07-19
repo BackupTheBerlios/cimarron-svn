@@ -158,3 +158,17 @@ class ISkin(Interface):
         title = u'Window',
         required = True,
         )
+
+
+class IStore(Interface):
+    """
+    blah.
+    """
+    def save():
+        """
+        Saves the object(s) to permanent storage.
+        """
+    def discard():
+        """
+        Discards changes performed to the object(s).
+        """
