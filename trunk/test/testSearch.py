@@ -37,6 +37,7 @@ class TestSearch(abstractTestControl):
             parent = self.parent,
             columns = columns,
             searcher = Person,
+            cls = Person,
             )
         Person.__values__ = self.data = [
             Person('jose', 'perez'),
