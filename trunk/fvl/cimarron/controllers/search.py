@@ -109,6 +109,12 @@ class Search(ColumnAwareXmlMixin, Controller):
         """
         @param columns: A list of Columns. Only the C{read} attribute
             needs to be set.
+
+        @param searcher: an object that knows the values() for the right type of
+            objects. Typically, the Class itself.
+
+        @param transaction: A transaction that will be used to search the
+            values().
         """
         super(Search, self).__init__(**kwargs)
         self.entries = []
@@ -122,19 +128,22 @@ class Search(ColumnAwareXmlMixin, Controller):
         logger.debug (`columns`)
         if columns is not None:
             for c in columns:
+                # build label and entry
                 cimarron.skin.Label(text=c.name+":", parent=self.h)
                 entryConstr = c.entry
                 self.entries.append (entryConstr(
                     parent = self.h,
-                    onAction = self.action
+                    onAction = self.search
                     ))
 
+            # search button
             b = cimarron.skin.Button(
                 parent = self.h,
                 label = 'Search!',
-                onAction = self.action,
+                onAction = self.search,
                 )
             
+            # the widget that fires the action.
             self.mainWidget = b
         self.__columns = columns
     def _get_columns(self):
@@ -143,8 +152,8 @@ class Search(ColumnAwareXmlMixin, Controller):
 
     def doSearch(self, *ignore):
         """
-        Performs the abstract search, and handles the case
-        when more than one object is found.
+        Performs the abstract search. The result ends up in aSearch.value as a
+        list and returns the length of the list.
         """
         data = {}
         for i in xrange(len(self.columns)):
@@ -155,14 +164,15 @@ class Search(ColumnAwareXmlMixin, Controller):
                 data[c.attribute] = e.value
 
         # print 'searching', self.searcher, data
-        # self.value= self.searcher.search (self.trans, **data)
         self.value = self.searcher.values(self.trans, **data)
         return len(self.value)
     def search (self, *ignore):
+        """
+        Performs the search and fires the action thereupon.
+        """
         ans = self.doSearch()
         self.onAction()
         return ans
-    action = search
 
 class SearchEntry(Search):
     def _set_columns(self, columns):
@@ -178,7 +188,7 @@ class SearchEntry(Search):
         
     def search (self, *ignore):
         """
-        Performs the abstract search, and handles the case
+        Performs the search, and handles the case
         when more than one object is found.
         """
         self.doSearch()
@@ -196,7 +206,6 @@ class SearchEntry(Search):
         else:
             self.onAction()
         return len(ans)
-    action = search
 
     def selected(self, *ignore):
         """

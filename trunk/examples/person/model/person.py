@@ -41,7 +41,7 @@ class Person(Model):
         return "Person(name=%r, surname=%r, addresses=%r)" \
                % (self.name, self.surname, self.addresses)
 
-    def search(cls, trans, **values):
+    def values(cls, trans, **values):
         name, surname = values.values()[:2]
         ans = []
 
@@ -62,8 +62,7 @@ class Person(Model):
                 ans.append(i)
 
         return ans
-    search = classmethod(search)
-    values = search
+    values = classmethod(values)
 
 
 class Address(Model):

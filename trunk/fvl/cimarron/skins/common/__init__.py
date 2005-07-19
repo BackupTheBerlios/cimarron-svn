@@ -398,8 +398,6 @@ class Control(Widget):
         self.target = target
         self.attribute = attribute
         self.value = value
-        if value is None and target is not None:
-            self.newTarget()
         self.onAction = onAction
 
     def targetValue(self):
@@ -415,6 +413,9 @@ class Control(Widget):
     def refresh(self):
         """
         Set the L{Control}'s value from its target.
+
+        It also must display this change in the UI, so that's why it is
+        commonly overriden.
         """
         self.value = self.targetValue
 

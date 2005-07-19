@@ -65,8 +65,8 @@ class Grid(ColumnAwareXmlMixin, Controller):
         # make pylint (more like crud puppy now) happy
         self._tvdata = None
         self._tvdatalen = 0
-        # pylint will be ignored on these.
-        # they're set to the proper values elsewhere
+        # pylint must be ignored on these.
+        # they're set to the proper values elsewhere.
         # self._columns = []
         # self._dataspec = None
         # self._tvcolumns = None
@@ -77,6 +77,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
         #     self.value = []
         # this was not done because it was initializing
         # is this still true?
+        # if not, there's a bug.
         self.refresh()
 
     def attributesToConnect(cls):
