@@ -392,3 +392,54 @@ otro objeto.
 [1] Asuminedo que es el nombre del atributo correcto.
 
 [2] En realidad, muy probablemente sea un Controller.
+
+
+newtarget(), commitValue() y refresh()
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+La relacion anterior no es automatica. Es decir, por ejemplo, si
+cambio el valor del atributo value, ese cambio no se refleja en el
+target. Esto se debe a que... . Por ello, hay funciones especificas
+para el sincronizado de estos tres atributos y el user interface.
+
+El mas comunmente encontrado en otros frameworks de interfaz de
+usuario es refresh(). Este metodo actualiza el atributo value a
+partir de target y attribute y refresca el user interface.
+
+newTarget([target]) actualiza el valor del atributo target con el
+valor pasado (en caso de que fuera provisto) y llama a refresh(), por
+lo que el atributo value y el UI son actualizados tambien.
+
+El ultimo, commitValue([value]), actualiza el atributo value con el
+valor provisto y lo propaga al target adecuadamente segun lo descripto
+en la seccion anterior.
+
+Bien, ya sabemos que hacen, ahora veamos como usarlos. Normalmente el
+mas utilizado es newTarget(). Este se utiliza cada vez que queramos
+cambiar el target de un Control y lograr que este cambio llegue hasta
+el usuario. Por ejemplo, en una pantalla que nos permite buscar un
+objeto y editarlo, una vez que el usuario selecciona un objeto del
+resultado de la busqueda para su edicion, se deberia llamar al
+newTarget() del editor:
+
+
+class EditSomething:
+    ...
+    def userSelects(self, control):
+        # el control tiene el valor que necesitamos.
+        self.editor.newTarget(control.value)
+
+
+Ademas, suponiendo que esta ventana mantuviera en su propio value el
+objeto que esta siendo editado, y que podria tener su propio target y
+attribute, tambien seria adecuado llamar a commitValue():
+
+
+class EditSomething:
+    ...
+    def userSelects(self, control):
+        # el control tiene el valor que necesitamos.
+        self.editor.newTarget(control.value)
+        self.commitValue(control.value)
+
+
