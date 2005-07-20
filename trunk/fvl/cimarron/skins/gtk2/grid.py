@@ -98,20 +98,16 @@ class Grid(ColumnAwareXmlMixin, Controller):
             # i don't find a socking way to tell the focusing to skip
             # readOnly columns.
             (self._tvcolumns, self._dataspec) = \
-                zip(*[ (gtk.TreeViewColumn(column.name), str)
+                zip(*[ (gtk.TreeViewColumn(column.name),
+                        column.entry._cellDataType)
                        for column in columns ])
 
             # add the columns and attrs
-            for i in xrange (len(columns)):
-                column = self._tvcolumns[i]
-                crt = gtk.CellRendererText()
-                # editable
-                if not self._columns[i].readOnly:
-                    crt.set_property('editable', True)
-                    crt.connect('edited', self._cell_edited, i)
-                column.pack_start(crt, True)
-                column.add_attribute(crt, 'text', i)
-                self._tv.append_column(column)
+            for i, dataColumn in enumerate(columns):
+                viewColumn = self._tvcolumns[i]
+                dataColumn.entry._setupCell(self, dataColumn, viewColumn, i)
+                self._tv.append_column(viewColumn)
+
     def _get_columns(self):
         """
         Returns the L{Grid}'s columns.
@@ -146,13 +142,17 @@ class Grid(ColumnAwareXmlMixin, Controller):
                      """The index of the object currently selected.
                      If no object is selected, it is None.""")
 
-    def _cell_edited(self, cell, path, text, colNo, *ignore):
+    def _cell_toggled(self, cell, path, colNo, *ignore):
+        newVal = not self._tvdata[path][colNo]
+        return self._cell_edited(cell, path, newVal, colNo)
+
+    def _cell_edited(self, cell, path, newVal, colNo, *ignore):
         """
         A cell has been edited: keep the models in sync.
         """
         attribute = self.columns[colNo].attribute
         # modify the ListStore model...
-        self._tvdata[path][colNo] = text
+        self._tvdata[path][colNo] = newVal
         # ... and our model
         value = self.value
         # print `value`, `path`
@@ -163,7 +163,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
             # to give back up that row.
             value = self.cls()
             self.value.append(value)
-        value.setattr(attribute, text)
+        value.setattr(attribute, newVal)
             
         # coming soon: our models will (should) suport the generic TreeModel
         # protocol. Also: if write() returns false, the entry flashes and
@@ -245,7 +245,8 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
         self._columns = columns
         # build the tv columns and the data types tuple
         (self._tvcolumns, self._dataspec) = \
-            zip(*[ (gtk.TreeViewColumn(column.name), str)
+            zip(*[ (gtk.TreeViewColumn(column.name),
+                    column.entry._cellDataType)
                    for column in columns ])
         self.data = data
 
@@ -255,12 +256,11 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
         self._widget.add(self._tv)
 
         # add the columns and attrs
-        for i in xrange (len(columns)):
-            c = self._tvcolumns[i]
-            crt = gtk.CellRendererText()
-            c.pack_start(crt, True)
-            c.add_attribute(crt, 'text', i)
-            self._tv.append_column(c)
+        for i, dataColumn in enumerate(columns):
+            viewColumn = self._tvcolumns[i]
+            dataColumn.entry._setupCell(self, dataColumn, viewColumn, i,
+                                        readOnly=True)
+            self._tv.append_column(viewColumn)
 
         self._tv.connect('key-release-event', self._keyreleased)
         self._tv.connect('cursor_changed', self._cursor_changed)

@@ -28,6 +28,7 @@ import logging
 logger = logging.getLogger('fvl.cimarron.skins.gtk2.control')
 
 import gtk
+import gobject
 
 from fvl.cimarron.skins.gtk2.mixin import GtkFocusableMixin
 from fvl.cimarron.skins.common import Control, Unknown
@@ -81,6 +82,15 @@ class Checkbox(Button):
         self._widget = gtk.CheckButton()
         super(Checkbox, self).__init__(**kwargs)
         self.checked = checked
+    _cellDataType = gobject.TYPE_BOOLEAN
+    def _setupCell(cls, grid, dataColumn, viewColumn, index, readOnly=False):
+        renderer = gtk.CellRendererToggle()
+        if not (readOnly or dataColumn.readOnly):
+            renderer.set_property('activatable', True)
+            renderer.connect('toggled', grid._cell_toggled, index)
+        viewColumn.pack_start(renderer, True)
+        viewColumn.add_attribute(renderer, 'active', index)
+    _setupCell = classmethod(_setupCell)
     def _get_checked(self):
         """
         Get whether the checkbox is checked.
@@ -105,6 +115,16 @@ class Entry(GtkFocusableMixin, Control):
         self._widget.connect ('activate', self._activate)
         self._widget.connect ('key-release-event', self._keyreleased)
         self.delegates.append (self)
+
+    _cellDataType = gobject.TYPE_STRING
+    def _setupCell(cls, grid, dataColumn, viewColumn, index, readOnly=False):
+        renderer = gtk.CellRendererText()
+        if not (readOnly or dataColumn.readOnly):
+            renderer.set_property('editable', True)
+            renderer.connect('edited', grid._cell_edited, index)
+        viewColumn.pack_start(renderer, True)
+        viewColumn.add_attribute(renderer, 'text', index)
+    _setupCell = classmethod(_setupCell)
 
     def _get_value (self):
         """
