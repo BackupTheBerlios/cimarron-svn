@@ -23,19 +23,19 @@ from fvl import cimarron
 from testCommon import abstractTestControl
 from model.person import Person
 
-__all__=('TestSearch',)
+__all__=('TestSearchEntry',)
 
-class TestSearch(abstractTestControl):
+class TestSearchEntry(abstractTestControl):
     def setUp(self):
-        super (TestSearch, self).setUp()
+        super (TestSearchEntry, self).setUp()
         self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
-        columns = (
+        self.columns = (
             cimarron.skin.Column(name='Nombre', attribute='name'),
             cimarron.skin.Column(name='Apellido', attribute='surname'),
             )
         self.widget = cimarron.skin.SearchEntry(
             parent = self.parent,
-            columns = columns,
+            columns = self.columns,
             searcher = Person,
             cls = Person,
             )
@@ -49,26 +49,20 @@ class TestSearch(abstractTestControl):
         self.setUpControl(target=self.data[0], attr=None)
 
     def testNoneInEmptyFound(self):
-        # here we 'plant' the data, but real Search's will fetch its own data
-        # self.widget.data = []
         Person.__values__ = []
         self.widget.search()
         self.assertEqual(self.widget.value, None)
 
     def testNoneMatchesFound(self):
-        # here we 'plant' the data, but real Search's will fetch its own data
-        # self.widget.data = self.data
         Person.__values__ = self.data
         searchingValues = (
             {'name':'martin', 'surname':''},
             {'name':'', 'surname':'rezk'},
             )
 
-        for i in xrange (len(searchingValues)):
-            j = 0
-            for k in searchingValues[i].keys():
-                self.widget.entries[j].value = searchingValues[i][k]
-                j =+ 1
+        for index, value in enumerate(searchingValues):
+            for j, key in enumerate(searchingValues[index].keys()):
+                self.widget.entries[j].value = searchingValues[index][key]
             self.widget.search()
             self.assertEqual(self.widget.value, None)
 
@@ -84,14 +78,20 @@ class TestSearch(abstractTestControl):
             {'name':'p', 'surname':''},
             {'name':'', 'surname':'da'},
             )
-        for i in xrange (len(searchingValues)):
-            j = 0
-            for k in searchingValues[i].keys():
-                self.widget.entries[j].value = searchingValues[i][k]
-                j += 1
+        for index, value in enumerate(searchingValues):
+            for j, key in enumerate(value.keys()):
+                self.widget.entries[j].value = value[key]
+                
             self.widget.search()
-            self.assertEqual(self.widget.value, self.data[i/2])
+            
+            # correct value
+            self.assertEqual(self.widget.value, self.data[index/2])
+            for j, column in enumerate(self.columns):
+                # correct displayed values
+                self.assertEqual(self.widget.entries[j].value, self.widget.value.getattr(column.attribute))
 
     def testOnAction(self):
         self.widget.data = self.data
-        super (TestSearch, self).testOnAction()
+        super (TestSearchEntry, self).testOnAction()
+        
+    

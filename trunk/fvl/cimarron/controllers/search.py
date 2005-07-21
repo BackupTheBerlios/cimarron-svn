@@ -26,24 +26,22 @@ __revision__ = int('$Rev$'[5:-1])
 import logging
 
 from fvl import cimarron
-from fvl.cimarron.controllers.base import Controller
+from fvl.cimarron.controllers.base import Controller, WindowController
 from fvl.cimarron.controllers.column import ColumnAwareXmlMixin
 
 logger = logging.getLogger('fvl.cimarron.controllers.search')
 # logger.setLevel(logging.DEBUG)
 
-class SelectionWindow(Controller):
+class SelectionWindow(WindowController):
     """
     Not public. Please Ignore :)
-
-    XXX: why isn't this inheriting from WindowController?
     """
     def __init__(self, columns=None, **kwargs):
         if columns is None:
             columns = []
-        super(SelectionWindow, self).__init__(**kwargs)
-        self.win = cimarron.skin.Window(parent=self.parent,
-                                       title='Select', size=(30, 5))
+        super(SelectionWindow, self).__init__(parent=self.parent,
+                                              title='Select', size=(30, 5),
+                                              **kwargs)
         vbox = cimarron.skin.VBox(parent=self.win)
         self.grid = cimarron.skin.SelectionGrid(parent=vbox, columns=columns,
                                                onAction=self.onOk)
@@ -53,17 +51,12 @@ class SelectionWindow(Controller):
         self.cancel = cimarron.skin.Button(parent=hbox, label='Cancel',
                                           onAction=self.onCancel)
 
-    def show(self):
-        # FIXME: explain this assignment to value from within show
-        self.value = None
-        self.win.show()
-
     def onOk(self, *ignore):
         """
         onAction for 'Ok' button.
         """
         self.value = self.grid.value
-        self.win.hide()
+        self.hide()
         self.onAction()
 
     def onCancel(self, *ignore):
@@ -71,11 +64,8 @@ class SelectionWindow(Controller):
         onAction for 'Cancel' button
         """
         self.value = None
-        self.win.hide()
+        self.hide()
         self.onAction()
-
-    def hide(self):
-        self.win.hide()
 
     def refresh(self):
         self.grid.refresh()
@@ -126,14 +116,12 @@ class Search(ColumnAwareXmlMixin, Controller):
     def _set_columns(self, columns):
         logger.debug (`columns`)
         if columns is not None:
-            for c in columns:
+            for column in columns:
                 # build label and entry
-                cimarron.skin.Label(text=c.name+":", parent=self.h)
-                entryConstr = c.entry
-                self.entries.append (entryConstr(
-                    parent = self.h,
-                    onAction = self.search
-                    ))
+                cimarron.skin.Label(text=column.name+":", parent=self.h)
+                entryConstr = column.entry
+                self.entries.append (entryConstr(parent=self.h, onAction=self.search,
+                                                 attribute=column.attribute))
 
             # search button
             b = cimarron.skin.Button(
@@ -162,7 +150,7 @@ class Search(ColumnAwareXmlMixin, Controller):
                 # '' means `don't filter by me'
                 data[c.attribute] = e.value
 
-        # print 'searching', self.searcher, data
+        logger.debug ('searching %r, %r', self.searcher, data)
         self.value = self.searcher.search(self.cls, **data)
         return len(self.value)
     def search (self, *ignore):
@@ -178,7 +166,11 @@ class SearchEntry(Search):
         logger.debug (`columns`)
         super(SearchEntry,self)._set_columns(columns)
         if columns is not None:
-            # build the selection window
+            # build the selection window here because:
+            # a) we can't build it w/o columns (well, we *could*,
+            # but then we'll needmore API just for this case) and
+            # b) we must change the columns in the SelectionWindow
+            # when new Columns are supplied.
             self.selwin= SelectionWindow (columns= columns,
                                           onAction= self.selected,)
     def _get_columns(self):
@@ -192,18 +184,20 @@ class SearchEntry(Search):
         """
         self.doSearch()
 
-        # print 'searching', self.searcher, data
         ans = self.value
         if len(ans)==0:
-            self.value = None
+            self.commitValue(None)
         elif len(ans)==1:
-            self.value = ans[0]
+            self.commitValue(ans[0])
+            self.refresh()
         if len(ans)>1:
-            # select
+            # too much information, select one please.
             self.selwin.grid.data = ans
+            # this `comes back` in selected() (see below).
             self.selwin.show()
         else:
             self.onAction()
+        logger.debug(`self.value`)
         return len(ans)
 
     def selected(self, *ignore):
@@ -211,21 +205,20 @@ class SearchEntry(Search):
         Callback for the selection window when finally
         one object is selected.
         """
-        self.value = self.selwin.value
+        self.commitValue(self.selwin.value)
+        self.refresh()
         self.selwin.hide()
         self.onAction()
+        logger.debug(`self.value`)
 
     def refresh(self):
         """
         Show the value.
         """
+        # traceback.print_stack()
+        logger.debug(`self.value`)
         super(SearchEntry, self).refresh()
+        logger.debug(`self.value`)
         entries = self.entries
-        if self.value is not None:
-            value_getattr = self.value.getattr
-            columns = self.columns
-            for i in xrange(len(entries)):
-                entries[i].value = value_getattr(columns[i].attribute)
-        else:
-            for i in xrange(len(entries)):
-                entries[i].value = ''
+        for entry in self.entries:
+            entry.newTarget(self.value)

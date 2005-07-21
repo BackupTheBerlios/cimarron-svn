@@ -141,9 +141,9 @@ class WindowController (Controller):
     Is typical that each Window will have an associated Controller.
     Those Controllers must inherit from this class.
     """
-    def __init__ (self, **kwargs):
+    def __init__ (self, title='', size=(-1, -1), **kwargs):
         super(WindowController, self).__init__(**kwargs)
-        self.win = cimarron.skin.Window(parent=self)
+        self.win = cimarron.skin.Window(parent=self, title=title, size=size)
         self.win.delegates.insert(0, self)
 
     def visibleChildren (self):
