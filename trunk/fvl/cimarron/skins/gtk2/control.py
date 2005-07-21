@@ -140,15 +140,23 @@ class Entry(GtkFocusableMixin, Control):
         self._widget.set_text(unicode(value))
     value = property (_get_value, _set_value)
 
+    def _focusOut(self, *ignore):
+        """
+        The widget is about to lose focus.
+
+        If the delegate agrees, go ahead and save the changes.
+        """
+        if self.delegate('will_focus_out'):
+            self.commitValue()
+            self.dirty()
+        return False
+
     def will_focus_out (self, *ignore):
         """
         Called when the focus goes out the Entry.
         Copies the shown value to the value property.
         Do not call directly.
         """
-        # is not the same as _activate ()
-        self.commitValue()
-        self.dirty()
         return Unknown
 
     def _activate(self, widget=None):

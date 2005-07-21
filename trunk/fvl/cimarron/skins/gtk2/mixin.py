@@ -84,7 +84,7 @@ class GtkFocusableMixin(object):
 
     def _focusOut (self, *ignore):
         """
-        The widget has just received focus.
+        The widget is about to lose focus.
         """
         return not self.delegate('will_focus_out')
 
