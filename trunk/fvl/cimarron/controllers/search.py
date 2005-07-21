@@ -28,6 +28,7 @@ import logging
 from fvl import cimarron
 from fvl.cimarron.controllers.base import Controller, WindowController
 from fvl.cimarron.controllers.column import ColumnAwareXmlMixin
+from fvl.cimarron.skins.common import No as DelegateNo
 
 logger = logging.getLogger('fvl.cimarron.controllers.search')
 # logger.setLevel(logging.DEBUG)
@@ -120,8 +121,10 @@ class Search(ColumnAwareXmlMixin, Controller):
                 # build label and entry
                 cimarron.skin.Label(text=column.name+":", parent=self.h)
                 entryConstr = column.entry
-                self.entries.append (entryConstr(parent=self.h, onAction=self.search,
-                                                 attribute=column.attribute))
+                entry = entryConstr(parent=self.h, onAction=self.search,
+                                    attribute=column.attribute)
+                entry.delegates.append (self)
+                self.entries.append (entry)
 
             # search button
             b = cimarron.skin.Button(
@@ -160,6 +163,9 @@ class Search(ColumnAwareXmlMixin, Controller):
         ans = self.doSearch()
         self.onAction()
         return ans
+
+    def will_focus_out(self, *ignore):
+        return DelegateNo
 
 class SearchEntry(Search):
     def _set_columns(self, columns):
