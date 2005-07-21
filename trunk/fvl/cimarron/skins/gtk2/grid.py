@@ -51,6 +51,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
             will be able to edit the existing ones.
         """
         self._widget = self._tv = gtk.TreeView()
+        self._tv.set_rules_hint(True)
         # self.mainWidget = self
         self.columns = columns
         self.cls = cls
@@ -235,6 +236,7 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
             objects, and eventually how to save data back to.
         """
         self._tv = gtk.TreeView()
+        self._tv.set_rules_hint(True)
 
         if columns is None:
             columns = []
