@@ -78,6 +78,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
         # this was not done because it was initializing
         # is this still true?
         # if not, there's a bug.
+        # it *is* true :(
         self.refresh()
 
     def attributesToConnect(cls):
@@ -174,18 +175,16 @@ class Grid(ColumnAwareXmlMixin, Controller):
         """
         A key has been released: the user might be wanting to insert a row...
         """
-        # bugs will come to haunt you at night if you delete this
-        # and don't fix the socking but that is elsewhere
-        # (I whish at least where does he hide, the little frak)
         if self.value is None:
-            self.value = []
-        # conditions that assert we're in the fscking last row of data.
-        valueLen = len(self.value)
+            valueLen = 0
+        else:
+            valueLen = len(self.value)
+        # conditions that assert we're in the last row of data.
         last = self.value is None \
                or valueLen == 0 \
                or self.index == valueLen-1
                
-        # print self.index, `self.value`, last
+        logger.debug("%r %r %r", self.index, self.value, last)
         if key_event.keyval == gtk.keysyms.Down and last and \
                self.cls is not None and self._tvdatalen == valueLen:
             # right conditions; insert a new row in the TreeView
@@ -193,9 +192,9 @@ class Grid(ColumnAwareXmlMixin, Controller):
             self._tvdata.append(['' for j in self.columns])
             self._tvdatalen += 1
             self.index = valueLen
-            # print 'making new', self.index
+            logger.debug('making new %r', self.index)
             
-        # print self._tv.get_cursor()
+        logger.debug(`self._tv.get_cursor()`)
         return False
 
     def refresh(self):
