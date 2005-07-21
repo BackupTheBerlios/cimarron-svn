@@ -473,9 +473,10 @@ class Control(Widget):
         double-clicked it, or selected it, or whatever action means a
         yes-I-mean-this-one.
         """
-        self.commitValue()
-        if self.onAction is not None:
-            self.onAction()
+        if self.delegate('will_activate'):
+            self.commitValue()
+            if self.onAction is not None:
+                self.onAction()
 
     def skelargs(self):
         """

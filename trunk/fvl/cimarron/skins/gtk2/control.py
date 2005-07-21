@@ -115,7 +115,6 @@ class Entry(GtkFocusableMixin, Control):
         self.refresh ()
         self._widget.connect ('activate', self._activate)
         self._widget.connect ('key-release-event', self._keyreleased)
-        self.delegates.append (self)
 
     _cellDataType = gobject.TYPE_STRING
     def _setupCell(cls, grid, dataColumn, viewColumn, index, readOnly=False):
@@ -153,25 +152,6 @@ class Entry(GtkFocusableMixin, Control):
             self.commitValue()
             self.dirty()
         return False
-
-    def will_focus_out (self, *ignore):
-        """
-        Called when the focus goes out the Entry.
-        Copies the shown value to the value property.
-        Do not call directly.
-        """
-        return Unknown
-
-    def _activate(self, widget=None):
-        """
-        Called when <Enter> is hit. 
-        Copies the shown value to the value property.
-        Do not call directly.
-        """
-        if widget is None:
-            widget = self._widget
-        self.value = widget.get_text()
-        super(Entry, self)._activate()
 
     def _keyreleased (self, widget, key_event):
         """
