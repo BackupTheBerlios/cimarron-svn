@@ -38,6 +38,10 @@ class TestEntry(abstractTestControl):
     def testSetValue (self):
         raise NotImplementedError, 'you should subclass testEntry'
 
+    def testEntryNotDirtyJustBecauseEmpty(self):
+        self.widget.commitValue(None)
+        self.assert_(not self.widget.dirty())
+
 #    def testValueFromNone(self):
 #        self.assertRaises(TypeError, self.widget.newTarget, None)
 

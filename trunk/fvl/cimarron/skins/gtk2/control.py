@@ -178,7 +178,7 @@ class Entry(GtkFocusableMixin, Control):
         """
         has the user modified the C{Entry}'s value?
         """
-        dirty = self.targetValue != self._widget.get_text()
+        dirty = self.targetValue != (self._widget.get_text() or self.emptyValue)
         if dirty:
             self._widget.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse('red'))
         else:
