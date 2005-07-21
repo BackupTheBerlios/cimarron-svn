@@ -438,7 +438,7 @@ class Control(Widget):
         """
         if value is not _placeholder:
             self.value = value
-        if self.attribute is not None:
+        if self.attribute is not None and self.target is not None:
             self.target.setattr(self.attribute, self.value)
         else:
             self.target = self.value
