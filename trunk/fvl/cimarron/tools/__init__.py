@@ -58,10 +58,12 @@ def traverse (obj, path):
         elem = path[0]
         try:
             obj = getattr(obj, elem)
-        except AttributeError:
+        except AttributeError, e:
             if callable(obj):
                 return obj(*path)
             else:
+                e.args = ('while traversing %r for %r on the %r path'
+                          % (obj, elem, path), )
                 raise
         del path[0]
     return obj
