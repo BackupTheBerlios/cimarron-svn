@@ -400,7 +400,7 @@ class Control(Widget):
         self.value = value
         self.onAction = onAction
 
-    def targetValue(self):
+    def _targetValue(self):
         """
         Get the value from the target.
         """
@@ -408,7 +408,6 @@ class Control(Widget):
         if self.target is not None and self.attribute is not None:
             value = self.target.getattr(self.attribute)
         return value
-    targetValue = property(targetValue)
 
     def refresh(self):
         """
@@ -417,7 +416,7 @@ class Control(Widget):
         It also must display this change in the UI, so that's why it is
         commonly overriden.
         """
-        self.value = self.targetValue
+        self.value = self._targetValue()
 
     def newTarget (self, target=_placeholder):
         """

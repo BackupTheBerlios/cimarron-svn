@@ -26,6 +26,7 @@ __revision__ = int('$Rev$'[5:-1])
 
 import logging
 logger = logging.getLogger('fvl.cimarron.skins.gtk2.control')
+# logger.setLevel(logging.DEBUG)
 
 import gtk
 import gobject
@@ -138,6 +139,8 @@ class Entry(GtkFocusableMixin, Control):
         if value is None:
             value = ''
         self._widget.set_text(unicode(value))
+        # traceback.print_stack()
+        logger.debug(`value`)
     value = property (_get_value, _set_value)
 
     def _focusOut(self, *ignore):
@@ -186,7 +189,7 @@ class Entry(GtkFocusableMixin, Control):
         """
         has the user modified the C{Entry}'s value?
         """
-        dirty = self.targetValue != (self._widget.get_text() or self.emptyValue)
+        dirty = self._targetValue() != (self._widget.get_text() or self.emptyValue)
         if dirty:
             self._widget.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse('red'))
         else:
