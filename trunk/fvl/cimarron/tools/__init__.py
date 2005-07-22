@@ -53,17 +53,17 @@ def traverse (obj, path):
     Returns the object found by traversing the path
     (as a string) starting from obj.
     """
-    path = path.split('.')
-    while path:
-        elem = path[0]
+    pathList = path.split('.')
+    while pathList:
+        elem = pathList[0]
         try:
             obj = getattr(obj, elem)
         except AttributeError, e:
             if callable(obj):
-                return obj(*path)
+                return obj(*pathList)
             else:
                 e.args = ('while traversing %r for %r on the %r path'
                           % (obj, elem, path), )
                 raise
-        del path[0]
+        del pathList[0]
     return obj
