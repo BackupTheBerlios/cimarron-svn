@@ -61,7 +61,7 @@ class TestSearchEntry(abstractTestControl):
             )
 
         for index, value in enumerate(searchingValues):
-            for j, key in enumerate(searchingValues[index].keys()):
+            for j, key in enumerate(['name', 'surname']):
                 self.widget.entries[j].value = searchingValues[index][key]
             self.widget.search()
             self.assertEqual(self.widget.value, None)
@@ -79,7 +79,7 @@ class TestSearchEntry(abstractTestControl):
             {'name':'', 'surname':'da'},
             )
         for index, value in enumerate(searchingValues):
-            for j, key in enumerate(value.keys()):
+            for j, key in enumerate(['name', 'surname']):
                 self.widget.entries[j].value = value[key]
                 
             self.widget.search()

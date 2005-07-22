@@ -42,7 +42,8 @@ class Person(Model):
                % (self.name, self.surname, self.addresses)
 
     def values(cls, ignore, **values):
-        name, surname = values.values()[:2]
+        name = values['name']
+        surname = values['surname']
         ans = []
 
         for i in cls.__values__:
@@ -57,7 +58,7 @@ class Person(Model):
                         found = found and surname in i.surname
                     else:
                         found = surname in i.surname
-
+                        
             if found:
                 ans.append(i)
 
@@ -79,8 +80,8 @@ class Address(Model):
 
 
 Person.__values__ = [
-    Person ("Freeman", "Newman",
-            [Address (text="San luis 870"), Address(text="San luis 594 2D")]),
+    Person("Freeman", "Newman",
+           [Address(text="San luis 870"), Address(text="San luis 594 2D")]),
     Person("Roxanne", "Oneal"),
     Person("Ward", "Fischer"),
     Person("Philis", "Eggbert"),

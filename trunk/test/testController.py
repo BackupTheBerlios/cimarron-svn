@@ -32,8 +32,6 @@ __all__ = ('TestFooController',
            'TestBarController',
            'TestApp',
            'TestWindowController',
-           'TestCRUDController',
-           'TestEditor',
            )
 
 def visualTest():
@@ -308,65 +306,3 @@ class TestWindowController (abstractTestVisibility):
 
     def will_hide_2 (self, *ignore):
         self.will_hide_passed= True
-
-
-class TestCRUDController (TestController):
-    def setUp (self):
-        super (TestCRUDController, self).setUp ()
-        self.widget= CRUDController.fromXmlFile ('test/testCrud.xml')
-        self.widget.parent= self.parent= self.app
-        person= Person.__values__[0]
-        self.setUpControl (target= person, attr=None)
-        
-    def testRefresh (self):
-        # self.widget.target= self.target
-        self.assertEqual (self.widget.editors[0].target, self.target)
-        self.assertEqual (self.widget.editors[0].value, self.target)
-        self.assertEqual (self.widget.editors[1].target, self.target)
-        self.assertEqual (self.widget.editors[1].value, self.target.getAddresses ())
-
-    def testSearch (self):
-        # too specific stuff! fix if ui changes!
-        vbox= self.widget.note.children[0]
-        search= vbox.children[1]
-        nameEntry= search.entries[0]
-        surnameEntry= search.entries[1]
-        searchButton= search.h.children[-1]
-        personEditor= self.widget.editors[0]
-        addrEditor= self.widget.editors[1]
-
-        # test them, just in case
-        self.assert_ (isinstance (vbox, cimarron.skin.VBox))
-        self.assert_ (isinstance (search, cimarron.skin.SearchEntry))
-        self.assert_ (isinstance (nameEntry, cimarron.skin.Entry))
-        self.assert_ (isinstance (surnameEntry, cimarron.skin.Entry))
-        self.assert_ (isinstance (searchButton, cimarron.skin.Button))
-        self.assert_ (isinstance (personEditor, cimarron.skin.Editor))
-        self.assert_ (isinstance (addrEditor, cimarron.skin.Editor))
-
-        # back to `normality'
-        nameEntry.commitValue ('Freeman')
-        searchButton.onAction ()
-
-        # tests
-        # print surnameEntry
-        # self.assertEqual (surnameEntry.value, 'Newman')
-        self.assertEqual (personEditor.target, self.target)
-        self.assertEqual (personEditor.value, self.target)
-        self.assertEqual (addrEditor.target, self.target)
-        self.assertEqual (addrEditor.value, getattr (self.target, addrEditor.attribute))
-
-class TestEditor (TestController):
-    def setUp (self):
-        super (TestEditor, self).setUp ()
-        self.parent= cimarron.skin.Window ()
-        self.widget= Editor.fromXmlFile ('test/editor.xml')
-        self.widget.parent= self.parent
-        self.entry= self.widget.entries.children[0]
-        
-        self.setUpControl (attr=None)
-
-    def testRefresh (self):
-        # self.widget.target= self.target
-        self.assertEqual (self.entry.target, self.target)
-        self.assertEqual (self.entry.value, getattr (self.value, self.entry.attribute))

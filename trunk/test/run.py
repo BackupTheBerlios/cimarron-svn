@@ -25,7 +25,7 @@ import libxml2
 libxml2.debugMemory(1)
 
 moduleNames = ['testSkin', 'hello', 'testModel',
-               'testSearch'] #, 'testSkeleton']
+               'testSearch', 'testCrud'] #, 'testSkeleton']
 
 testnames = ('focus-events', 'delegations')
 

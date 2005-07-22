@@ -18,3 +18,15 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+from zope import interface
+
+import fvl.cimarron
+
+class Store(object):
+    interface.implements(fvl.cimarron.interfaces.IStore)
+
+    def save(self):
+        pass
+
+    def discard(self):
+        pass

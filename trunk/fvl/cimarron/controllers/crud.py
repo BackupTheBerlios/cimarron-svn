@@ -20,7 +20,6 @@
 """
 CRUD controllers and related junk.
 """
-
 __revision__ = int('$Rev$'[5:-1])
 
 import logging
@@ -45,7 +44,7 @@ class CRUDController (WindowController):
     
     def __init__ (self, cls=None, searchColumns=None, editorClass=None,
                   filename=None, store=None, **kwargs):
-        from fvl.cimarron.skin import Notebook, VBox, Button, Notebook
+        from fvl.cimarron.skin import Notebook, VBox, Button
 
         self.editors = []
         super(CRUDController, self).__init__(**kwargs)
@@ -178,7 +177,33 @@ class CRUDController (WindowController):
         return (self, attrs, idDict)
     fromXmlObj = classmethod(fromXmlObj)
         
-class Editor (Controller):
+class Editor(Controller):
+    def __init__(self, attributes=None, label='', **kwargs):
+        from fvl.cimarron.skin import VBox, HBox, Button, Label, Entry
+
+        super(Editor, self).__init__(**kwargs)
+        if attributes is None:
+            attributes = []
+
+        # main containers
+        self.vbox = VBox(parent=self)
+        hbox = HBox(parent=self.vbox)
+        self.labels = VBox(parent=hbox)
+        self.entries = VBox(parent=hbox)
+
+        self.label = label
+        for attr in attributes:
+            Label(parent=self.labels, text=attr)
+            # FIX: make if more flexible
+            Entry(parent=self.entries, attribute=attr)
+    
+        # save/discard buttons
+        hbox = HBox(parent=self.vbox, expand=False)
+        save = Button(parent=hbox, label='Save', onAction=self.save)
+        # so tests passes
+        self.mainWidget = save
+        discard = Button (parent=hbox, label='Discard', onAction=self.discard)
+
     def _set_value(self, value):
         self.__value = value
         try:
@@ -193,6 +218,12 @@ class Editor (Controller):
     def _get_value(self):
         return self.__value
     value = property(_get_value, _set_value)
+
+    def _set_label(self, label):
+        self.vbox.label = label
+    def _get_label(self):
+        return self.vbox.label
+    label = property(_get_label, _set_label)
 
     def modifyModel (self, control, *ignore):
         try:
@@ -225,12 +256,6 @@ class Editor (Controller):
         except AttributeError:
             idDict = {}
 
-        # main containers
-        vbox = VBox(parent=self, label=self.label)
-        hbox = HBox(parent=vbox)
-        labels = VBox(parent=hbox)
-        self.entries = VBox(parent=hbox)
-
         # load children
         attrs = {self: cls.attributesToConnect()}
         xmlObj = xmlObj.children
@@ -239,23 +264,15 @@ class Editor (Controller):
                   self.childFromXmlObj(xmlObj)
             if obj is not None:
                 if xmlObj.name == "Label":
-                    obj.parent = labels
+                    obj.parent = self.labels
                 else:
                     obj.parent = self.entries
                     obj.onAction = self.modifyModel
                     obj.delegates.append(self)
-                    attrsInChild[obj] += ['read', 'write']
                 attrs.update(attrsInChild)
             idDict.update(idDictInChild)
             
             xmlObj = xmlObj.next
-
-        # save/discard buttons
-        hbox = HBox(parent=vbox, expand=False)
-        save = Button(parent=hbox, label='Save', onAction=self.save)
-        # so tests passes
-        self.mainWidget = save
-        discard = Button(parent=hbox, label='Discard', onAction=self.discard)
 
         return (self, attrs, idDict)
     fromXmlObj = classmethod(fromXmlObj)
