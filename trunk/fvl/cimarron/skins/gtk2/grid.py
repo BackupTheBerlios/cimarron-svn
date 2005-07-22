@@ -52,7 +52,6 @@ class Grid(ColumnAwareXmlMixin, Controller):
         """
         self._widget = self._tv = gtk.TreeView()
         self._tv.set_rules_hint(True)
-        # self.mainWidget = self
         self.columns = columns
         self.cls = cls
 
@@ -74,13 +73,27 @@ class Grid(ColumnAwareXmlMixin, Controller):
         self.index = None
 
         super(Grid, self).__init__(**kwargs)
-        # if self.value is None:
-        #     self.value = []
-        # this was not done because it was initializing
-        # is this still true?
-        # if not, there's a bug.
-        # it *is* true :(
         self.refresh()
+
+    def _get_value(self):
+        return self._value
+    def _set_value(self, value):
+        self._value = value
+        if len(self.columns)>0:
+            self._tvdata = gtk.ListStore(*self._dataspec)
+        else:
+            self._tvdata = gtk.ListStore(str)
+
+        if value is not None:
+            for i in value:
+                self._tvdata.append([i.getattr(j.attribute)
+                                     for j in self.columns])
+            self._tvdatalen = len(value)
+            self.index = 0
+        else:
+            self.index = None
+        self._tv.set_model(self._tvdata)
+    value = property(_get_value, _set_value)
 
     def attributesToConnect(cls):
         """
@@ -167,10 +180,6 @@ class Grid(ColumnAwareXmlMixin, Controller):
             self.value.append(value)
         value.setattr(attribute, newVal)
             
-        # coming soon: our models will (should) suport the generic TreeModel
-        # protocol. Also: if write() returns false, the entry flashes and
-        # a) rollbacks the value or
-        # b) leaves it with wrong value, so the user can edit it (preferred)
         return False
     def _keyreleased(self, widget, key_event, *ignore):
         """
@@ -197,28 +206,6 @@ class Grid(ColumnAwareXmlMixin, Controller):
             
         logger.debug(`self._tv.get_cursor()`)
         return False
-
-    def refresh(self):
-        """
-        See L{Control.refresh}
-        """
-        super(Grid, self).refresh()
-        if len(self.columns)>0:
-            self._tvdata = gtk.ListStore(*self._dataspec)
-        else:
-            self._tvdata = gtk.ListStore(str)
-
-        # print 'Grid.refresh:', `self.value`, self.columns
-        logger.debug(`self.value`)
-        if self.value is not None:
-            for i in self.value:
-                self._tvdata.append([i.getattr(j.attribute)
-                                     for j in self.columns])
-            self._tvdatalen = len(self.value)
-            self.index = 0
-        else:
-            self.index = None
-        self._tv.set_model(self._tvdata)
 
 
 class SelectionGrid(ColumnAwareXmlMixin, Controller):
