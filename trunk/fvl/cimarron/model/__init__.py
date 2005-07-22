@@ -25,12 +25,16 @@ models that cooperate with cimarrón.
 
 __revision__ = int('$Rev$'[5:-1])
 
+from zope import interface
+
 from fvl.cimarron.tools import traverse
+from fvl.cimarron.interfaces import IModel
 
 class Model(object):
     """
     Model provides a very basic model for cimarron.
     """
+    interface.implements(IModel)
     def getattr(self, attr):
         """
         Find the attribute referred to by 'attr', and return it.

@@ -32,8 +32,10 @@ import operator
 import logging
 
 import libxml2
+from zope import interface
 
 from fvl.cimarron.tools import traverse
+from fvl.cimarron.interfaces import IModel
 from fvl import cimarron
 
 __all__ = ('XmlMixin', 'Widget', 'Container', 'Control',
@@ -405,7 +407,8 @@ class Control(Widget):
         Get the value from the target.
         """
         value = self.target
-        if self.target is not None and self.attribute is not None:
+        if self.target is not None and self.attribute is not None \
+               and IModel in interface.providedBy(self.target):
             value = self.target.getattr(self.attribute)
         return value
 
