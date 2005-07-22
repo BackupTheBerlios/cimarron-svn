@@ -73,7 +73,6 @@ class Grid(ColumnAwareXmlMixin, Controller):
         self.index = None
 
         super(Grid, self).__init__(**kwargs)
-        self.refresh()
 
     def _get_value(self):
         return self._value
@@ -91,6 +90,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
             self._tvdatalen = len(value)
             self.index = 0
         else:
+            self._tvdatalen = 0
             self.index = None
         self._tv.set_model(self._tvdata)
     value = property(_get_value, _set_value)
@@ -124,9 +124,6 @@ class Grid(ColumnAwareXmlMixin, Controller):
                 self._tv.append_column(viewColumn)
 
     def _get_columns(self):
-        """
-        Returns the L{Grid}'s columns.
-        """
         return self._columns
     columns = property(_get_columns, _set_columns)
         
@@ -177,7 +174,10 @@ class Grid(ColumnAwareXmlMixin, Controller):
             # we're editing the empty row, so go build an object
             # to give back up that row.
             value = self.cls()
-            self.value.append(value)
+            if self.value is not None:
+                self.value.append(value)
+            else:
+                self.value = [value]
         value.setattr(attribute, newVal)
             
         return False
@@ -206,7 +206,6 @@ class Grid(ColumnAwareXmlMixin, Controller):
             
         logger.debug(`self._tv.get_cursor()`)
         return False
-
 
 class SelectionGrid(ColumnAwareXmlMixin, Controller):
     """
