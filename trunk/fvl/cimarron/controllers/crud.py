@@ -44,9 +44,8 @@ class CRUDController (WindowController):
         return attrs+['cls']
     attributesToConnect = classmethod(attributesToConnect)
     
-    def __init__ (self,
-                  cls=None, searchColumns=None, editorClass=None, filename=None,
-                  **kwargs):
+    def __init__ (self, cls=None, searchColumns=None, editorClass=None,
+                  filename=None, store=None, **kwargs):
         self.editors = []
         super(CRUDController, self).__init__(**kwargs)
         self.note = cimarron.skin.Notebook(parent=self.win)
@@ -59,6 +58,7 @@ class CRUDController (WindowController):
                                          label='New',
                                          expand=False)
         self.cls = cls
+        self.store = store
 
         if searchColumns:
             # add the Search thing
@@ -78,23 +78,34 @@ class CRUDController (WindowController):
             self.mainWidget = modelEditor
 
         # more tabs?
+        # FIXME: complete!
+
+    def _set_value(self, value):
+        self.__value = value
+        for editor in self.editors:
+            editor.newTarget(self.__value)
+    def _get_value(self):
+        return self.__value
+    value = property(_get_value, _set_value)
 
     def _set_cls (self, cls):
-        """
-        Sets the CRUD's 'class'. This is, the callable used to create
-        a new object of the type the CRUD is editing.
-        """
         if cls is not None:
             def onAction(control, *ignore):
                 return self.newModel(control, cls, *ignore)
             self.new.onAction = onAction
         self._cls = cls
     def _get_cls (self):
-        """
-        Gets the CRUD's 'class'.
-        """
         return self._cls
-    cls = property(_get_cls, _set_cls)
+    cls = property(_get_cls, _set_cls, None, """
+        The CRUD's 'class'. This is, the callable used to create
+        a new object of the type the CRUD is editing.""")
+
+    def _set_store(self, store):
+        self.__store = store
+        for editor in self.editors:
+            editor.store = store
+    def _get_store(self):
+        return self.__store
         
     def newModel(self, control, cls, *ignore):
         """
@@ -110,12 +121,8 @@ class CRUDController (WindowController):
             value = self.search.value
         else:
             value = model
-        # print 'here1'
         self.commitValue(value)
-        self.refresh()
 
-        # print 'CRUD.changeModel', `model`, model is None, \
-        # self.search.value, self.value
         if value is not None:
             self.note.activate(1)
             # and this?
@@ -125,15 +132,8 @@ class CRUDController (WindowController):
         """
         FIXME: wtf?
         """
+        self.store.save()
         self.onAction()
-
-    def refresh (self):
-        """
-        See L{Control.refresh <fvl.cimarron.skins.common.Control.refresh>}
-        """
-        super(CRUDController, self).refresh()
-        for editor in self.editors:
-            editor.newTarget(self.value)
 
     def fromXmlObj (cls, xmlObj, skin):
         """
@@ -165,9 +165,6 @@ class CRUDController (WindowController):
                         obj.onAction = self.save
                         second = False
 
-                # luckily we got rid of those; they would be a PITA
-                # when defining the dtd.
-                # attrsInChild[obj]+= ['read', 'write']
                 attrs.update(attrsInChild)
             idDict.update(idDictInChild)
             xmlObj = xmlObj.next
@@ -184,21 +181,20 @@ class CRUDController (WindowController):
     fromXmlObj = classmethod(fromXmlObj)
         
 class Editor (Controller):
-    def refresh (self, *ignore):
-        super(Editor, self).refresh()
-        # print 'here 4', self.target, self.value
+    def _set_value(self, value):
+        self.__value = value
         try:
             entries = self.entries.children
         except AttributeError, e:
             # the entries are not there yet
-            # print 'ups', e
             pass
         else:
-            value = self.value
+            value = self.__value
             for entry in entries:
-                # print entry, entry.attribute,
                 entry.newTarget (value)
-                # print entry.target, entry.value
+    def _get_value(self):
+        return self.__value
+    value = property(_get_value, _set_value)
 
     def modifyModel (self, control, *ignore):
         try:
