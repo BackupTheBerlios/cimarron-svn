@@ -28,7 +28,6 @@ __revision__ = int('$Rev$'[5:-1])
 
 import logging
 
-from fvl import cimarron
 from fvl.cimarron.skins.common import XmlMixin
 
 logger = logging.getLogger('fvl.cimarron.controllers.column')
@@ -37,7 +36,7 @@ class ColumnAwareXmlMixin(object):
     """
     A Mixin for classes that want to load columns from XML.
     """
-    def fromXmlObj(cls, xmlObj, skin):
+    def fromXmlObj(cls, xmlObj):
         """
         Helper function for loading a Cimarrón app from an xml file. (see
         L{Controller.fromXmlFile}).
@@ -54,7 +53,7 @@ class ColumnAwareXmlMixin(object):
         xmlObj = xmlObj.children
         while xmlObj:
             (obj, attrsInChild, idDictInChild) = \
-                  self.childFromXmlObj(xmlObj, skin)
+                  self.childFromXmlObj(xmlObj)
             if obj is not None:
                 columns.append(obj)
                 attrs.update(attrsInChild)
@@ -82,6 +81,6 @@ class Column(XmlMixin):
         self.name = name
         self.attribute = attribute
         if entry is None:
-            entry = cimarron.skin.Entry
+            from fvl.cimarron.skin import Entry as entry
         self.entry = entry
         self.readOnly = readOnly

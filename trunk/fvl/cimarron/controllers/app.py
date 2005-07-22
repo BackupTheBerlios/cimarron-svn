@@ -25,7 +25,6 @@ __revision__ = int('$Rev$'[5:-1])
 
 import logging
 
-from fvl import cimarron
 from fvl.cimarron.skins.common import Unknown, ForcedYes
 from fvl.cimarron.controllers.base import Controller
 
@@ -62,13 +61,15 @@ class Application(Controller):
           - someone calls C{quit()} and no window opposes
             to the action.
         """
-        cimarron.skin._run()
+        from fvl.cimarron.skin import _run
+        return _run()
 
     def quit(self):
         """
         Terminates the Application.
         """
-        cimarron.skin._quit()
+        from fvl.cimarron.skin import _quit
+        return _quit()
 
     def will_hide(self, window):
         """
@@ -85,7 +86,8 @@ class Application(Controller):
         Add a new timer for the app. When the C{timeout} expires,
         the C{callback} gets called.
         """
-        return cimarron.skin._schedule(timeout, callback, repeat)
+        from fvl.cimarron.skin import _schedule
+        return _schedule(timeout, callback, repeat)
 
     def _concreteParenter (self, child):
         """

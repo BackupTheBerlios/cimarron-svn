@@ -76,18 +76,4 @@ def _config(skin_name=DEFAULT_SKIN_NAME):
     logger.debug('enabling "from fvl.cimarron.skin import Foo"')
     sys.modules['fvl.cimarron.skin'] = skin
 
-class _lazy_skin_module(new.module):
-    """
-    An instance of _lazy_skin_module stands in for the real skin
-    module, and becomes a Borg of the real skin as soon as an unknown
-    attribute is requested (i.e., as soon as __getattr__ is called).
-    """
-    def __getattr__(self, attr):
-        _config()
-        self.__dict__.clear()
-        self.__dict__.update(skin.__dict__)
-        return getattr(skin, attr)
-
-skin = _lazy_skin_module('<lazy>')
-sys.modules['fvl.cimarron.skin'] = skin
-
+_config()

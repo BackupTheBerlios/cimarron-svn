@@ -36,7 +36,6 @@ from zope import interface
 
 from fvl.cimarron.tools import traverse
 from fvl.cimarron.interfaces import IModel
-from fvl import cimarron
 
 __all__ = ('XmlMixin', 'Widget', 'Container', 'Control',
            'ForcedNo', 'No', 'Unknown', 'Yes', 'ForcedYes')
@@ -108,10 +107,11 @@ class XmlMixin (object):
         return []
     attributesToConnect = classmethod (attributesToConnect)
     
-    def fromXmlObj(cls, xmlObj, skin):
+    def fromXmlObj(cls, xmlObj):
         """
         Helper function for loading a Cimarrón app from an xml file. (see
-        L{Controller.fromXmlFile<cimarron.controllers.base.Controller.fromXmlFile>}).
+        L{Controller.fromXmlFile
+        <cimarron.controllers.base.Controller.fromXmlFile>}).
         """
         self = cls()
         self.fromXmlObjProps(xmlObj.properties)
@@ -124,7 +124,7 @@ class XmlMixin (object):
         xmlObj = xmlObj.children
         while xmlObj:
             (obj, attrsInChild, idDictInChild) = \
-                  self.childFromXmlObj(xmlObj, skin)
+                  self.childFromXmlObj(xmlObj)
             if obj is not None:
                 obj.parent = self
                 attrs.update (attrsInChild)
@@ -134,13 +134,14 @@ class XmlMixin (object):
         return (self, attrs, idDict)
     fromXmlObj = classmethod(fromXmlObj)
         
-    def childFromXmlObj (self, xmlObj, skin):
+    def childFromXmlObj (self, xmlObj):
         """
         Load a Cimarrón object child from a libxml2 xmlNode
         """
         obj = (None, None, {})
         if xmlObj.type == 'element':
-            obj = getattr(skin, xmlObj.name).fromXmlObj(xmlObj, skin)
+            from fvl.cimarron import skin
+            obj = getattr(skin, xmlObj.name).fromXmlObj(xmlObj)
         return obj
 
     def fromXmlObjProp(self, prop):
@@ -316,7 +317,8 @@ class Widget(XmlMixin):
         Does the skin-specific magic that `glues' a child with its parent.
         Do not call directly.
         """
-        cimarron.skin._concreteParenter(self, child)
+        from fvl.cimarron import skin
+        skin._concreteParenter(self, child)
 
     def _connectWith (self, other):
         """

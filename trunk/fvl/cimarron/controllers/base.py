@@ -31,7 +31,6 @@ import os
 import libxml2
 import logging
 
-from fvl import cimarron
 from fvl.cimarron.tools import traverse
 from fvl.cimarron.skins.common import Control, Container
 
@@ -54,10 +53,8 @@ class Controller(Control, Container):
         Load a Cimarrón Controller from an xml file.
         """
         if os.path.isfile(filename):
-            (self, attrs, idDict)= cls.fromXmlObj(
-                libxml2.parseFile(filename).getRootElement (),
-                cimarron.skin
-                )
+            root = libxml2.parseFile(filename).getRootElement()
+            (self, attrs, idDict) = cls.fromXmlObj(root)
             self.idDict = idDict
             self._connect(attrs)
             return self
@@ -65,7 +62,7 @@ class Controller(Control, Container):
             raise OSError, "Unable to open file: %r" % filename
     fromXmlFile = classmethod(fromXmlFile)
 
-    def childFromXmlObj(self, xmlObj, skin):
+    def childFromXmlObj(self, xmlObj):
         """
         Load a Cimarron object child from a libxml2 xmlNode
         """
@@ -73,7 +70,7 @@ class Controller(Control, Container):
         if xmlObj.name == 'import':
             obj = self.importFromXmlObj(xmlObj)
         else:
-            obj = super(Controller, self).childFromXmlObj(xmlObj, skin)
+            obj = super(Controller, self).childFromXmlObj(xmlObj)
         return obj
 
     def importFromXmlObj(self, xmlObj):
@@ -143,7 +140,8 @@ class WindowController (Controller):
     """
     def __init__ (self, title='', size=(-1, -1), **kwargs):
         super(WindowController, self).__init__(**kwargs)
-        self.win = cimarron.skin.Window(parent=self, title=title, size=size)
+        from fvl.cimarron.skin import Window
+        self.win = Window(parent=self, title=title, size=size)
         self.win.delegates.insert(0, self)
 
     def visibleChildren (self):

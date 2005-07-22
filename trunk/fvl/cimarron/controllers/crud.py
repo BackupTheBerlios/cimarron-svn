@@ -25,7 +25,6 @@ __revision__ = int('$Rev$'[5:-1])
 
 import logging
 
-from fvl import cimarron
 from fvl.cimarron.controllers.base import Controller, WindowController
 
 logger = logging.getLogger('fvl.cimarron.controllers.crud')
@@ -46,25 +45,24 @@ class CRUDController (WindowController):
     
     def __init__ (self, cls=None, searchColumns=None, editorClass=None,
                   filename=None, store=None, **kwargs):
+        from fvl.cimarron.skin import Notebook, VBox, Button, Notebook
+
         self.editors = []
         super(CRUDController, self).__init__(**kwargs)
-        self.note = cimarron.skin.Notebook(parent=self.win)
+        self.note = Notebook(parent=self.win)
 
         # first tab
-        self.firstTab = cimarron.skin.VBox(label='Search')
+        self.firstTab = VBox(label='Search')
         self.firstTab.parent = self.note
 
-        self.new = cimarron.skin.Button (parent=self.firstTab,
-                                         label='New',
-                                         expand=False)
+        self.new = Button(parent=self.firstTab, label='New', expand=False)
         self.cls = cls
         self.store = store
 
         if searchColumns:
             # add the Search thing
-            self.search = cimarron.skin.Search (parent=self.firstTab,
-                                                columns=searchColumns,
-                                                onAction=self.changeModel)
+            self.search = Search(parent=self.firstTab, columns=searchColumns,
+                                 onAction=self.changeModel)
 
         # second tab
         if editorClass is not None:
@@ -135,7 +133,7 @@ class CRUDController (WindowController):
         self.store.save()
         self.onAction()
 
-    def fromXmlObj (cls, xmlObj, skin):
+    def fromXmlObj (cls, xmlObj):
         """
         See L{XmlMixin.fromXmlObj
         <fvl.cimarron.skins.common.XmlMixin.fromXmlObj>}
@@ -150,7 +148,7 @@ class CRUDController (WindowController):
         second = False
         while xmlObj:
             (obj, attrsInChild, idDictInChild) = \
-                  self.childFromXmlObj(xmlObj, skin)
+                  self.childFromXmlObj(xmlObj)
             if obj is not None:
                 if first:
                     obj.parent = self.firstTab
@@ -217,7 +215,9 @@ class Editor (Controller):
     def will_focus_out (self, control, *ignore):
         self.modifyModel (control)
 
-    def fromXmlObj (cls, xmlObj, skin):
+    def fromXmlObj (cls, xmlObj):
+        from fvl.cimarron.skin import HBox, VBox, Button
+        
         self = cls()
         self.fromXmlObjProps(xmlObj.properties)
         try:
@@ -226,17 +226,17 @@ class Editor (Controller):
             idDict = {}
 
         # main containers
-        vbox = cimarron.skin.VBox(parent=self, label=self.label)
-        hbox = cimarron.skin.HBox(parent=vbox)
-        labels = cimarron.skin.VBox(parent=hbox)
-        self.entries = cimarron.skin.VBox(parent=hbox)
+        vbox = VBox(parent=self, label=self.label)
+        hbox = HBox(parent=vbox)
+        labels = VBox(parent=hbox)
+        self.entries = VBox(parent=hbox)
 
         # load children
         attrs = {self: cls.attributesToConnect()}
         xmlObj = xmlObj.children
         while xmlObj:
             (obj, attrsInChild, idDictInChild) = \
-                  self.childFromXmlObj(xmlObj, skin)
+                  self.childFromXmlObj(xmlObj)
             if obj is not None:
                 if xmlObj.name == "Label":
                     obj.parent = labels
@@ -251,15 +251,11 @@ class Editor (Controller):
             xmlObj = xmlObj.next
 
         # save/discard buttons
-        hbox = cimarron.skin.HBox(parent=vbox, expand=False)
-        save = cimarron.skin.Button(parent=hbox,
-                                    label='Save',
-                                    onAction=self.save)
+        hbox = HBox(parent=vbox, expand=False)
+        save = Button(parent=hbox, label='Save', onAction=self.save)
         # so tests passes
         self.mainWidget = save
-        discard = cimarron.skin.Button (parent=hbox,
-                                        label='Discard',
-                                        onAction=self.discard)
+        discard = Button(parent=hbox, label='Discard', onAction=self.discard)
 
         return (self, attrs, idDict)
     fromXmlObj = classmethod(fromXmlObj)

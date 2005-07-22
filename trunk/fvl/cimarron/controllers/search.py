@@ -25,7 +25,6 @@ __revision__ = int('$Rev$'[5:-1])
 
 import logging
 
-from fvl import cimarron
 from fvl.cimarron.controllers.base import Controller, WindowController
 from fvl.cimarron.controllers.column import ColumnAwareXmlMixin
 from fvl.cimarron.skins.common import No as DelegateNo
@@ -38,19 +37,21 @@ class SelectionWindow(WindowController):
     Not public. Please Ignore :)
     """
     def __init__(self, columns=None, **kwargs):
+        from fvl.cimarron import skin
+        
         if columns is None:
             columns = []
         super(SelectionWindow, self).__init__(parent=self.parent,
                                               title='Select', size=(30, 5),
                                               **kwargs)
-        vbox = cimarron.skin.VBox(parent=self.win)
-        self.grid = cimarron.skin.SelectionGrid(parent=vbox, columns=columns,
-                                               onAction=self.onOk)
-        hbox = cimarron.skin.HBox(parent=vbox, expand=False)
-        self.ok = cimarron.skin.Button(parent=hbox, label='Ok',
-                                      onAction=self.onOk)
-        self.cancel = cimarron.skin.Button(parent=hbox, label='Cancel',
-                                          onAction=self.onCancel)
+        vbox = skin.VBox(parent=self.win)
+        self.grid = skin.SelectionGrid(parent=vbox, columns=columns,
+                                       onAction=self.onOk)
+        hbox = skin.HBox(parent=vbox, expand=False)
+        self.ok = skin.Button(parent=hbox, label='Ok',
+                              onAction=self.onOk)
+        self.cancel = skin.Button(parent=hbox, label='Cancel',
+                                  onAction=self.onCancel)
 
     def onOk(self, *ignore):
         """
@@ -106,9 +107,11 @@ class Search(ColumnAwareXmlMixin, Controller):
 
         @param cls: The class that we'll want to look for with C{searcher}.
         """
+        from fvl.cimarron.skin import HBox
+
         super(Search, self).__init__(**kwargs)
         self.entries = []
-        self.h = cimarron.skin.HBox(parent=self, expand=False)
+        self.h = HBox(parent=self, expand=False)
         self.columns = columns
         self.value = None
         self.searcher = searcher
@@ -117,9 +120,10 @@ class Search(ColumnAwareXmlMixin, Controller):
     def _set_columns(self, columns):
         logger.debug (`columns`)
         if columns is not None:
+            from fvl.cimarron.skin import Label, Button
             for column in columns:
                 # build label and entry
-                cimarron.skin.Label(text=column.name+":", parent=self.h)
+                Label(text=column.name+":", parent=self.h)
                 entryConstr = column.entry
                 entry = entryConstr(parent=self.h, onAction=self.search,
                                     attribute=column.attribute)
@@ -127,11 +131,7 @@ class Search(ColumnAwareXmlMixin, Controller):
                 self.entries.append (entry)
 
             # search button
-            b = cimarron.skin.Button(
-                parent = self.h,
-                label = 'Search!',
-                onAction = self.search,
-                )
+            b = Button(parent=self.h, label='Search!', onAction=self.search)
             
             # the widget that fires the action.
             self.mainWidget = b
