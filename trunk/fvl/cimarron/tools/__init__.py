@@ -62,8 +62,8 @@ def traverse (obj, path):
             if callable(obj):
                 return obj(*pathList)
             else:
-                e.args = ('while traversing %r for %r on the %r path'
-                          % (obj, elem, path), )
+                e.args = ('while traversing %r for %r on the %r path (%r left)'
+                          % (obj, elem, path, pathList), )
                 raise
         del pathList[0]
     return obj
