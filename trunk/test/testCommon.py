@@ -31,6 +31,21 @@ class abstractTestBasic(unittest.TestCase, object):
         super (abstractTestBasic, self).setUp ()
     def testSkinArgv(self):
         self.assertEqual(cimarron.skin.__name__, 'fvl.cimarron.skins.gtk2')
+    def testSimpleSubclass(self):
+        """
+        One of the ideas of cimarron is that we should be able to
+        subclass anything, to specilize anything. Here is a first go
+        at that.
+        """
+        aClass = type(self.widget)
+        otherClass = type('subClassOf' + aClass.__name__, (aClass, ), {})
+        app = cimarron.skin.Application()
+        if issubclass(aClass, cimarron.skin.Window):
+            window = otherClass(parent=app)
+        else:
+            window = cimarron.skin.Window(parent=app)
+            otherWidget = otherClass(parent=window)
+        window.show()
     def tearDown(self):
         self.app.hide()
         self.app.quit()
