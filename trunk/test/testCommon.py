@@ -203,7 +203,7 @@ class abstractTestControl(abstractTestWidget):
         # erroring) would be cool
         self.widget.dirty()
 
-    def testForBug(self):
+    def testForBugA(self):
         self.widget.attribute = 'foo'
         self.widget.newTarget(None)
         # this is sneaky: we use a list so that multivalued Controls
@@ -213,3 +213,10 @@ class abstractTestControl(abstractTestWidget):
         # :)
         self.widget.commitValue([])
         self.widget.refresh()
+
+    def testForBugB(self):
+        self.widget.attribute = 'foo'
+        self.widget.newTarget(None)
+        # sneaky (see testForBugA)
+        self.widget.commitValue([])
+        self.widget.commitValue([])
