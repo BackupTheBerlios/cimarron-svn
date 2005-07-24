@@ -45,7 +45,7 @@ class Button(GtkFocusableMixin, Control):
         """
         @param label: text that is shown in the middle of the button.
         """
-        if not '_widget' in self.__dict__:
+        if '_widget' not in self.__dict__:
             self._widget = gtk.Button()
             self._widget.set_use_underline(True)
         super(Button, self).__init__(**kwargs)
@@ -80,7 +80,8 @@ class Checkbox(Button):
     A Control that represents a boolean value.
     """
     def __init__(self, checked=False, **kwargs):
-        self._widget = gtk.CheckButton()
+        if '_widget' not in self.__dict__:
+            self._widget = gtk.CheckButton()
         super(Checkbox, self).__init__(**kwargs)
         self.checked = checked
     _cellDataType = gobject.TYPE_BOOLEAN
@@ -109,8 +110,9 @@ class Entry(GtkFocusableMixin, Control):
     The simplest text input control.
     """
     def __init__(self, emptyValue=None, **kwargs):
+        if '_widget' not in self.__dict__:
+            self._widget = gtk.Entry()
         self.emptyValue = emptyValue
-        self._widget = gtk.Entry()
         super(Entry, self).__init__(**kwargs)
         self.refresh ()
         self._widget.connect ('activate', self._activate)

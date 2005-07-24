@@ -37,7 +37,8 @@ class VBox(Container):
     will be placed one on top of the other.
     """
     def __init__ (self, **kwargs):
-        self._widget = gtk.VBox()
+        if '_widget' not in self.__dict__:
+            self._widget = gtk.VBox()
         # self._widget.set_border_width (5)
         self._widget.set_spacing (5)
         super(VBox, self).__init__(**kwargs)
@@ -48,7 +49,8 @@ class HBox(Container):
     will be placed from left to right.
     """
     def __init__ (self, **kwargs):
-        self._widget = gtk.HBox()
+        if '_widget' not in self.__dict__:
+            self._widget = gtk.HBox()
         # self._widget.set_border_width (5)
         self._widget.set_spacing(5)
         super(HBox, self).__init__(**kwargs)
@@ -59,7 +61,8 @@ class Notebook (Container):
     only one of them is shown at any given time.
     """
     def __init__ (self, **kwargs):
-        self._widget = gtk.Notebook()
+        if '_widget' not in self.__dict__:
+            self._widget = gtk.Notebook()
         super(Notebook, self).__init__(**kwargs)
         self._widget.connect('change-current-page', self.__change_page)
 

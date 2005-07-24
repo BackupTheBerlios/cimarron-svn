@@ -40,7 +40,8 @@ class Label(Widget):
         """
         @param text: The text that will be displayed.
         """
-        self._widget = gtk.Label()
+        if '_widget' not in self.__dict__:
+            self._widget = gtk.Label()
         super(Label, self).__init__(**kwargs)
         self.text = text
 
@@ -68,7 +69,8 @@ class Image(Widget):
         """
         @param filename: The name of the file that contains the image.
         """
-        self._widget = gtk.Image()
+        if '_widget' not in self.__dict__:
+            self._widget = gtk.Image()
         super(Image, self).__init__(**kwargs)
         self.load(filename)
 

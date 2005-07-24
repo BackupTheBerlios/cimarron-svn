@@ -31,6 +31,28 @@ class abstractTestBasic(unittest.TestCase, object):
         super (abstractTestBasic, self).setUp ()
     def testSkinArgv(self):
         self.assertEqual(cimarron.skin.__name__, 'fvl.cimarron.skins.gtk2')
+    def testWeakestLiskov(self):
+        """
+        Test that we can actually create (instances of) subclasses of
+        our widgets.
+        """
+        widgetClass = type(self.widget)
+        subclass = type('Subclass', (widgetClass, ), {})
+        subclass()
+    def testWeakLiskov(self):
+        """
+        Test that we can create subclasses of our widgets, whose
+        concrete widgets are themselves subclasses of the original.
+        """
+        oldClass = type(self.widget._widget)
+        concreteClass = type('ConcreteSublassOf' + oldClass.__name__,
+                             (oldClass, ), {})
+        class Subclass(type(self.widget)):
+            def __init__(s, *a, **kw):
+                s._widget = concreteClass()
+                super(Subclass, s).__init__(*a, **kw)
+        other = Subclass()
+        self.assertEqual(type(other._widget).__name__[:17], 'ConcreteSublassOf')
     def tearDown(self):
         self.app.hide()
         self.app.quit()

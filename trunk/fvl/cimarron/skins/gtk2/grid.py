@@ -50,7 +50,9 @@ class Grid(ColumnAwareXmlMixin, Controller):
             the grid won't be able to create more objects, but still
             will be able to edit the existing ones.
         """
-        self._widget = self._tv = gtk.TreeView()
+        if '_widget' not in self.__dict__:
+            self._widget = gtk.TreeView()
+        self._tv = self._widget
         self._tv.set_rules_hint(True)
         self.columns = columns
         self.cls = cls
@@ -241,9 +243,10 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
         self.data = data
 
         # put the TreeView in a scrolled window
-        self._widget = gtk.ScrolledWindow()
-        self._widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
-        self._widget.add(self._tv)
+        if '_widget' not in self.__dict__:
+            self._widget = gtk.ScrolledWindow()
+            self._widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
+            self._widget.add(self._tv)
 
         # add the columns and attrs
         for i, dataColumn in enumerate(columns):
