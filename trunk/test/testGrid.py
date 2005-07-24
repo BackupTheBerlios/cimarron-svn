@@ -28,11 +28,22 @@ from fvl.cimarron.model import Model
 
 from testCommon import abstractTestControl
 
-__all__ = ('TestSelectionGrid', 'TestGrid')
+__all__ = ('TestSelectionGrid', 'TestGrid', 'TestGridInit')
 
 class DummyTarget(Model):
     def __init__(self, dummy):
         self.dummy = dummy
+
+class TestGridInit(unittest.TestCase):
+    """
+    Test we can create empty Grids
+    """
+    def testGrid(self):
+        grid = Grid()
+        self.assertEqual(list(grid.columns), [])
+    def testSelectionGrid(self):
+        grid = SelectionGrid()
+        self.assertEqual(list(grid.data), [])
 
 class TestGrid(abstractTestControl):
     def setUp(self):

@@ -231,10 +231,13 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
 
         self._columns = columns
         # build the tv columns and the data types tuple
-        (self._tvcolumns, self._dataspec) = \
-            zip(*[ (gtk.TreeViewColumn(column.name),
-                    column.entry._cellDataType)
-                   for column in columns ])
+        if columns:
+            (self._tvcolumns, self._dataspec) = \
+                              zip(*[ (gtk.TreeViewColumn(column.name),
+                                      column.entry._cellDataType)
+                                     for column in columns ])
+        else:
+            self._tvcolumns = self._dataspec = ()
         self.data = data
 
         # put the TreeView in a scrolled window
@@ -278,8 +281,10 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
         self.refreshFromData()
 	
     def refreshFromData(self):
-        if len(self._columns)>0:
+        if len(self._columns) > 0:
             self._tvdata = gtk.ListStore(*self._dataspec)
+        else:
+            self._tvdata = None
         if self.data is not None:
             for i in self.data:
                 # build a ListStore w/ al the values

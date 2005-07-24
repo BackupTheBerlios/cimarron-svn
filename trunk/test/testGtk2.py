@@ -39,7 +39,7 @@ from testButton import TestButton, TestCheckbox
 from testEntry import TestEntry, TestEntrySomeMore
 from testBox import TestBoxes
 from testNotebook import TestNotebook
-from testGrid import TestSelectionGrid, TestGrid
+from testGrid import TestSelectionGrid, TestGrid, TestGridInit
 
 
 __all__ = ('TestGtkEntry',
@@ -53,6 +53,7 @@ __all__ = ('TestGtkEntry',
            'TestGtkNotebook',
            'TestGtkSelectionGrid',
            'TestGtkGrid',
+           'TestGridInit',
            )
 
 class testGtkParenting (abstractTestWidget):
