@@ -139,7 +139,7 @@ class WindowController (Controller):
     Those Controllers must inherit from this class.
     """
     window = None # override Widget.window property
-    def __init__ (self, title='', size=(-1, -1), **kwargs):
+    def __init__ (self, title='', size=(80, 25), **kwargs):
         super(WindowController, self).__init__(**kwargs)
         from fvl.cimarron.skin import Window
         self.window = Window(parent=self, title=title, size=size)
