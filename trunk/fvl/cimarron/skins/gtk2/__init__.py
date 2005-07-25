@@ -43,6 +43,25 @@ from control import *
 from window import *
 from grid import *
 
+def _splash():
+    _splash_win = win = gtk.Window()
+    win.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_SPLASHSCREEN)
+    win.set_title('Cimarrón splash')
+    win.set_size_request(200, 100)
+    win.set_position(gtk.WIN_POS_CENTER_ALWAYS)
+
+    lbl = gtk.Label()
+    lbl.set_text('Loading...')
+    lbl.set_alignment(1, 1)
+
+    gtk.window_set_auto_startup_notification(False)
+    win.add(lbl)
+    win.show_all()
+    while gtk.events_pending(): gtk.main_iteration()
+    gtk.window_set_auto_startup_notification(True)
+    _splash_win.hide()
+_splash()
+
 def _run():
     """
     Fills the hook for L{Application.run}
