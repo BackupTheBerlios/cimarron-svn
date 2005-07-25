@@ -79,22 +79,26 @@ class Grid(ColumnAwareXmlMixin, Controller):
     def _get_value(self):
         return self._value
     def _set_value(self, value):
-        self._value = value
-        if len(self.columns)>0:
-            self._tvdata = gtk.ListStore(*self._dataspec)
-        else:
-            self._tvdata = gtk.ListStore(str)
+        self.window.disable()
+        try:
+            self._value = value
+            if len(self.columns)>0:
+                self._tvdata = gtk.ListStore(*self._dataspec)
+            else:
+                self._tvdata = gtk.ListStore(str)
 
-        if value is not None:
-            for i in value:
-                self._tvdata.append([i.getattr(j.attribute)
-                                     for j in self.columns])
-            self._tvdatalen = len(value)
-            self.index = 0
-        else:
-            self._tvdatalen = 0
-            self.index = None
-        self._tv.set_model(self._tvdata)
+            if value is not None:
+                for i in value:
+                    self._tvdata.append([i.getattr(j.attribute)
+                                         for j in self.columns])
+                self._tvdatalen = len(value)
+                self.index = 0
+            else:
+                self._tvdatalen = 0
+                self.index = None
+            self._tv.set_model(self._tvdata)
+        finally:
+            self.window.enable()
     value = property(_get_value, _set_value)
 
     def attributesToConnect(cls):

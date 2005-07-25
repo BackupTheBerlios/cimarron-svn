@@ -145,16 +145,20 @@ class Search(ColumnAwareXmlMixin, Controller):
         Performs the abstract search. The result ends up in aSearch.value as a
         list and returns the length of the list.
         """
-        data = {}
-        for i in xrange(len(self.columns)):
-            e = self.entries[i]
-            c = self.columns[i]
-            if e.value != '':
-                # '' means `don't filter by me'
-                data[c.attribute] = e.value
+        self.window.disable()
+        try:
+            data = {}
+            for i in xrange(len(self.columns)):
+                e = self.entries[i]
+                c = self.columns[i]
+                if e.value != '':
+                    # '' means `don't filter by me'
+                    data[c.attribute] = e.value
 
-        logger.debug ('searching %r, %r', self.searcher, data)
-        self.value = self.searcher.search(self.cls, **data)
+            logger.debug ('searching %r, %r', self.searcher, data)
+            self.value = self.searcher.search(self.cls, **data)
+        finally:
+            self.window.enable()
         return len(self.value)
     def search (self, *ignore):
         """

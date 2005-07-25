@@ -134,3 +134,29 @@ class Window(GtkVisibilityMixin, Container):
             height = int(height * cell[1])
         self._widget.set_size_request(width, height)
     size = property(_get_size, _set_size)
+
+    def _define_cursor_window(self):
+        cursor = gtk.gdk.Cursor(gtk.gdk.WATCH)
+        self._cursor_window = gtk.gdk.Window(self._widget.window, -1, -1,
+                                             gtk.gdk.WINDOW_CHILD, 0,
+                                             gtk.gdk.INPUT_ONLY,
+                                             cursor=cursor)
+
+    def disable(self):
+        if self._widget.window is not None:
+            if '_cursor_window' not in self.__dict__:
+                self._define_cursor_window()
+            width = gtk.gdk.screen_width()
+            height = gtk.gdk.screen_height()
+            self._cursor_window.resize(width, height)
+            self._cursor_window.show()
+        self._widget.set_sensitive(False)
+        while gtk.events_pending(): gtk.main_iteration()
+
+    def enable(self):
+        self._widget.set_sensitive(True)
+        if self._widget.window is not None:
+            if '_cursor_window' not in self.__dict__:
+                self._define_cursor_window()
+            self._cursor_window.hide()
+
