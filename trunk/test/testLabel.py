@@ -28,8 +28,8 @@ __all__ = ('TestLabel',
 class TestLabel(abstractTestWidget):
     def setUp(self):
         super(TestLabel, self).setUp()
-        self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
-        self.widget = self.label = cimarron.skin.Label(text='hello', parent=self.win)
+        self.parent = self.window = cimarron.skin.Window(title='Test', parent=self.app)
+        self.widget = self.label = cimarron.skin.Label(text='hello', parent=self.window)
 
     def testLabel(self):
         self.assertEqual(self.label.text, 'hello')
@@ -38,4 +38,4 @@ class TestLabel(abstractTestWidget):
         raise NotImplementedError
         
     def testShow(self):
-        self.win.show()
+        self.window.show()

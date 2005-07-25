@@ -56,7 +56,7 @@ class TestGrid(abstractTestControl):
                    Column(name='Apellido', attribute='surname'),
                    )
 
-        self.parent = self.win = Window(title='Test', parent=self.app)
+        self.parent = self.window = Window(title='Test', parent=self.app)
         self.widget = self.grid = Grid(parent = self.parent,
                                        columns = columns,
                                        cls = Person,
@@ -95,7 +95,7 @@ class TestSelectionGrid(abstractTestControl):
                    Column(name='Apellido', attribute='surname'),
                    )
 
-        self.parent = self.win = Window(title='Test', parent=self.app)
+        self.parent = self.window = Window(title='Test', parent=self.app)
         self.widget = self.grid = SelectionGrid(parent = self.parent,
                                                 columns = columns,
                                                 data = self.list,

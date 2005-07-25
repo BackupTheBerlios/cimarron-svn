@@ -42,6 +42,7 @@ class Window(GtkVisibilityMixin, Container):
     A Window. Duh.
     """
     interface.implements(IWindow)
+    window = None # override Widget.window
     
     def __init__(self, title='', size=(-1, -1), **kwargs):
         """
@@ -54,6 +55,7 @@ class Window(GtkVisibilityMixin, Container):
         self._widget.connect('delete-event', self._delete_callback)
         self.title = title
         self.size = size
+        self.window = self
 
     def _delete_callback(self, *ignore):
         """

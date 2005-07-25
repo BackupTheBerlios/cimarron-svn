@@ -30,8 +30,8 @@ __all__ = ('TestEntrySomeMore',
 class TestEntry(abstractTestControl):
     def setUp(self):
         super(TestEntry, self).setUp()
-        self.win = cimarron.skin.Window(title='Test', parent=self.app)
-        self.parent = cimarron.skin.VBox (parent= self.win)
+        self.window = cimarron.skin.Window(title='Test', parent=self.app)
+        self.parent = cimarron.skin.VBox (parent= self.window)
         self.widget = self.entry = cimarron.skin.Entry(parent=self.parent)
         self.setUpControl()
 
@@ -49,8 +49,8 @@ class TestEntrySomeMore(unittest.TestCase):
     def setUp(self):
         self.target = Country(name='Gergovia')
         self.app = cimarron.skin.Application()
-        self.win = cimarron.skin.Window(title='Test', parent=self.app)
-        self.widget = self.entry = cimarron.skin.Entry(parent=self.win,
+        self.window = cimarron.skin.Window(title='Test', parent=self.app)
+        self.widget = self.entry = cimarron.skin.Entry(parent=self.window,
                                                        target=self.target,
                                                        attribute='name')
     def testNewTargetCalledUponInit(self):

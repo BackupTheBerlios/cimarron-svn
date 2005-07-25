@@ -26,15 +26,15 @@ from testCommon import abstractTestContainer
 
 __all__= ('TestNotebook', )
 
-class TestNotebook (abstractTestContainer):
+class TestNotebook(abstractTestContainer):
     def setUp (self):
-        super (TestNotebook, self).setUp ()
-        self.parent= cimarron.skin.Window (parent= self.app)
-        self.widget= cimarron.skin.Notebook (parent= self.parent)
+        super (TestNotebook, self).setUp()
+        self.parent = self.window = cimarron.skin.Window(parent=self.app)
+        self.widget = cimarron.skin.Notebook(parent=self.parent)
 
-    def testAddChild (self):
-        self.other= cimarron.skin.Entry ()
-        self.other.label= 'first'
-        self.other.parent= self.widget
+    def testAddChild(self):
+        self.other = cimarron.skin.Entry()
+        self.other.label = 'first'
+        self.other.parent = self.widget
 
-        self.assertEqual (True, True)
+        self.assertEqual(True, True)

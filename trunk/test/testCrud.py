@@ -34,7 +34,8 @@ class TestCRUDController (TestController):
     def setUp (self):
         super (TestCRUDController, self).setUp ()
         self.store = Store()
-        self.widget= CRUDController.fromXmlFile ('test/testCrud.xml')
+        self.widget = CRUDController.fromXmlFile ('test/testCrud.xml')
+        self.window = self.widget.window
         self.widget.parent= self.parent= self.app
         self.widget.store = self.store
         person= Person.__values__[0]
@@ -83,7 +84,7 @@ class TestEditor(TestController):
     def setUp(self):
         super (TestEditor, self).setUp()
         self.store = Store()
-        self.parent= cimarron.skin.Window ()
+        self.parent = self.window = cimarron.skin.Window ()
         # self.widget = cimarron.skin.Editor(store=self.store,
         #                                    attributes=['name', 'surname'])
         self.widget= Editor.fromXmlFile ('test/editor.xml')

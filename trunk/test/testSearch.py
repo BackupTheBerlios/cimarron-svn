@@ -28,7 +28,7 @@ __all__=('TestSearchEntry',)
 class TestSearchEntry(abstractTestControl):
     def setUp(self):
         super (TestSearchEntry, self).setUp()
-        self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
+        self.parent = self.window = cimarron.skin.Window(title='Test', parent=self.app)
         self.columns = (
             cimarron.skin.Column(name='Nombre', attribute='name'),
             cimarron.skin.Column(name='Apellido', attribute='surname'),

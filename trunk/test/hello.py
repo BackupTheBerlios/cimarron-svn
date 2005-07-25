@@ -29,19 +29,19 @@ class TestHelloWorld(unittest.TestCase):
     def testSkinArgv(self):
         self.assertEqual(skin.__name__, 'fvl.cimarron.skins.gtk2')
     def testWindow(self):
-        self.win = skin.Window()
+        self.window = skin.Window()
     def testWindowParent(self):
-        self.win = skin.Window(parent=self.app)
-        self.assertEqual(self.app, self.win.parent)
-        self.assertEqual(list(self.app.children), [self.win])
+        self.window = skin.Window(parent=self.app)
+        self.assertEqual(self.app, self.window.parent)
+        self.assertEqual(list(self.app.children), [self.window])
     def testWindowTitle(self):
-        self.win = skin.Window(parent=self.app, title='hello')
-        self.assertEqual(self.win.title, 'hello')
+        self.window = skin.Window(parent=self.app, title='hello')
+        self.assertEqual(self.window.title, 'hello')
     def testLabel(self):
         self.testWindowTitle()
-        self.label = skin.Label(text='Hello, World!', parent=self.win)
+        self.label = skin.Label(text='Hello, World!', parent=self.window)
         self.assertEqual(self.label.text, 'Hello, World!')
-        self.assertEqual(self.win, self.label.parent)
+        self.assertEqual(self.window, self.label.parent)
 
 if __name__ == '__main__':
     unittest.main()

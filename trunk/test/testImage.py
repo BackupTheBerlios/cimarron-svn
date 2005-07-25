@@ -27,8 +27,8 @@ __all__=('TestImage',)
 class TestImage(abstractTestWidget):
     def setUp(self):
         super(TestImage, self).setUp()
-        self.parent = self.win = cimarron.skin.Window(title='Test', parent=self.app)
-        self.widget = self.image = cimarron.skin.Image(filename='./dummy.jpg',parent=self.win) #the method doesn't care if the file exists or it's an image
+        self.parent = self.window = cimarron.skin.Window(title='Test', parent=self.app)
+        self.widget = self.image = cimarron.skin.Image(filename='./dummy.jpg',parent=self.window) #the method doesn't care if the file exists or it's an image
 
     def testSet_from_file(self):
         # what does this test, exactly?
@@ -36,5 +36,5 @@ class TestImage(abstractTestWidget):
         self.assertEqual(setImgResult, None)
 
     def testShow(self):
-        self.win.show()
+        self.window.show()
         #self.app.run()

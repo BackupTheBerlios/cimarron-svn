@@ -134,9 +134,9 @@ class Connection (object):
 class TestFooController(TestController):
     def setUp (self):
         super (TestController, self).setUp ()
-        self.parent = self.win = cimarron.skin.Window(title='Test',
+        self.parent = self.window = cimarron.skin.Window(title='Test',
                                                       parent=self.app)
-        self.widget= FooController (parent=self.win)
+        self.widget= FooController (parent=self.window)
         self.setUpControl (dict(foo=1, bar=2, baz=3), None)
         
     def testModel (self):
@@ -237,11 +237,11 @@ class TestBarController(TestController):
         self.attribute = 0
         self.value = self.target.getattr(self.attribute)
         super(TestBarController, self).setUp()
-        self.parent = self.win = cimarron.skin.Window(title='Test 2',
+        self.parent = self.window = cimarron.skin.Window(title='Test 2',
                                                       parent=self.app)
         def here (*a):
             print 'here!'
-        self.widget= BarController (parent=self.win, data=self.list,
+        self.widget= BarController (parent=self.window, data=self.list,
                                     attribute=self.attribute, onAction=here)
         # self.value= self.list[0]
         self.widget.refresh()
@@ -287,7 +287,7 @@ class TestWindowController (abstractTestVisibility):
     def setUp (self):
         super (TestWindowController, self).setUp ()
         self.app = cimarron.skin.Application()
-        self.win= self.widget= WindowController (parent= self.app)
+        self.window= self.widget= WindowController (parent= self.app)
 
     def testVisible (self):
         self.widget.show ()

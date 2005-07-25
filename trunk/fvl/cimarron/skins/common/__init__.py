@@ -238,6 +238,8 @@ class Widget(XmlMixin):
             return None
     parent = property(_get_parent, _set_parent,
                       doc="parent is either the containing L{Widget}, or None")
+    window = property(lambda self: self.parent.window,
+                      doc = "Get the L{Widget}'s C{Window}.")
 
     def _get_skin (self):
         """

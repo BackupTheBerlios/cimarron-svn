@@ -138,11 +138,12 @@ class WindowController (Controller):
     Is typical that each Window will have an associated Controller.
     Those Controllers must inherit from this class.
     """
+    window = None # override Widget.window property
     def __init__ (self, title='', size=(-1, -1), **kwargs):
         super(WindowController, self).__init__(**kwargs)
         from fvl.cimarron.skin import Window
-        self.win = Window(parent=self, title=title, size=size)
-        self.win.delegates.insert(0, self)
+        self.window = Window(parent=self, title=title, size=size)
+        self.window.delegates.insert(0, self)
 
     def visibleChildren (self):
         """
@@ -162,13 +163,13 @@ class WindowController (Controller):
         """
         Show the window.
         """
-        self.win.show ()
+        self.window.show ()
 
     def hide (self):
         """
         Hide the window.
         """
-        self.win.hide ()
+        self.window.hide ()
 
     def _get_visible (self):
         """

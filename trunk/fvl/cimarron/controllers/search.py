@@ -44,7 +44,7 @@ class SelectionWindow(WindowController):
         super(SelectionWindow, self).__init__(parent=self.parent,
                                               title='Select', size=(30, 5),
                                               **kwargs)
-        vbox = skin.VBox(parent=self.win)
+        vbox = skin.VBox(parent=self.window)
         self.grid = skin.SelectionGrid(parent=vbox, columns=columns,
                                        onAction=self.onOk)
         hbox = skin.HBox(parent=vbox, expand=False)

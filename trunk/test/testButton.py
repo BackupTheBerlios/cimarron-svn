@@ -29,8 +29,8 @@ __all__ = ('TestButton',
 class TestButton(abstractTestControl):
     def setUp(self):
         super(TestButton, self).setUp()
-        self.win = cimarron.skin.Window(title='Test', parent=self.app)
-        self.parent = cimarron.skin.VBox (parent= self.win)
+        self.window = cimarron.skin.Window(title='Test', parent=self.app)
+        self.parent = cimarron.skin.VBox (parent= self.window)
         self.widget = cimarron.skin.Button(label='Click me', parent=self.parent)
         self.setUpControl()
 

@@ -48,7 +48,7 @@ class CRUDController (WindowController):
 
         self.editors = []
         super(CRUDController, self).__init__(**kwargs)
-        self.note = Notebook(parent=self.win)
+        self.note = Notebook(parent=self.window)
 
         # first tab
         self.firstTab = VBox(label='Search')

@@ -113,6 +113,8 @@ else:
 class abstractTestWidget(abstractTestDelegateGenerated):
     def testParenting(self):
         self.assertEqual(self.widget.parent, self.parent)
+    def testWindowing(self):
+        self.assertEqual(self.widget.window, self.window)
 
 class abstractTestVisibility(unittest.TestCase):
     def testShow(self):

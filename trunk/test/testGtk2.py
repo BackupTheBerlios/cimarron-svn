@@ -172,21 +172,21 @@ class TestGtkWindow(testGtkVisibility, TestWindow):
         import time
         
         f = NamedTemporaryFile(suffix='.png')
-        self.win.show()
+        self.window.show()
         while gtk.events_pending():
             gtk.main_iteration()
         time.sleep(1)
         while gtk.events_pending():
             gtk.main_iteration()
-        self.win.screenshot(f.name)
+        self.window.screenshot(f.name)
         i = Image.open(f.name)
         self.assertEqual(i.format, 'PNG')
 
     def testWindowCanSetSize(self):
-        self.win.size = (80, 25)
-        cell = self.win._get_cell_size()
+        self.window.size = (80, 25)
+        cell = self.window._get_cell_size()
         expected = int(80*cell[0]), int(25*cell[1])
-        self.assertEqual(self.win._widget.get_size(), expected)
+        self.assertEqual(self.window._widget.get_size(), expected)
 
 class TestGtkLabel(testGtkParenting, TestLabel):
     def testSetLabel(self):
