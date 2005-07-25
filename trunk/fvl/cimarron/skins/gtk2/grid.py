@@ -79,7 +79,8 @@ class Grid(ColumnAwareXmlMixin, Controller):
     def _get_value(self):
         return self._value
     def _set_value(self, value):
-        self.window.disable()
+        if self.window is not None:
+            self.window.disable()
         try:
             self._value = value
             if len(self.columns)>0:
@@ -98,7 +99,8 @@ class Grid(ColumnAwareXmlMixin, Controller):
                 self.index = None
             self._tv.set_model(self._tvdata)
         finally:
-            self.window.enable()
+            if self.window is not None:
+                self.window.enable()
     value = property(_get_value, _set_value)
 
     def attributesToConnect(cls):
