@@ -45,14 +45,15 @@ class abstractTestBasic(unittest.TestCase, object):
         concrete widgets are themselves subclasses of the original.
         """
         oldClass = type(self.widget._widget)
-        concreteClass = type('ConcreteSublassOf' + oldClass.__name__,
+        prefix = 'ConcreteSublassOf'
+        concreteClass = type(prefix + oldClass.__name__,
                              (oldClass, ), {})
         class Subclass(type(self.widget)):
             def __init__(s, *a, **kw):
                 s._widget = concreteClass()
                 super(Subclass, s).__init__(*a, **kw)
         other = Subclass()
-        self.assertEqual(type(other._widget).__name__[:17], 'ConcreteSublassOf')
+        self.assert_(type(other._widget).__name__.startswith(prefix))
     def tearDown(self):
         self.app.hide()
         self.app.quit()
@@ -150,13 +151,13 @@ class abstractTestControl(abstractTestWidget):
         super(abstractTestControl, self).setUp()
         self.messages_recieved = []
     def setUpControl(self, target=Country (name='Elbonia'), attr='name'):
-        self.widget.attribute= self.attribute= attr
-        self.target= target
-        self.widget.newTarget (self.target)
+        self.widget.attribute = self.attribute = attr
+        self.target = target
+        self.widget.newTarget(self.target)
         if attr is not None:
-            self.value= getattr (target, attr)
+            self.value = getattr(target, attr)
         else:
-            self.value= target
+            self.value = target
 
     def testValue(self):
         self.widget.value = self.value

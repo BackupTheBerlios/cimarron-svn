@@ -103,6 +103,7 @@ class CRUDController (WindowController):
             editor.store = store
     def _get_store(self):
         return self.__store
+    store = property(_get_store, _set_store, None, """""")
         
     def newModel(self, control, cls, *ignore):
         """
@@ -178,12 +179,13 @@ class CRUDController (WindowController):
     fromXmlObj = classmethod(fromXmlObj)
         
 class Editor(Controller):
-    def __init__(self, attributes=None, label='', **kwargs):
+    def __init__(self, attributes=None, label='', store=None, **kwargs):
         from fvl.cimarron.skin import VBox, HBox, Button, Label, Entry
 
         super(Editor, self).__init__(**kwargs)
         if attributes is None:
             attributes = []
+        self.store = store
 
         # main containers
         self.vbox = VBox(parent=self)
@@ -237,6 +239,7 @@ class Editor(Controller):
     def save (self, *ignore):
         # how will this be finally done is a mistery (yet)
         # print 'save', str (self.value)
+        self.store.save()
         self.onAction ()
     def discard (self, *ignore):
         # how will this be finally done is a mistery (yet)

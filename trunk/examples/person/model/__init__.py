@@ -26,7 +26,7 @@ class Store(object):
     interface.implements(fvl.cimarron.interfaces.IStore)
 
     def save(self):
-        pass
+        self.saved = True
 
     def discard(self):
-        pass
+        self.discarded = True

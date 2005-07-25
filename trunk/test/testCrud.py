@@ -34,13 +34,14 @@ class TestCRUDController (TestController):
     def setUp (self):
         super (TestCRUDController, self).setUp ()
         self.store = Store()
+        self.app = self.parent = cimarron.skin.Application()
         self.widget = CRUDController.fromXmlFile ('test/testCrud.xml')
+        self.widget.parent = self.parent
         self.window = self.widget.window
-        self.widget.parent= self.parent= self.app
         self.widget.store = self.store
         person= Person.__values__[0]
         self.setUpControl (target= person, attr=None)
-        
+
     def testRefresh (self):
         # self.widget.target= self.target
         self.assertEqual (self.widget.editors[0].target, self.target)
@@ -101,10 +102,16 @@ class TestEditor(TestController):
         pass
 
     def testRefresh (self):
-        # self.widget.target= self.target
+        """
+        Check that assign
+        """
         self.assertEqual (self.entry.target, self.target)
         self.assertEqual (self.entry.value,
                           getattr (self.value, self.entry.attribute))
 
-    def testNothing(self):
-        pass
+    def testSave(self):
+        """
+        """
+        self.widget.save()
+
+        self.assert_(self.store.saved)
