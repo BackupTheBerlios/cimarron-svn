@@ -80,6 +80,20 @@ class TestCRUDController (TestController):
         self.assertEqual (addrEditor.target, self.target)
         self.assertEqual (addrEditor.value, getattr (self.target, addrEditor.attribute))
 
+    def testSave(self):
+        """
+        """
+        self.widget.save()
+
+        self.assert_(self.store.saved)
+
+    def testDiscard(self):
+        """
+        """
+        self.widget.discard()
+
+        self.assert_(self.store.discarded)
+
 
 class TestEditor(TestController):
     def setUp(self):
@@ -115,3 +129,10 @@ class TestEditor(TestController):
         self.widget.save()
 
         self.assert_(self.store.saved)
+
+    def testDiscard(self):
+        """
+        """
+        self.widget.discard()
+
+        self.assert_(self.store.discarded)

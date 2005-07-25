@@ -127,11 +127,12 @@ class CRUDController (WindowController):
             # self.editor.focus ()
 
     def save (self, *ignore):
-        """
-        FIXME: wtf?
-        """
         self.store.save()
+        # FIXME: really?
         self.onAction()
+
+    def discard(self):
+        self.store.discard()
 
     def fromXmlObj (cls, xmlObj):
         """
@@ -237,14 +238,12 @@ class Editor(Controller):
             pass
 
     def save (self, *ignore):
-        # how will this be finally done is a mistery (yet)
         # print 'save', str (self.value)
         self.store.save()
         self.onAction ()
     def discard (self, *ignore):
-        # how will this be finally done is a mistery (yet)
         # print 'discard', self.value
-        pass
+        self.store.discard()
 
     def will_focus_out (self, control, *ignore):
         self.modifyModel (control)
