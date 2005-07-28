@@ -50,17 +50,17 @@ class Grid(ColumnAwareXmlMixin, Controller):
             the grid won't be able to create more objects, but still
             will be able to edit the existing ones.
         """
-        if '_widget' not in self.__dict__:
-            self._widget = gtk.TreeView()
-        self._tv = self._widget
+        if '_concreteWidget' not in self.__dict__:
+            self._concreteWidget = gtk.TreeView()
+        self._tv = self._concreteWidget
         self._tv.set_rules_hint(True)
         self.columns = columns
         self.cls = cls
 
         # put the TreeView in a scrolled window
-        self._widget = gtk.ScrolledWindow()
-        self._widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
-        self._widget.add(self._tv)
+        self._concreteWidget = gtk.ScrolledWindow()
+        self._concreteWidget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
+        self._concreteWidget.add(self._tv)
 
         self._tv.connect('key-release-event', self._keyreleased)
 
@@ -249,10 +249,10 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
         self.data = data
 
         # put the TreeView in a scrolled window
-        if '_widget' not in self.__dict__:
-            self._widget = gtk.ScrolledWindow()
-            self._widget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
-            self._widget.add(self._tv)
+        if '_concreteWidget' not in self.__dict__:
+            self._concreteWidget = gtk.ScrolledWindow()
+            self._concreteWidget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
+            self._concreteWidget.add(self._tv)
 
         # add the columns and attrs
         for i, dataColumn in enumerate(columns):

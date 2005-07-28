@@ -132,7 +132,7 @@ class TestSelectionGrid(abstractTestControl):
 
     def testDoubleClickSelection(self):
         self.widget.index=1
-        self.widget._double_click(widget=self.widget._widget)
+        self.widget._double_click(widget=self.widget._concreteWidget)
         self.assertEquals(self.dummyDCValue,self.widget.data[self.widget.index],
                                     """Double click did not sent the values""") 
 

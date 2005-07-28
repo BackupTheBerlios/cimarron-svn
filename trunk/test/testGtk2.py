@@ -59,25 +59,26 @@ __all__ = ('TestGtkEntry',
 
 class testGtkParenting (abstractTestWidget):
     def testGtkParent (self):
-        self.assertEqual (self.widget._widget.parent, self.parent._widget)
+        self.assertEqual (self.widget._outerWidget.parent, self.parent._concreteWidget)
 
     def testGtkChildInChildren (self):
-        self.assert_ (self.widget._widget
-                      in self.parent._widget.get_children ())
+        self.assert_ (self.widget._outerWidget
+                      in self.parent._concreteWidget.get_children ())
 
 class testGtkVisibility(abstractTestVisibility):
     def testGtkShow(self):
         self.app.show()
         self.widget.hide()
         self.widget.show()
-        self.assert_(self.widget._widget.window is not None
-                     and self.widget._widget.window.is_visible())
+        # outer, I guess
+        self.assert_(self.widget._outerWidget.window is not None
+                     and self.widget._outerWidget.window.is_visible())
 
     def testGtkHide(self):
         self.app.show()
         self.widget.hide()
-        self.assert_(self.widget._widget.window is None
-                     or not self.widget._widget.window.is_visible(),
+        self.assert_(self.widget._outerWidget.window is None
+                     or not self.widget._outerWidget.window.is_visible(),
                      "calling hide on the widget didn't actually hide it")
 
 class testGtkFocusable(TestCase):
@@ -94,11 +95,11 @@ class testGtkFocusable(TestCase):
             while gtk.events_pending():
                 gtk.main_iteration ()
             self.passed = 0
-            self.other._widget.grab_focus ()
-            while not self.other._widget.is_focus():
+            self.other._focusWidget.grab_focus ()
+            while not self.other._focusWidget.is_focus():
                 gtk.main_iteration()
-            self.widget._widget.grab_focus ()
-            while not self.widget._widget.is_focus():
+            self.widget._focusWidget.grab_focus ()
+            while not self.widget._focusWidget.is_focus():
                 gtk.main_iteration ()
             while not self.passed is 'in':
                 gtk.main_iteration ()
@@ -114,13 +115,13 @@ class testGtkFocusable(TestCase):
             while gtk.events_pending():
                 gtk.main_iteration ()
             self.passed = 0
-            self.widget._widget.grab_focus ()
-            while not self.widget._widget.is_focus():
+            self.widget._focusWidget.grab_focus ()
+            while not self.widget._focusWidget.is_focus():
                 gtk.main_iteration()
             while not self.passed is 'in':
                 gtk.main_iteration ()
-            self.other._widget.grab_focus ()
-            while not self.other._widget.is_focus():
+            self.other._focusWidget.grab_focus ()
+            while not self.other._focusWidget.is_focus():
                 gtk.main_iteration ()
             while not self.passed is 'out':
                 gtk.main_iteration ()
@@ -130,13 +131,13 @@ class testGtkFocusable(TestCase):
             return 0
 
     def testFocus (self):
-        self.other._widget.grab_focus ()
+        self.other._focusWidget.grab_focus ()
 
         self.app.show ()
         gobject.timeout_add (100, self.doTestFocus)
         gobject.timeout_add (500, gtk.main_quit)
         self.app.run ()
-        self.assert_ (self.widget._widget.is_focus ())
+        self.assert_ (self.widget._focusWidget.is_focus ())
 
     def doTestFocus (self, *ignore):
         self.widget.focus ()
@@ -144,7 +145,7 @@ class testGtkFocusable(TestCase):
 class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
     def testSetValue (self):
         self.widget.value= 'this is a test'
-        self.assertEqual (self.widget._widget.get_text(), self.widget.value)
+        self.assertEqual (self.widget._concreteWidget.get_text(), self.widget.value)
 
     def testValueIsTargetWhenNoAttr (self):
         self.target= getattr (self.target, self.attribute)
@@ -152,11 +153,11 @@ class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
 
     def testEntryKnowsIfDirty(self):
         self.widget.value = 'foo'
-        self.widget._widget.set_text('bar')
+        self.widget._concreteWidget.set_text('bar')
         self.assertEqual(self.widget.dirty(), True)
 
     def testEntryChangesWhenDirty(self):
-        w = self.widget._widget
+        w = self.widget._concreteWidget
         self.widget.value = 'foo'
         s = w.get_style()
         clean = (s.fg, s.bg, s.text)
@@ -213,24 +214,24 @@ class TestGtkWindow(testGtkVisibility, TestWindow):
         self.window.size = (80, 25)
         cell = self.window._get_cell_size()
         expected = int(80*cell[0]), int(25*cell[1])
-        self.assertEqual(self.window._widget.get_size(), expected)
+        self.assertEqual(self.window._concreteWidget.get_size(), expected)
 
 class TestGtkLabel(testGtkParenting, TestLabel):
     def testSetLabel(self):
         self.widget.text= 'This is a label'
-        self.assertEqual (self.widget.text, self.widget._widget.get_text ())
+        self.assertEqual (self.widget.text, self.widget._concreteWidget.get_text ())
 
 class TestGtkButton(testGtkFocusable, testGtkParenting, TestButton):
     def testSetLabel (self):
         self.widget.label= "Don't click me"
-        self.assertEqual(self.widget.label, self.widget._widget.get_label ())
+        self.assertEqual(self.widget.label, self.widget._concreteWidget.get_label ())
 
 class TestGtkCheckbox(TestCheckbox, TestGtkButton):
     def testSetChecked(self):
         self.widget.checked = True
-        self.assertEqual(self.widget._widget.get_active(), True)
+        self.assertEqual(self.widget._concreteWidget.get_active(), True)
         self.widget.checked = False
-        self.assertEqual(self.widget._widget.get_active(), False)
+        self.assertEqual(self.widget._concreteWidget.get_active(), False)
 
 class TestGtkBoxes(testGtkParenting, TestBoxes):
     pass
@@ -246,19 +247,19 @@ class TestGtkNotebook (testGtkParenting, TestNotebook):
         for i in xrange (10):
             self.widget.activate (i)
             while gtk.events_pending (): gtk.main_iteration ()
-            self.assertEqual (i, self.widget._widget.get_current_page ())
+            self.assertEqual (i, self.widget._concreteWidget.get_current_page ())
             
         for i in xrange (10):
             self.widget.activate (self.widget._children[i])
             while gtk.events_pending (): gtk.main_iteration ()
-            self.assertEqual (i, self.widget._widget.get_current_page ())
+            self.assertEqual (i, self.widget._concreteWidget.get_current_page ())
 
     def testPreventPageChange (self):
         self.testActivate ()
         self.widget.activate (0)
         self.widget.delegates.append (self)
         self.widget.activate (1)
-        self.assertEqual (self.widget._widget.get_current_page (), 0)
+        self.assertEqual (self.widget._concreteWidget.get_current_page (), 0)
 
     def will_change_page (self, *ignore):
         return ForcedNo

@@ -37,10 +37,10 @@ class VBox(Container):
     will be placed one on top of the other.
     """
     def __init__ (self, **kwargs):
-        if '_widget' not in self.__dict__:
-            self._widget = gtk.VBox()
-        # self._widget.set_border_width (5)
-        self._widget.set_spacing (5)
+        if '_concreteWidget' not in self.__dict__:
+            self._concreteWidget = gtk.VBox()
+        # self._concreteWidget.set_border_width (5)
+        self._concreteWidget.set_spacing (5)
         super(VBox, self).__init__(**kwargs)
 
 class HBox(Container):
@@ -49,10 +49,10 @@ class HBox(Container):
     will be placed from left to right.
     """
     def __init__ (self, **kwargs):
-        if '_widget' not in self.__dict__:
-            self._widget = gtk.HBox()
-        # self._widget.set_border_width (5)
-        self._widget.set_spacing(5)
+        if '_concreteWidget' not in self.__dict__:
+            self._concreteWidget = gtk.HBox()
+        # self._concreteWidget.set_border_width (5)
+        self._concreteWidget.set_spacing(5)
         super(HBox, self).__init__(**kwargs)
 
 class Notebook (Container):
@@ -61,10 +61,10 @@ class Notebook (Container):
     only one of them is shown at any given time.
     """
     def __init__ (self, **kwargs):
-        if '_widget' not in self.__dict__:
-            self._widget = gtk.Notebook()
+        if '_concreteWidget' not in self.__dict__:
+            self._concreteWidget = gtk.Notebook()
         super(Notebook, self).__init__(**kwargs)
-        self._widget.connect('change-current-page', self.__change_page)
+        self._concreteWidget.connect('change-current-page', self.__change_page)
 
     def activate (self, other):
         """
@@ -81,17 +81,17 @@ class Notebook (Container):
             pageNo = self._children.index(other)
         if 0 <= pageNo and pageNo < len(self._children) \
                and self.delegate('will_change_page'):
-            self._widget.set_current_page(pageNo)
+            self._concreteWidget.set_current_page(pageNo)
 
     def _concreteParenter (self, child):
         """
         See L{fvl.cimarron.skins.gtk2._concreteParenter}
         """
         super(Notebook, self)._concreteParenter(child)
-        if getattr(child, '_widget', None):
+        if getattr(child, '_concreteWidget', None):
             label = gtk.Label()
             label.set_text(child.label)
-            self._widget.set_tab_label(child._widget, label)
+            self._concreteWidget.set_tab_label(child._concreteWidget, label)
 
     def __change_page (self, *ignore):
         """

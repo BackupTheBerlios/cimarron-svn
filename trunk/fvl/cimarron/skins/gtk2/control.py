@@ -45,12 +45,12 @@ class Button(GtkFocusableMixin, Control):
         """
         @param label: text that is shown in the middle of the button.
         """
-        if '_widget' not in self.__dict__:
-            self._widget = gtk.Button()
-            self._widget.set_use_underline(True)
+        if '_concreteWidget' not in self.__dict__:
+            self._concreteWidget = gtk.Button()
+            self._concreteWidget.set_use_underline(True)
         super(Button, self).__init__(**kwargs)
         self.label = label
-        self._widget.connect('clicked', self._activate)
+        self._concreteWidget.connect('clicked', self._activate)
 
     def _set_label(self, label):
         """
@@ -58,12 +58,12 @@ class Button(GtkFocusableMixin, Control):
 
         label must be a unicode object.
         """
-        self._widget.set_label(label)
+        self._concreteWidget.set_label(label)
     def _get_label(self):
         """
         Get the button's label.
         """
-        return self._widget.get_label()
+        return self._concreteWidget.get_label()
     label = property(_get_label, _set_label, None,
                      """See the C{label} parameter for the constructor.""")
 
@@ -80,8 +80,8 @@ class Checkbox(Button):
     A Control that represents a boolean value.
     """
     def __init__(self, checked=False, **kwargs):
-        if '_widget' not in self.__dict__:
-            self._widget = gtk.CheckButton()
+        if '_concreteWidget' not in self.__dict__:
+            self._concreteWidget = gtk.CheckButton()
         super(Checkbox, self).__init__(**kwargs)
         self.checked = checked
     _cellDataType = gobject.TYPE_BOOLEAN
@@ -97,12 +97,12 @@ class Checkbox(Button):
         """
         Get whether the checkbox is checked.
         """
-        return self._widget.get_active()
+        return self._concreteWidget.get_active()
     def _set_checked(self, checked):
         """
         Set the checkedness of the checkbox.
         """
-        self._widget.set_active(checked)
+        self._concreteWidget.set_active(checked)
     checked = property(_get_checked, _set_checked)
 
 class Entry(GtkFocusableMixin, Control):
@@ -110,10 +110,10 @@ class Entry(GtkFocusableMixin, Control):
     The simplest text input control.
     """
     def __init__(self, emptyValue=None, **kwargs):
-        if '_widget' not in self.__dict__:
-            self._widget = gtk.Entry()
-            self._widget.connect ('activate', self._activate)
-            self._widget.connect ('key-release-event', self._keyreleased)
+        if '_concreteWidget' not in self.__dict__:
+            self._concreteWidget = gtk.Entry()
+            self._concreteWidget.connect ('activate', self._activate)
+            self._concreteWidget.connect ('key-release-event', self._keyreleased)
         self.emptyValue = emptyValue
         super(Entry, self).__init__(**kwargs)
         self.refresh ()
@@ -132,15 +132,15 @@ class Entry(GtkFocusableMixin, Control):
         """
         Get the C{entry}'s value.
         """
-        #value = self._widget.get_text() or self.emptyValue
-        return self._widget.get_text() or self.emptyValue
+        #value = self._concreteWidget.get_text() or self.emptyValue
+        return self._concreteWidget.get_text() or self.emptyValue
     def _set_value (self, value):
         """
         Set the C{Entry}'s value. C{value} must be a unicode object.
         """
         if value is None:
             value = ''
-        self._widget.set_text(unicode(value))
+        self._concreteWidget.set_text(unicode(value))
         # traceback.print_stack()
         # logger.error('%r -> %r' % (value, self.value))
     value = property (_get_value, _set_value)
@@ -174,9 +174,9 @@ class Entry(GtkFocusableMixin, Control):
         """
         dirty = self._targetValue() != (self.value or self.emptyValue)
         if dirty:
-            self._widget.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse('red'))
+            self._concreteWidget.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse('red'))
         else:
-            self._widget.modify_bg(gtk.STATE_NORMAL, None)
+            self._concreteWidget.modify_bg(gtk.STATE_NORMAL, None)
         return dirty
 
 
@@ -189,24 +189,23 @@ class MlEntry(Entry):
             self.buffer = gtk.TextBuffer()
         else:
             self.buffer = aBuffer
-        self._widget = gtk.TextView(self.buffer)
+        self._concreteWidget = gtk.TextView(self.buffer)
         """
         WRAP_CHAR gives word wraping character boundaries,
         this can be changed to words or not to wrap (WRAP_WORD, WRAP_NONE)
         a parameter should be added for this, meanwhile it will stay
         like this beacause i think is the most frequent use case
         """
-        self._widget.set_wrap_mode(gtk.WRAP_CHAR)
+        self._concreteWidget.set_wrap_mode(gtk.WRAP_CHAR)
         """
         Same here that in wraping but options are (JUSTIFY_RIGHT, JUSTIFY_CENTER)
         """
-        self._widget.set_justification(gtk.JUSTIFY_LEFT)
-        self._tc = self._widget #_tc for text container
-        self._widget = gtk.ScrolledWindow()
-        self._widget.add(self._tc)
+        self._concreteWidget.set_justification(gtk.JUSTIFY_LEFT)
+        self._tc = self._concreteWidget #_tc for text container
+        self._concreteWidget = gtk.ScrolledWindow()
+        self._concreteWidget.add(self._tc)
         self.emptyValue = emptyValue
         super(MlEntry, self).__init__(**kwargs)
-        #self._widget.connect ('key-release-event', self._activate)
         self.refresh ()
 
     def _get_value (self):
@@ -227,9 +226,3 @@ class MlEntry(Entry):
         #traceback.print_stack()
         logger.debug(`value`)
     value = property (_get_value, _set_value)
-
-    #def activate(self):
-    #    print "#############se activo nomas"
-    #    self.onAction()
-
-

@@ -43,19 +43,17 @@ class abstractTestBasic(unittest.TestCase, object):
         """
         Test that we can create subclasses of our widgets, whose
         concrete widgets are themselves subclasses of the original.
-        this only works with widgets made of one widget (means not composite by 2 or more,
-        like searchEntry)
         """
-        oldClass = type(self.widget._widget)
+        oldClass = type(self.widget._concreteWidget)
         prefix = 'ConcreteSublassOf'
         concreteClass = type(prefix + oldClass.__name__,
                              (oldClass, ), {})
         class Subclass(type(self.widget)):
             def __init__(s, *a, **kw):
-                s._subWidget = concreteClass()
+                s._concreteWidget = concreteClass()
                 super(Subclass, s).__init__(*a, **kw)
         other = Subclass()
-        self.assert_(type(other._subWidget).__name__.startswith(prefix))
+        self.assert_(type(other._concreteWidget).__name__.startswith(prefix))
     def tearDown(self):
         self.app.hide()
         self.app.quit()
@@ -204,7 +202,7 @@ class abstractTestControl(abstractTestWidget):
                     w = w.mainWidget
             except AttributeError:
                 pass
-            w = w._widget
+            w = w._activableWidget
             try:
                 c=w.clicked
             except AttributeError:

@@ -48,11 +48,11 @@ class Window(GtkVisibilityMixin, Container):
         """
         @param title: the title for the window.
         """
-        if '_widget' not in self.__dict__:
-            self._widget = gtk.Window()
+        if '_concreteWidget' not in self.__dict__:
+            self._concreteWidget = gtk.Window()
         super(Window, self).__init__(**kwargs)
 
-        self._widget.connect('delete-event', self._delete_callback)
+        self._concreteWidget.connect('delete-event', self._delete_callback)
         self.title = title
         self.size = size
         self.window = self
@@ -70,12 +70,12 @@ class Window(GtkVisibilityMixin, Container):
         """
         Set the window's title. C{title} must be a unicode object.
         """
-        self._widget.set_title(title)
+        self._concreteWidget.set_title(title)
     def _get_title(self):
         """
         Get the window's title.
         """
-        return self._widget.get_title()
+        return self._concreteWidget.get_title()
     title = property(_get_title, _set_title,
                      doc="""The title for the window.""")
 
@@ -91,7 +91,7 @@ class Window(GtkVisibilityMixin, Container):
         If <frame> is true, include the windowmanager frames.
 
         """
-        xid = self._widget.window.xid
+        xid = self._concreteWidget.window.xid
         if filename is None:
             filename = inspect.stack()[1][1] + '.png'
         if frame:
@@ -106,7 +106,7 @@ class Window(GtkVisibilityMixin, Container):
 
         The window size is specified in cells.
         """
-        ctx = self._widget.get_pango_context()
+        ctx = self._concreteWidget.get_pango_context()
         metrics = ctx.get_metrics(ctx.get_font_description())
         cell = ( float(metrics.get_approximate_char_width()) / pango.SCALE,
                  float(metrics.get_ascent()
@@ -117,7 +117,7 @@ class Window(GtkVisibilityMixin, Container):
         """
         Get the window size, in cells.
         """
-        size = self._widget.get_size()
+        size = self._concreteWidget.get_size()
         if size != (-1, -1):
             cell = self._get_cell_size()
             size = int(size[0] / cell[0]), int(size[1] / cell[1])
@@ -132,30 +132,30 @@ class Window(GtkVisibilityMixin, Container):
             cell = self._get_cell_size()
             width = int(width * cell[0])
             height = int(height * cell[1])
-        self._widget.set_size_request(width, height)
+        self._concreteWidget.set_size_request(width, height)
     size = property(_get_size, _set_size)
 
     def _define_cursor_window(self):
         cursor = gtk.gdk.Cursor(gtk.gdk.WATCH)
-        self._cursor_window = gtk.gdk.Window(self._widget.window, -1, -1,
+        self._cursor_window = gtk.gdk.Window(self._concreteWidget.window, -1, -1,
                                              gtk.gdk.WINDOW_CHILD, 0,
                                              gtk.gdk.INPUT_ONLY,
                                              cursor=cursor)
 
     def disable(self):
-        if self._widget.window is not None:
+        if self._concreteWidget.window is not None:
             if '_cursor_window' not in self.__dict__:
                 self._define_cursor_window()
             width = gtk.gdk.screen_width()
             height = gtk.gdk.screen_height()
             self._cursor_window.resize(width, height)
             self._cursor_window.show()
-        self._widget.set_sensitive(False)
+        self._concreteWidget.set_sensitive(False)
         while gtk.events_pending(): gtk.main_iteration()
 
     def enable(self):
-        self._widget.set_sensitive(True)
-        if self._widget.window is not None:
+        self._concreteWidget.set_sensitive(True)
+        if self._concreteWidget.window is not None:
             if '_cursor_window' not in self.__dict__:
                 self._define_cursor_window()
             self._cursor_window.hide()

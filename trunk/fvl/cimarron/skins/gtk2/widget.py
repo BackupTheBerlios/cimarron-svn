@@ -40,8 +40,8 @@ class Label(Widget):
         """
         @param text: The text that will be displayed.
         """
-        if '_widget' not in self.__dict__:
-            self._widget = gtk.Label()
+        if '_concreteWidget' not in self.__dict__:
+            self._concreteWidget = gtk.Label()
         super(Label, self).__init__(**kwargs)
         self.text = text
 
@@ -50,12 +50,12 @@ class Label(Widget):
         Set the L{Label}'s text. Underscores are converted into
         mnemonics.
         """
-        self._widget.set_text_with_mnemonic(text)
+        self._concreteWidget.set_text_with_mnemonic(text)
     def _get_text(self):
         """
         Get the L{Label}'s text.
         """
-        return self._widget.get_text()
+        return self._concreteWidget.get_text()
     text = property(_get_text, _set_text,
                     doc="""The text to display""")
 
@@ -69,8 +69,8 @@ class Image(Widget):
         """
         @param filename: The name of the file that contains the image.
         """
-        if '_widget' not in self.__dict__:
-            self._widget = gtk.Image()
+        if '_concreteWidget' not in self.__dict__:
+            self._concreteWidget = gtk.Image()
         super(Image, self).__init__(**kwargs)
         self.load(filename)
 
@@ -78,6 +78,6 @@ class Image(Widget):
         """
         Load an image from a file.
         """
-        self._widget.set_from_file(filename)
+        self._concreteWidget.set_from_file(filename)
 
 	

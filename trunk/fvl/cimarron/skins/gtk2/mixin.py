@@ -49,7 +49,7 @@ class GtkVisibilityMixin(object):
         Currently this relies on the C{Widget} having a GdkWindow,
         which isn't true for e.g. L{Label}s.
         """
-        window = self._widget.window
+        window = self._concreteWidget.window
         return window is not None and window.is_visible()
     visible = property(_get_visible)
 
@@ -57,14 +57,14 @@ class GtkVisibilityMixin(object):
         """
         Show the object.
         """
-        self._widget.show_all()
+        self._concreteWidget.show_all()
 
     def hide(self):
         """
         Hide the object, after delegates agrees.
         """
         if self.delegate ('will_hide'):
-            self._widget.hide_all()
+            self._concreteWidget.hide_all()
 
 class GtkFocusableMixin(object):
     """
@@ -73,8 +73,8 @@ class GtkFocusableMixin(object):
     """
     def __init__ (self, **kwargs):
         super (GtkFocusableMixin, self).__init__ (**kwargs)
-        self._widget.connect ('focus-in-event', self._focusIn)
-        self._widget.connect ('focus-out-event', self._focusOut)
+        self._concreteWidget.connect ('focus-in-event', self._focusIn)
+        self._concreteWidget.connect ('focus-out-event', self._focusOut)
 
     def _focusIn (self, *ignore):
         """
@@ -92,5 +92,5 @@ class GtkFocusableMixin(object):
         """
         Set the focus on this object.
         """
-        self._widget.grab_focus ()
+        self._concreteWidget.grab_focus ()
 

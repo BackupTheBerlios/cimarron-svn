@@ -92,18 +92,18 @@ def _concreteParenter(parent, child):
     Does the skin-specific magic that `glues' a child with its parent.
     Do not call directly.
     """
-    if '_widget' in child.__dict__:
+    if '_concreteWidget' in child.__dict__:
         # print 'parenting', parent, child,
-        if '_widget' in parent.__dict__:
+        if '_concreteWidget' in parent.__dict__:
             # print 'concreted'
             try:
-                packer = parent._widget.pack_start
+                packer = parent._concreteWidget.pack_start
             except AttributeError:
                 # maybe it's a Window?
-                parent._widget.add(child._widget)
-                parent._widget.set_border_width(child.border)
+                parent._concreteWidget.add(child._concreteWidget)
+                parent._concreteWidget.set_border_width(child.border)
             else:
-                packer(child._widget, child.expand, child.fill, child.border)
+                packer(child._concreteWidget, child.expand, child.fill, child.border)
         else:
             if parent.parent is None:
                 # print 'postponed'
