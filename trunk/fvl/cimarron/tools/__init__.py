@@ -67,3 +67,13 @@ def traverse (obj, path):
                 raise
         del pathList[0]
     return obj
+
+class Null(object):
+    __slots__ = ()
+    def __call__(self, *a, **kw):
+        return Null
+    def __getattr__(self, attr):
+        return Null
+    def __setattr__(self, attr, val):
+        pass
+Null = Null()
