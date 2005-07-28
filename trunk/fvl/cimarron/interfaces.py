@@ -100,10 +100,10 @@ class IWidget(Interface):
         from XML files/objects.
         """
 
-    mainWidget = Null
-    _concreteWidget = Null
-    _focusWidget = Null
-    _outerWidget = Null
+    mainWidget = Attribute("")
+    _concreteWidget = Attribute("")
+    _focusWidget = Attribute("")
+    _outerWidget = Attribute("")
         
 
 class IContainer(IWidget):
