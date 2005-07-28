@@ -69,6 +69,9 @@ def traverse (obj, path):
     return obj
 
 class Null(object):
+    """
+    This object is a poisonous Null object.
+    """
     __slots__ = ()
     def __call__(self, *a, **kw):
         return Null
@@ -76,4 +79,6 @@ class Null(object):
         return Null
     def __setattr__(self, attr, val):
         pass
+    def __nonzero__(self):
+        return Null()
 Null = Null()
