@@ -21,6 +21,8 @@
 from zope.interface import Attribute, Interface
 from zope.schema import Object
 
+from fvl.cimarron.tools import Null
+
 class IModel(Interface):
     def getattr(attr):
         """
@@ -97,6 +99,11 @@ class IWidget(Interface):
         Connects the widget with someone else. This is used for loading
         from XML files/objects.
         """
+
+    mainWidget = Null
+    _concreteWidget = Null
+    _focusWidget = Null
+    _outerWidget = Null
         
 
 class IContainer(IWidget):
