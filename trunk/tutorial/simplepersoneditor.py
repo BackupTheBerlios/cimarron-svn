@@ -3,11 +3,11 @@ from simpleperson import Person
 
 class PersonEditor(cimarron.skin.WindowController):
     def __init__(self, target=None, **kw):
-        super(PersonEditor, self).__init__(**kw)
-        self.win.title = 'Person Editor'
-        outer_vbox = cimarron.skin.VBox(parent=self.win)
-        hbox = cimarron.skin.HBox(parent=outer_vbox)
-        vbox = cimarron.skin.VBox(parent=hbox)
+        super(PersonEditor, self).\
+            __init__(title='Person Editor', size=(40, 6), **kw)
+        outer_vbox = cimarron.skin.VBox(parent=self.window)
+        hbox = cimarron.skin.HBox(parent=outer_vbox, expand=False)
+        vbox = cimarron.skin.VBox(parent=hbox, expand=False)
         cimarron.skin.Label(parent=vbox, text='Name:')
         cimarron.skin.Label(parent=vbox, text='Surname:')
         vbox = cimarron.skin.VBox(parent=hbox)
@@ -18,7 +18,8 @@ class PersonEditor(cimarron.skin.WindowController):
                                  onAction=self.checkValues))
         cimarron.skin.Button(parent=outer_vbox, label='Check', 
 	     onAction = self.checkValues)
-        self.label = cimarron.skin.Label(parent=outer_vbox, text="")
+        self.label = cimarron.skin.Label(parent=outer_vbox, text="",
+                                         expand=False)
         if target is not None:
             self.newTarget(target)
 
@@ -33,6 +34,6 @@ class PersonEditor(cimarron.skin.WindowController):
         self.checkValues(self)
 
 app = cimarron.skin.Application()
-w = PersonEditor(parent=app, target=Person(name="John", surname="Doe"))
+w = PersonEditor(parent=app, target=Person(name="John", surname="Cleese"))
 w.show()
 app.run()

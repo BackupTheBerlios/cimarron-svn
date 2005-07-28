@@ -11,13 +11,28 @@ class Person(Model):
             self.addresses = addresses
 
 class Address(Model):
-    def __init__(self, street=None, zipcode=None, city=None, country=None):
+    def __init__(self, street=None, city=None, country=None):
         self.street = street
-        self.zipcode = zipcode
         self.city = city
         self.country = country
-        self.isDirty= False
 
-    def setattr(self, attr, value):
-        super(Address, self).setattr(attr, value)
-        self.isDirty= True
+Person.__values__ = [
+    Person ("John", "Cleese",
+            [Address(street="Ministry for Funny Walks",
+                     city="London", country="UK")]),
+    Person ("Michael", "Palin",
+            [Address(street="Inquisition Headquarters",
+                     city="Madrid", country="Spain")]),
+    Person ("Eric", "Idle",
+            [Address(street="Bruce Avenue",
+                     city="Sydney", country="Australia")]),
+    Person ("Graham", "Chapman",
+            [Address(street="Stable Alley",
+                     city="Bethlehem", country="Judea")]),
+    Person ("Terry", "Jones",
+            [Address(street="Suggestions?",
+                     city="London", country="UK")]),
+    Person ("Terry", "Gillian",
+            [Address(street="Suggestions?",
+                     city="London", country="UK")])
+]

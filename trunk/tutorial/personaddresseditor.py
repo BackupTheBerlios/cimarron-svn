@@ -3,16 +3,15 @@ from model import Person, Address
 
 class PersonAddressEditor(cimarron.skin.WindowController):
     def __init__(self, target=None, **kw):
-        super(PersonAddressEditor, self).__init__(**kw)
-        self.win.title = 'Person Editor'
-        outer_vbox = cimarron.skin.VBox(parent=self.win)
-        hbox = cimarron.skin.HBox(parent=outer_vbox)
-        vbox = cimarron.skin.VBox(parent=hbox)
+        super(PersonAddressEditor, self).\
+            __init__(title = 'Person Editor', size=(50, 15), **kw)
+        outer_vbox = cimarron.skin.VBox(parent=self.window)
+        hbox = cimarron.skin.HBox(parent=outer_vbox, expand=False)
+        vbox = cimarron.skin.VBox(parent=hbox, expand=False)
         cimarron.skin.Label(parent=vbox, text='Name:')
         cimarron.skin.Label(parent=vbox, text='Surname:')
         vbox = cimarron.skin.VBox(parent=hbox)
         gridColumns = (cimarron.skin.Column(name="Street", attribute="street"),
-                       cimarron.skin.Column(name="Zip Code", attribute="zipcode"),
                        cimarron.skin.Column(name="City", attribute="city"),
                        cimarron.skin.Column(name="Country", attribute="country"))
         self.widgets = \
@@ -23,14 +22,15 @@ class PersonAddressEditor(cimarron.skin.WindowController):
              cimarron.skin.Grid(parent=outer_vbox, cls=Address,
                                 attribute="addresses", columns=gridColumns))
         cimarron.skin.Button(parent=outer_vbox, label='Check', 
-	     onAction = self.checkValues)
-        self.label = cimarron.skin.Label(parent=outer_vbox, text="")
+	     onAction = self.checkValues, expand=False)
+        self.label = cimarron.skin.Label(parent=outer_vbox, text="", expand=False)
         if target is not None:
             self.newTarget(target)
 
     def checkValues(self, sender=None):
-        self.label.text = "Mr/Ms %s, %s" % \
-                          (self.target.surname, self.target.name)
+        self.label.text = "Mr/Ms %s, %s (%d addresses)" % \
+                          (self.target.surname, self.target.name,
+                           len(self.target.addresses))
 
     def newTarget(self, target=None):
         super(PersonAddressEditor, self).newTarget(target)
@@ -39,8 +39,6 @@ class PersonAddressEditor(cimarron.skin.WindowController):
         self.checkValues(self)
 
 app = cimarron.skin.Application()
-p = Person(name="John", surname="Doe",
-           addresses=[Address("Belgrano 594", "X500JQL", "Cordoba", "Argentina")])
-w = PersonAddressEditor(parent=app, target=p)
+w = PersonAddressEditor(parent=app, target=Person.__values__[0])
 w.show()
 app.run()

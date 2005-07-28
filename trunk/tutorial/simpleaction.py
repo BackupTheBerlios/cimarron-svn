@@ -2,10 +2,9 @@ from fvl import cimarron
 
 class MainWindowController(cimarron.skin.WindowController):
    def __init__(self, **kw):
-       super(MainWindowController, self).__init__(**kw)
-       self.win.title = 'Simple Action Demo'
-       self.win.size = (40, 5)
-       cimarron.skin.Button(parent=self.win, label='Hello',
+       super(MainWindowController, self).\
+            __init__(title = 'Simple Action Demo', size = (40, 5), **kw)
+       cimarron.skin.Button(parent=self.window, label='Hello',
            onAction = self.doSomething)
 
    def doSomething(self, sender):
