@@ -36,13 +36,14 @@ from testWindow import TestWindow
 from testLabel import TestLabel
 from testImage import TestImage
 from testButton import TestButton, TestCheckbox
-from testEntry import TestEntry, TestEntrySomeMore
+from testEntry import TestEntry, TestEntrySomeMore, TestMlEntry
 from testBox import TestBoxes
 from testNotebook import TestNotebook
 from testGrid import TestSelectionGrid, TestGrid, TestGridInit
 
 
 __all__ = ('TestGtkEntry',
+           'TestGtkMlEntry',
            'TestEntrySomeMore',
            'TestGtkWindow',
            'TestGtkLabel',
@@ -164,6 +165,32 @@ class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
         s = w.get_style()
         dirty = (s.fg, s.bg, s.text)
         self.assertNotEqual(clean, dirty)
+
+class TestGtkMlEntry(TestMlEntry, TestGtkEntry):
+    def testSetValue (self):
+        self.widget.value= 'this is a test'
+        self.assertEqual (self.widget.buffer.get_text(self.widget.buffer.get_start_iter(),
+                                                               self.widget.buffer.get_end_iter(),
+                                                               include_hidden_chars=False),
+                          self.widget.value)
+
+        """
+        The following tests are bypassed beacause they test features that are not
+        present in this widget but yes in entry from who we are taking the rest of
+        the tests
+        """
+    def testEntryChangesWhenDirty(self):
+        pass
+
+    def testEntryKnowsIfDirty(self):
+        pass
+
+    def testOnAction(self):
+        pass
+
+#raise `TestGtkMlEntry.mro()`
+        
+
 
 class TestGtkWindow(testGtkVisibility, TestWindow):
     def testWindowCanScreenshot(self):

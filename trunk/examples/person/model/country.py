@@ -82,7 +82,7 @@ class Country (Model):
     search= classmethod (search)
 
     def __str__ (self):
-        return 'Country name: '+self.name
+        return 'Country name: %r' % (self.name, )
 
 
 class State (Model):

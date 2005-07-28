@@ -112,11 +112,11 @@ class Entry(GtkFocusableMixin, Control):
     def __init__(self, emptyValue=None, **kwargs):
         if '_widget' not in self.__dict__:
             self._widget = gtk.Entry()
+            self._widget.connect ('activate', self._activate)
+            self._widget.connect ('key-release-event', self._keyreleased)
         self.emptyValue = emptyValue
         super(Entry, self).__init__(**kwargs)
         self.refresh ()
-        self._widget.connect ('activate', self._activate)
-        self._widget.connect ('key-release-event', self._keyreleased)
 
     _cellDataType = gobject.TYPE_STRING
     def _setupCell(cls, grid, dataColumn, viewColumn, index, readOnly=False):
@@ -132,6 +132,7 @@ class Entry(GtkFocusableMixin, Control):
         """
         Get the C{entry}'s value.
         """
+        #value = self._widget.get_text() or self.emptyValue
         return self._widget.get_text() or self.emptyValue
     def _set_value (self, value):
         """
@@ -141,7 +142,7 @@ class Entry(GtkFocusableMixin, Control):
             value = ''
         self._widget.set_text(unicode(value))
         # traceback.print_stack()
-        logger.debug(`value`)
+        # logger.error('%r -> %r' % (value, self.value))
     value = property (_get_value, _set_value)
 
     def _focusOut(self, *ignore):
@@ -171,9 +172,64 @@ class Entry(GtkFocusableMixin, Control):
         """
         has the user modified the C{Entry}'s value?
         """
-        dirty = self._targetValue() != (self._widget.get_text() or self.emptyValue)
+        dirty = self._targetValue() != (self.value or self.emptyValue)
         if dirty:
             self._widget.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse('red'))
         else:
             self._widget.modify_bg(gtk.STATE_NORMAL, None)
         return dirty
+
+
+class MlEntry(Entry):
+    """
+    A multiline Text input (we could call it a Text Area, but we don't:D).
+    """
+    def __init__(self, emptyValue=None, aBuffer=None,**kwargs):
+        if not aBuffer:
+            self.buffer = gtk.TextBuffer()
+        else:
+            self.buffer = aBuffer
+        self._widget = gtk.TextView(self.buffer)
+        """
+        WRAP_CHAR gives word wraping character boundaries,
+        this can be changed to words or not to wrap (WRAP_WORD, WRAP_NONE)
+        a parameter should be added for this, meanwhile it will stay
+        like this beacause i think is the most frequent use case
+        """
+        self._widget.set_wrap_mode(gtk.WRAP_CHAR)
+        """
+        Same here that in wraping but options are (JUSTIFY_RIGHT, JUSTIFY_CENTER)
+        """
+        self._widget.set_justification(gtk.JUSTIFY_LEFT)
+        self._tc = self._widget #_tc for text container
+        self._widget = gtk.ScrolledWindow()
+        self._widget.add(self._tc)
+        self.emptyValue = emptyValue
+        super(MlEntry, self).__init__(**kwargs)
+        self._widget.connect ('key-release-event', self._activate)
+        self.refresh ()
+
+    def _get_value (self):
+        """
+        Get the C{MlEntry}'s buffer value.
+        """
+        return self.buffer.get_text(self.buffer.get_start_iter(),
+                                     self.buffer.get_end_iter(),
+                                     include_hidden_chars=False) or self.emptyValue
+    def _set_value (self, value):
+        """
+        Set the C{MlEntry}'s buffer value. C{value} must be a unicode object.
+        """
+        if value is None:
+            value = ''
+        self.buffer.set_text(unicode(value))
+        self._tc.set_buffer(self.buffer)
+        #traceback.print_stack()
+        logger.debug(`value`)
+    value = property (_get_value, _set_value)
+
+    #def activate(self):
+    #    print "#############se activo nomas"
+    #    self.onAction()
+
+

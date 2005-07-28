@@ -94,4 +94,4 @@ class TestSearchEntry(abstractTestControl):
         self.widget.data = self.data
         super (TestSearchEntry, self).testOnAction()
         
-    
+

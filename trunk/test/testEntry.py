@@ -45,6 +45,7 @@ class TestEntry(abstractTestControl):
 #    def testValueFromNone(self):
 #        self.assertRaises(TypeError, self.widget.newTarget, None)
 
+
 class TestEntrySomeMore(unittest.TestCase):
     def setUp(self):
         self.target = Country(name='Gergovia')
@@ -60,3 +61,9 @@ class TestEntrySomeMore(unittest.TestCase):
         self.widget.value = 'Paysandu'
         self.widget._activate()
         self.assertEqual(self.widget.value, self.target.name)
+
+class TestMlEntry(TestEntry):
+    def setUp(self):
+        super(TestMlEntry, self).setUp()
+        self.widget = self.entry = cimarron.skin.MlEntry(parent=self.parent)
+        self.setUpControl()
