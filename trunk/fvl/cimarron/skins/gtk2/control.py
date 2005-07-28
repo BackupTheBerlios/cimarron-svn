@@ -206,7 +206,7 @@ class MlEntry(Entry):
         self._widget.add(self._tc)
         self.emptyValue = emptyValue
         super(MlEntry, self).__init__(**kwargs)
-        self._widget.connect ('key-release-event', self._activate)
+        #self._widget.connect ('key-release-event', self._activate)
         self.refresh ()
 
     def _get_value (self):
