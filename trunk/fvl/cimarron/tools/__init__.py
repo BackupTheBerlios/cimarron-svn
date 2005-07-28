@@ -80,5 +80,5 @@ class Null(object):
     def __setattr__(self, attr, val):
         pass
     def __nonzero__(self):
-        return Null()
+        return False
 Null = Null()
