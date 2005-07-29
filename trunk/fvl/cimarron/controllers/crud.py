@@ -49,7 +49,8 @@ class CRUDController (WindowController):
         self.editors = []
         super(CRUDController, self).__init__(**kwargs)
         self.note = Notebook(parent=self.window)
-        self._innerWidget = self.note._outerWidget
+        # why this fails miserably?
+        # self._innerWidget = self.note._innerWidget
 
         # first tab
         self.firstTab = VBox(label='Search')
