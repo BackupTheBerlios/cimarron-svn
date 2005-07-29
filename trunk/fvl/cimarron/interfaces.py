@@ -107,6 +107,8 @@ class IWidget(Interface):
                                 widget.focus().""")
     _outerWidget = Attribute("""The concrete widget that is parentized when
                                 widget.parent = someOtherWidget""")
+    _innerWidget = Attribute("""The concrete widget where children are added
+                                when someOtherWidget.parent = widget""")
         
 
 class IContainer(IWidget):
