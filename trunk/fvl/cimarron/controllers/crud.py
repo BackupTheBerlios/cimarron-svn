@@ -49,6 +49,7 @@ class CRUDController (WindowController):
         self.editors = []
         super(CRUDController, self).__init__(**kwargs)
         self.note = Notebook(parent=self.window)
+        self._innerWidget = self.note._outerWidget
 
         # first tab
         self.firstTab = VBox(label='Search')
@@ -189,7 +190,9 @@ class Editor(Controller):
         self.store = store
 
         # main containers
-        self._outerWidget = self.vbox = VBox(parent=self)
+        # self.vbox = VBox(parent=self)
+        self.vbox = VBox()
+        self._outerWidget = self.vbox._outerWidget
 
         hbox = HBox(parent=self.vbox)
         self.labels = VBox(parent=hbox)

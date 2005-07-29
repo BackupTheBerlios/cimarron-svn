@@ -59,7 +59,7 @@ __all__ = ('TestGtkEntry',
 
 class testGtkParenting (abstractTestWidget):
     def testGtkParent (self):
-        self.assertEqual (self.widget._outerWidget.parent, self.parent._concreteWidget)
+        self.assertEqual (self.widget._outerWidget.parent, self.parent._innerWidget)
 
     def testGtkChildInChildren (self):
         self.assert_ (self.widget._outerWidget

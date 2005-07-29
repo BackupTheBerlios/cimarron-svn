@@ -95,6 +95,9 @@ def _concreteParenter(parent, child):
     if '_outerWidget' in child.__dict__:
         # print 'parenting', parent, child,
         if '_innerWidget' in parent.__dict__:
+            if child._outerWidget.parent is not None:
+                raise ValueError, 'child %r is already parented to a %r' % \
+                      (child, child._outerWidget.parent)
             # print 'concreted'
             try:
                 packer = parent._innerWidget.pack_start
@@ -103,11 +106,8 @@ def _concreteParenter(parent, child):
                 parent._innerWidget.add(child._outerWidget)
                 parent._innerWidget.set_border_width(child.border)
             else:
-                try:
-                    packer(child._outerWidget, child.expand, child.fill,
-                           child.border)
-                except:
-                    print `child`
+                packer(child._outerWidget, child.expand, child.fill,
+                       child.border)
         else:
             if parent.parent is None:
                 # print 'postponed'

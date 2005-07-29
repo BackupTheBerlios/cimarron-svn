@@ -92,5 +92,4 @@ class GtkFocusableMixin(object):
         """
         Set the focus on this object.
         """
-        self._concreteWidget.grab_focus ()
-
+        self._focusWidget.grab_focus ()
