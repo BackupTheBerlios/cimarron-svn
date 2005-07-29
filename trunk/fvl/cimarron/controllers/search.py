@@ -130,17 +130,16 @@ class Search(ColumnAwareXmlMixin, Controller):
                 entry = entryConstr(parent=self.h, onAction=self.search,
                                     attribute=column.attribute)
                 entry.delegates.append (self)
-                #if columns are added at creation it willset the first entry
-                #as the _concreteWidget, else it will be the button
+                # if columns are added at creation it willset the first entry
+                # as the _concreteWidget, else it will be the button
                 if '_concreteWidget' not in self.__dict__:
                     self._concreteWidget = entry
                 self.entries.append (entry)
 
             # search button
+            b = Button(parent=self.h, label='Search!', onAction=self.search)
             if '_concreteWidget' not in self.__dict__:
-                self._concreteWidget = b = Button(parent=self.h, label='Search!', onAction=self.search)
-            else:
-                b = Button(parent=self.h, label='Search!', onAction=self.search)
+                self._concreteWidget = b
             
             # the widget that fires the action.
             self.mainWidget = b
@@ -187,7 +186,7 @@ class SearchEntry(Search):
         if columns is not None:
             # build the selection window here because:
             # a) we can't build it w/o columns (well, we *could*,
-            # but then we'll needmore API just for this case) and
+            # but then we'll need more API just for this case) and
             # b) we must change the columns in the SelectionWindow
             # when new Columns are supplied.
             self.selwin= SelectionWindow (columns= columns,
@@ -234,7 +233,6 @@ class SearchEntry(Search):
         """
         Show the value.
         """
-        # traceback.print_stack()
         logger.debug(`self.value`)
         super(SearchEntry, self).refresh()
         logger.debug(`self.value`)

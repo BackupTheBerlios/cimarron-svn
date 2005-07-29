@@ -49,8 +49,10 @@ class CRUDController (WindowController):
         self.editors = []
         super(CRUDController, self).__init__(**kwargs)
         self.note = Notebook(parent=self.window)
-        # why this fails miserably?
+        # why this fails so miserably?
         # self._innerWidget = self.note._innerWidget
+        if not '_concreteWidget' in self.__dict__:
+            self._concreteWidget = self.window
 
         # first tab
         self.firstTab = VBox(label='Search')
@@ -242,11 +244,9 @@ class Editor(Controller):
             pass
 
     def save (self, *ignore):
-        # print 'save', str (self.value)
         self.store.save()
         self.onAction ()
     def discard (self, *ignore):
-        # print 'discard', self.value
         self.store.discard()
 
     def will_focus_out (self, control, *ignore):
@@ -273,6 +273,8 @@ class Editor(Controller):
                     obj.parent = self.labels
                 else:
                     obj.parent = self.entries
+                    if not '_concreteWidget' in self.__dict__:
+                        self._concreteWidget = obj
                     obj.onAction = self.modifyModel
                     obj.delegates.append(self)
                 attrs.update(attrsInChild)
