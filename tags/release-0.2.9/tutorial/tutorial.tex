@@ -1,0 +1,289 @@
+% -*- coding: latin-1 -*-
+%
+% Copyright 2005 FundaciÃ³n Via Libre
+%
+% This file is part of PAPO.
+%
+% PAPO is free software; you can redistribute it and/or modify it under the
+% terms of the GNU General Public License as published by the Free Software
+% Foundation; either version 2 of the License, or (at your option) any later
+% version.
+%
+% PAPO is distributed in the hope that it will be useful, but WITHOUT ANY
+% WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+% FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+% details.
+%
+% You should have received a copy of the GNU General Public License along with
+% PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
+% Suite 330, Boston, MA 02111-1307 USA
+% 
+\documentclass[a4paper]{howto}
+
+\setlength\textwidth{6.5in}
+\setlength\oddsidemargin{0in}
+\setlength\evensidemargin{0in}
+
+%\usepackage[spanish]{babel}
+\usepackage[latin1]{inputenc}
+
+\newcommand{\Cimarron}[0]{Cimarrón}
+
+\title{\Cimarron Tutorial}
+\author{Marcos Dione and Federico Heinz\\Fundación Vía Libre}
+\authoraddress{\email{mdione@vialibre.org.ar}\\\email{fheinz@vialibre.org.ar}}
+%\release{0.00}
+
+\begin{document}
+
+\maketitle
+
+\ifhtml
+\chapter*{Front Matter}
+\fi
+
+\begin{abstract}
+ \noindent
+ This document is intended as a primer for Python programmers who want
+ to get an overview on how to write programs based on \Cimarron.
+
+ \Cimarron\ is a simplified framework designed to help write
+ cross-platform database-centric applications, such as accounting
+ systems. It provides an abstract widget set that can be presented to
+ the user through the native user interface on the system she is
+ running, and is heavily based on the Model-View-Controller and the
+ Delegation patterns.
+
+ After reading this document, you should have a general understanding of
+ \Cimarron's way of doing things.
+\end{abstract}
+
+\tableofcontents
+
+\section{Before you even begin}
+
+Python will have to be able to find \Cimarron{} in order for the
+examples in this tutorial to work. Unless \Cimarron{} is installed in
+a directory within your \envvar{PYTHONPATH}, you may have to run your
+instance of Python with a \envvar{PYTHONPATH} that works. Assuming
+your copy of \Cimarron{} is in \file{\textasciitilde/src/cimarron},
+the following command sequence should do the trick:
+
+\begin{verbatim}
+~$ cd src/cimarron
+~/src/cimarron$ export PYTHONPATH=".:./examples/person:$PYTHONPATH"
+~/src/cimarron$ python
+\end{verbatim}
+
+\section{First steps}
+
+Here is the Python code to produce the GUI equivalent of the ``Hello
+Word'' program using \Cimarron. Just paste the code into an instance of
+Python to get a single window with a single button in it. The window's
+title is ``Hello World Demo'', and the button reads ``Hello''.
+
+\verbatiminput{helloworld.py}
+
+As you can see in the code, we build the window from the outside in,
+specifying each new widget's parent as we go. We start declaring
+\class{MainWindowController} as a subclass of
+\class{WindowController}. As such, every instance will already have a
+window associated with it through the \member{win} attribute. The
+constructor for \class{MainWindowController} sets the window's title and
+size. Then it creates a \class{Button} instance, at the same time
+specifying the window as its parent and ``Hello'' as its label.
+
+By convention, you can initialize all the attributes you want on an
+instance of a \Cimarron{} object by passing the appropriate keyword
+parameters when creating it. For this to work, it is important that
+whenever you subclass a \Cimarron{} class, you include the parameter
+\var{**kw} in the class' constructor, and that you pass that parameter
+along to your superlclass' constructor, as shown in the declaration of
+\class{MainWindowController}'s \method{__init__()}. It is worth noting
+that the constructor does no checking on the attributes you set this
+way, so specifying an undefined attribute will lead to its creation:
+
+\begin{verbatim}
+>>> from fvl import cimarron
+>>> a = Button(foo=42)
+>>> a.foo
+42
+\end{verbatim}
+
+The program doesn't do anything beyond showing these elements. If the
+user interface you are using allows for it, you can use the standard
+mechanisms to resize the window, close it, etc. You can even activate
+the button, but nothing special will happen. It is interesting to note
+that whether you actually see a graphical, textual or web interface
+depends on the environment under which you are running the
+program. \Cimarron{} provides a set of abstract widgets used to display
+and input data. When you run the program, the system decides which user
+interface is the most appropriate for your environment, and displays it
+accordingly\footnote{At the moment, this is true only in theory:
+\Cimarron{} is designed to work that way, but only the GTK2 engine and
+available. There is also an experimental and incomplete Qt engine, and
+writing new ones is a fairly straightforward task.  Of course, we
+wellcome contributions for additional engines, including engines to
+enable \Cimarron{} programs to run on proprietary platforms.}.
+
+The rest of the code is the main application. Every \Cimarron{} program
+needs an instance of \class{Application} (or of a custom subclass of it)
+to take care of interaction with the user. After storing the instance of
+\class{Application} in \var{app}, the program creates an instance of
+\class{MainWindowController} and puts it on screen with a call to its
+\method{show()} method. It then calls \class{Application}'s
+\method{run()} method to handle user events. This method exits when the
+user closes the last (and in this case only) window.
+
+As an exercise, we suggest that you attempt to modify the code above in
+such a way that \class{MainWindowController}'s constructor accepts a
+parameter \var{title} that allows you to specify the window's title on
+creation, with a default value of ``Main Window''. Then modify the main
+program to display two (or more) windows with different titles.
+
+\section{Actions}
+
+To get the program to do something more interesting than just displaying
+widgets, we can use the \class{Button}'s action. All \Cimarron{}
+controls can have an action associated with them. The action is a
+callable object that will be invoked by the control whenever it is
+triggered (each kind of control defines what it takes to trigger
+it). The called function must accept one argument, which will contain
+the control that got triggered. This way, the same action can be shared
+by different controls.
+
+The following code extends the first example to actually do something
+when the button is pressed: it prints the message ``Button pressed!'' in
+the console. Not very useful, but enough for the purpose of
+illustration.
+
+\verbatiminput{simpleaction.py}
+
+Note that although the \method{doSomething()} method ignores the
+\var{sender} parameter, it could query the \class{Button} it contains
+for information, or otherwise alter it. For example, this program shows
+how to use a \class{VBox} to create a stack of two buttons inside the
+window, and one way to use the \var{sender} parameter to influence the
+action's outcome according to data obtained from the triggered control.
+
+\verbatiminput{multiplexedaction.py}
+
+\class{VBox}es and \class{HBox}es are used in \Cimarron{} to lay out
+widgets. \class{VBox} stacks the widgets inside it on top of each other
+from top to bottom, \class{HBox} makes a horizontal row with them, from
+left to right. You can have a \class{VBox} inside a \class{HBox} inside
+a \class{VBox}, to as many levels as you want. You could have a
+\class{VBox} inside a \class{VBox}, but of course it would be rather
+pointless.
+
+\section{A four-function simple calculator}
+
+Here's an attempt at constructing a somewhat useful program using what
+we know so far about \Cimarron:
+
+\verbatiminput{calculator.py}
+
+As usual, we have a controller for the window, whose constructor method
+builds the window's contents from the outside in. We use a label to
+display the calculator's input and result, because we want the user to
+input data only thorugh the numeric keypad directly below it, and not
+using the keyboard. The keypad itself is made up of four columns of
+buttons, which we set up using data from a list of dictionaries, one for
+each key. Note that in the operation keys we use the fact that the
+initializer will accept undefined attributes to associate an operation
+to each button. This association is later used by the \method{operate()}
+method. The actual functionality of the calculator is then implemented
+in three simple methods that modify the calculator's state based on the
+user's actions.
+
+The code above has a bug: it allows the user to input a number with more
+than one decimal point. Try to find a few different ways of getting rid
+of that bug.
+
+\section{Interacting with a model}
+
+\Cimarron{} is meant to help implement applications organized around the
+Model-View-Controller pattern. The previous examples have shown
+interaction between a controller (\class{MainWindowController}), whose
+job is to set up a view (the window and its widgets), complete with the
+actions that must occur when something is triggered. The widgets also
+know how to interact with a model, over a simple API, to keep track of
+the values of particular attributes. The \class{Model} class can be
+derived to create classes that automatically implement this API. To
+illustrate, we'll use the following trivial model, which implements all
+the methods that are needed to interact with \Cimarron{} widgets.
+
+\verbatiminput{simpleperson.py}
+
+In this case, we define \class{Person} as a subclass of \class{Model}
+because the latter provides a trivial implementation of the
+\class{IModel} interface, which defines how widgets interact with the
+objects they display. Your classes can provide custom implementations of
+this interface to accomodate for special needs.
+
+Here's how we can write a program that displays and edits a
+\class{Person} instance:
+
+\verbatiminput{simplepersoneditor.py}
+
+As you can see, again the bulk of the code is concerned with creating
+and packing the widgets. Note that the \class{Entry} widgets' associated
+action doesn't update any information. In fact, the widgets don't even
+need to have any action at all in order to be able to interact with the
+model. The controller specifies the model's attribute that will be
+controlled by the widget instead. As shown in the code, a widget can
+have both an action and an attribute associated with it: the action
+establishes a communications channel back to the controller, while the
+attribute acts as a forward communication with the model. For
+\class{Entry} instances, the action is invoked only if the user presses
+\kbd{Enter}, but the value in the model is always updated. In order to
+see this in action, you may want to edit the contents in the window's
+fields and compare the result of leaving the field with \kbd{Enter} with
+that of leaving the field with \kbd{Tab} or with the mouse.
+
+Once the window is all set up, it is \class{PersonEditor}'s
+\method{newTarget()} method's responsibility to inform each widget which
+concrete instance they are to interact with at any given moment. To that
+end, \class(PersonEditor) instances keep a list of the widgets that it
+needs to update when its target changes. Once a widget's target is set,
+it's the widget's responsibility to keep its value in sync with the
+model.
+
+The \method{checkValues()} method, invoked every time you press the
+``Check'' button or trigger the action of an \class{Entry} by pressing
+\kbd{Enter}, is meant to show that the actual \class{Person} object's
+values are being modified through the widgets.
+
+An interesting layout feature in this program is the use of the
+\var{expand} parameter in some of the widgets. This parameter, which
+defaults to \class{True}, controls whether the widget will expand in the
+direction of the enclosing box. When it is set to \class{False}, the
+widget will just take up its natural size, eventually allowing other
+widgets to take advantage of available window real estate. This can be
+easily seen in action when you resize the window using the mouse. You
+may want to experiment changing its value for different widgets, to see
+what happens.
+
+\section{A more involved model}
+
+Since allowing for user interaction to edit a network of objects is what
+\Cimarron{} is all about, we'll need a more elaborate model to play
+with. From this section on, we will be using the following data model:
+
+\verbatiminput{model.py}
+
+As you can see, the classes that make up the model are pretty
+simple. All that \Cimarron{} demands of them is that they implement the
+\class{IModel} interface. There is one-to-many relationship between
+instances of \class{Person} and \class{Address}. This is represented by
+\class{Person} having a list-like (in this case, a true \class{List})
+attribute where it can store the related instances.
+
+The last part of the declaration just fills creates a few instances of
+the classes and stores in \class{Person}'s \member{__values__}
+attribute, just so our programs will have something to play with. In a
+real-world program, there would be a mechanism for retrieving and
+storing instances of these classes in a database.
+
+
+\end{document}
