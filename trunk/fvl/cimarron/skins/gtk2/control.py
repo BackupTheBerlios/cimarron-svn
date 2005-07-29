@@ -190,36 +190,38 @@ class MultiLine(Entry):
             self.buffer = gtk.TextBuffer()
         else:
             self.buffer = aBuffer
-        self._focusWidget = self._outerWidget = self._concreteWidget = gtk.TextView(self.buffer)
+        #self._focusWidget = self._outerWidget = self._concreteWidget = gtk.TextView(self.buffer)
+        self._tc = gtk.TextView(self.buffer)
         """
         WRAP_CHAR gives word wraping character boundaries,
         this can be changed to words or not to wrap (WRAP_WORD, WRAP_NONE)
         a parameter should be added for this, meanwhile it will stay
         like this beacause i think is the most frequent use case
         """
-        self._concreteWidget.set_wrap_mode(gtk.WRAP_CHAR)
+        self._tc.set_wrap_mode(gtk.WRAP_CHAR)
         """
         Same here that in wraping but options are (JUSTIFY_RIGHT, JUSTIFY_CENTER)
         """
-        self._concreteWidget.set_justification(gtk.JUSTIFY_LEFT)
-        self._tc = self._concreteWidget #_tc for text container
-        self._concreteWidget = gtk.ScrolledWindow()
+        self._tc.set_justification(gtk.JUSTIFY_LEFT)
+        if '_concreteWidget' not in self.__dict__:
+            self._focusWidget = self._outerWidget = self._concreteWidget = gtk.ScrolledWindow()
+        else:
+            self._focusWidget = self._outerWidget = self._concreteWidget
         self._concreteWidget.add(self._tc)
         self.emptyValue = emptyValue
         super(MultiLine, self).__init__(**kwargs)
-        self._focusWidget = self._outerWidget = self._concreteWidget
         self.refresh ()
 
     def _get_value (self):
         """
-        Get the C{MlEntry}'s buffer value.
+        Get the C{Multiline}'s buffer value.
         """
         return self.buffer.get_text(self.buffer.get_start_iter(),
                                      self.buffer.get_end_iter(),
                                      include_hidden_chars=False) or self.emptyValue
     def _set_value (self, value):
         """
-        Set the C{MlEntry}'s buffer value. C{value} must be a unicode object.
+        Set the C{Multiline}'s buffer value. C{value} must be a unicode object.
         """
         if value is None:
             value = ''

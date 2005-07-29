@@ -230,8 +230,12 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
             what to show in the grid, how obtain it from the
             objects, and eventually how to save data back to.
         """
-        self._concreteWidget = self._tv = gtk.TreeView()
-        self._tv.set_rules_hint(True)
+
+        #self._concreteWidget = self._tv = gtk.TreeView()
+        if '_concreteWidget' not in self.__dict__:
+            self._concreteWidget = gtk.TreeView()  
+        #self._tv = gtk.TreeView()
+        self._concreteWidget.set_rules_hint(True)
 
         if columns is None:
             columns = []
@@ -253,18 +257,22 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
         if '_outerWidget' not in self.__dict__:
             self._outerWidget = gtk.ScrolledWindow()
             self._outerWidget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
-            self._outerWidget.add(self._tv)
+            self._outerWidget.add(self._concreteWidget)
 
         # add the columns and attrs
         for i, dataColumn in enumerate(columns):
             viewColumn = self._tvcolumns[i]
             dataColumn.entry._setupCell(self, dataColumn, viewColumn, i,
                                         readOnly=True)
-            self._tv.append_column(viewColumn)
+            #self._tv.append_column(viewColumn)
+            self._concreteWidget.append_column(viewColumn)
 
-        self._tv.connect('key-release-event', self._keyreleased)
-        self._tv.connect('cursor_changed', self._cursor_changed)
-        self._tv.connect('row-activated', self._double_click)
+        #self._tv.connect('key-release-event', self._keyreleased)
+        self._concreteWidget.connect('key-release-event', self._keyreleased)
+        #self._tv.connect('cursor_changed', self._cursor_changed)
+        self._concreteWidget.connect('cursor_changed', self._cursor_changed)
+        #self._tv.connect('row-activated', self._double_click)
+        self._concreteWidget.connect('row-activated', self._double_click)
 
         super (SelectionGrid, self).__init__(**kwargs)
 
@@ -301,7 +309,8 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
                 # NOTE: this forces the data to be read.
                 self._tvdata.append([i.getattr(j.attribute)
                                      for j in self._columns])
-        self._tv.set_model(self._tvdata)
+        #self._tv.set_model(self._tvdata)
+        self._concreteWidget.set_model(self._tvdata)
     def _get_data(self):
         return self._data
     data = property(_get_data, _set_data, None,
@@ -311,13 +320,15 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
         """
         The user changed the highlighted row.
         """
-        self.__index = int(self._tv.get_cursor()[0][0])
+        #self.__index = int(self._tv.get_cursor()[0][0])
+        self.__index = int(self._concreteWidget.get_cursor()[0][0])
     def _set_index(self, index):
         """
         Change which row is highlighted, to the row who's index is C{index}.
         """
         if index is not None:
-            self._tv.set_cursor(index)
+            #self._tv.set_cursor(index)
+            self._concreteWidget.set_cursor(index)
         self.__index = index
     def _get_index(self):
         """
