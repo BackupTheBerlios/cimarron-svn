@@ -111,7 +111,7 @@ class Search(ColumnAwareXmlMixin, Controller):
 
         super(Search, self).__init__(**kwargs)
         self.entries = []
-        self.h = HBox(parent=self, expand=False)
+        self._outerWidget = self.h = HBox(parent=self, expand=False)
         self.columns = columns
         self.value = None
         self.searcher = searcher

@@ -189,7 +189,8 @@ class Editor(Controller):
         self.store = store
 
         # main containers
-        self.vbox = VBox(parent=self)
+        self._outerWidget = self.vbox = VBox(parent=self)
+
         hbox = HBox(parent=self.vbox)
         self.labels = VBox(parent=hbox)
         self.entries = VBox(parent=hbox)
@@ -203,7 +204,6 @@ class Editor(Controller):
         # save/discard buttons
         hbox = HBox(parent=self.vbox, expand=False)
         save = Button(parent=hbox, label='Save', onAction=self.save)
-        # so tests passes
         self.mainWidget = save
         discard = Button (parent=hbox, label='Discard', onAction=self.discard)
 

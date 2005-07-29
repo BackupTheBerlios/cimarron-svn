@@ -142,7 +142,7 @@ class WindowController (Controller):
     def __init__ (self, title='', size=(80, 25), **kwargs):
         super(WindowController, self).__init__(**kwargs)
         from fvl.cimarron.skin import Window
-        self.window = Window(parent=self, title=title, size=size)
+        self._outerWidget = self.window = Window(parent=self, title=title, size=size)
         self.window.delegates.insert(0, self)
 
     def visibleChildren (self):

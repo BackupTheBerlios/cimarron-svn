@@ -62,8 +62,8 @@ class TestEntrySomeMore(unittest.TestCase):
         self.widget._activate()
         self.assertEqual(self.widget.value, self.target.name)
 
-class TestMlEntry(TestEntry):
+class TestMultiLine(TestEntry):
     def setUp(self):
-        super(TestMlEntry, self).setUp()
-        self.widget = self.entry = cimarron.skin.MlEntry(parent=self.parent)
+        super(TestMultiLine, self).setUp()
+        self.widget = self.entry = cimarron.skin.MultiLine(parent=self.parent)
         self.setUpControl()

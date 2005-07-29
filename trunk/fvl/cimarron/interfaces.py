@@ -100,10 +100,13 @@ class IWidget(Interface):
         from XML files/objects.
         """
 
-    mainWidget = Attribute("")
-    _concreteWidget = Attribute("")
-    _focusWidget = Attribute("")
-    _outerWidget = Attribute("")
+    mainWidget = Attribute("""The widget (not necesarily concrete) that fires 
+                              the onAction.""")
+    _concreteWidget = Attribute("""The concrete widget that ...""")
+    _focusWidget = Attribute("""The concrete widget that gets focused when
+                                widget.focus().""")
+    _outerWidget = Attribute("""The concrete widget that is parentized when
+                                widget.parent = someOtherWidget""")
         
 
 class IContainer(IWidget):

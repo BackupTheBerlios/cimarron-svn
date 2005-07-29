@@ -58,9 +58,10 @@ class Grid(ColumnAwareXmlMixin, Controller):
         self.cls = cls
 
         # put the TreeView in a scrolled window
-        self._concreteWidget = gtk.ScrolledWindow()
-        self._concreteWidget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
-        self._concreteWidget.add(self._tv)
+        if '_outerWidget' not in self.__dict__:
+            self._outerWidget = gtk.ScrolledWindow()
+            self._outerWidget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
+            self._outerWidget.add(self._tv)
 
         self._tv.connect('key-release-event', self._keyreleased)
 
@@ -229,7 +230,7 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
             what to show in the grid, how obtain it from the
             objects, and eventually how to save data back to.
         """
-        self._tv = gtk.TreeView()
+        self._concreteWidget = self._tv = gtk.TreeView()
         self._tv.set_rules_hint(True)
 
         if columns is None:
@@ -249,10 +250,10 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
         self.data = data
 
         # put the TreeView in a scrolled window
-        if '_concreteWidget' not in self.__dict__:
-            self._concreteWidget = gtk.ScrolledWindow()
-            self._concreteWidget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
-            self._concreteWidget.add(self._tv)
+        if '_outerWidget' not in self.__dict__:
+            self._outerWidget = gtk.ScrolledWindow()
+            self._outerWidget.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
+            self._outerWidget.add(self._tv)
 
         # add the columns and attrs
         for i, dataColumn in enumerate(columns):

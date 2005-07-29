@@ -49,7 +49,7 @@ class Window(GtkVisibilityMixin, Container):
         @param title: the title for the window.
         """
         if '_concreteWidget' not in self.__dict__:
-            self._concreteWidget = gtk.Window()
+            self._outerWidget = self._concreteWidget = gtk.Window()
         super(Window, self).__init__(**kwargs)
 
         self._concreteWidget.connect('delete-event', self._delete_callback)

@@ -36,14 +36,14 @@ from testWindow import TestWindow
 from testLabel import TestLabel
 from testImage import TestImage
 from testButton import TestButton, TestCheckbox
-from testEntry import TestEntry, TestEntrySomeMore, TestMlEntry
+from testEntry import TestEntry, TestEntrySomeMore, TestMultiLine
 from testBox import TestBoxes
 from testNotebook import TestNotebook
 from testGrid import TestSelectionGrid, TestGrid, TestGridInit
 
 
 __all__ = ('TestGtkEntry',
-           'TestGtkMlEntry',
+           'TestGtkMultiLine',
            'TestEntrySomeMore',
            'TestGtkWindow',
            'TestGtkLabel',
@@ -167,7 +167,7 @@ class TestGtkEntry(testGtkFocusable, testGtkParenting, TestEntry):
         dirty = (s.fg, s.bg, s.text)
         self.assertNotEqual(clean, dirty)
 
-class TestGtkMlEntry(TestMlEntry, TestGtkEntry):
+class TestGtkMultiLine(TestMultiLine, TestGtkEntry):
     def testSetValue (self):
         self.widget.value= 'this is a test'
         self.assertEqual (self.widget.buffer.get_text(self.widget.buffer.get_start_iter(),

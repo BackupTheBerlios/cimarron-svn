@@ -46,7 +46,7 @@ class Button(GtkFocusableMixin, Control):
         @param label: text that is shown in the middle of the button.
         """
         if '_concreteWidget' not in self.__dict__:
-            self._concreteWidget = gtk.Button()
+            self._activableWidget = self._focusWidget = self._outerWidget = self._concreteWidget = gtk.Button()
             self._concreteWidget.set_use_underline(True)
         super(Button, self).__init__(**kwargs)
         self.label = label
@@ -81,7 +81,8 @@ class Checkbox(Button):
     """
     def __init__(self, checked=False, **kwargs):
         if '_concreteWidget' not in self.__dict__:
-            self._concreteWidget = gtk.CheckButton()
+            self._activableWidget = self._focusWidget = self._outerWidget = \
+                                    self._concreteWidget = gtk.CheckButton()
         super(Checkbox, self).__init__(**kwargs)
         self.checked = checked
     _cellDataType = gobject.TYPE_BOOLEAN
@@ -111,7 +112,7 @@ class Entry(GtkFocusableMixin, Control):
     """
     def __init__(self, emptyValue=None, **kwargs):
         if '_concreteWidget' not in self.__dict__:
-            self._concreteWidget = gtk.Entry()
+            self._activableWidget = self._focusWidget = self._outerWidget = self._concreteWidget = gtk.Entry()
             self._concreteWidget.connect ('activate', self._activate)
             self._concreteWidget.connect ('key-release-event', self._keyreleased)
         self.emptyValue = emptyValue
@@ -180,7 +181,7 @@ class Entry(GtkFocusableMixin, Control):
         return dirty
 
 
-class MlEntry(Entry):
+class MultiLine(Entry):
     """
     A multiline Text input (we could call it a Text Area, but we don't:D).
     """
@@ -189,7 +190,7 @@ class MlEntry(Entry):
             self.buffer = gtk.TextBuffer()
         else:
             self.buffer = aBuffer
-        self._concreteWidget = gtk.TextView(self.buffer)
+        self._focusWidget = self._outerWidget = self._concreteWidget = gtk.TextView(self.buffer)
         """
         WRAP_CHAR gives word wraping character boundaries,
         this can be changed to words or not to wrap (WRAP_WORD, WRAP_NONE)
@@ -205,7 +206,8 @@ class MlEntry(Entry):
         self._concreteWidget = gtk.ScrolledWindow()
         self._concreteWidget.add(self._tc)
         self.emptyValue = emptyValue
-        super(MlEntry, self).__init__(**kwargs)
+        super(MultiLine, self).__init__(**kwargs)
+        self._focusWidget = self._outerWidget = self._concreteWidget
         self.refresh ()
 
     def _get_value (self):

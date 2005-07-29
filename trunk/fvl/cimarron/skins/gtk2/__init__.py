@@ -100,7 +100,7 @@ def _concreteParenter(parent, child):
                 packer = parent._concreteWidget.pack_start
             except AttributeError:
                 # maybe it's a Window?
-                parent._concreteWidget.add(child._concreteWidget)
+                parent._concreteWidget.add(child._outerWidget)
                 parent._concreteWidget.set_border_width(child.border)
             else:
                 packer(child._concreteWidget, child.expand, child.fill, child.border)

@@ -38,7 +38,7 @@ class VBox(Container):
     """
     def __init__ (self, **kwargs):
         if '_concreteWidget' not in self.__dict__:
-            self._concreteWidget = gtk.VBox()
+            self._outerWidget = self._concreteWidget = gtk.VBox()
         # self._concreteWidget.set_border_width (5)
         self._concreteWidget.set_spacing (5)
         super(VBox, self).__init__(**kwargs)
@@ -50,7 +50,7 @@ class HBox(Container):
     """
     def __init__ (self, **kwargs):
         if '_concreteWidget' not in self.__dict__:
-            self._concreteWidget = gtk.HBox()
+            self._outerWidget = self._concreteWidget = gtk.HBox()
         # self._concreteWidget.set_border_width (5)
         self._concreteWidget.set_spacing(5)
         super(HBox, self).__init__(**kwargs)
@@ -62,7 +62,7 @@ class Notebook (Container):
     """
     def __init__ (self, **kwargs):
         if '_concreteWidget' not in self.__dict__:
-            self._concreteWidget = gtk.Notebook()
+            self._outerWidget = self._concreteWidget = gtk.Notebook()
         super(Notebook, self).__init__(**kwargs)
         self._concreteWidget.connect('change-current-page', self.__change_page)
 
