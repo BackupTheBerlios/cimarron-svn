@@ -100,4 +100,3 @@ class Application(Controller):
         Dummy override of L{Control.refresh
         <fvl.cimarron.skins.common.Control.refresh>}
         """
-

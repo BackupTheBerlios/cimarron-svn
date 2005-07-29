@@ -93,5 +93,3 @@ class TestSearchEntry(abstractTestControl):
     def testOnAction(self):
         self.widget.data = self.data
         super (TestSearchEntry, self).testOnAction()
-        
-

@@ -45,9 +45,6 @@ class Controller(Control, Container):
     mainWidget = None # mainWidget is the "default" Control of the
                       # Controller, that which fires when you press
                       # enter.
-    def __init__(self, **kwargs):
-        super (Controller, self).__init__ (**kwargs)
-
     def fromXmlFile(cls, filename):
         """
         Load a Cimarrón Controller from an xml file.
@@ -150,7 +147,6 @@ class WindowController (Controller):
         Return a list of visible children.
         """
         chld = self._children
-        # print chld
         return [i for i in chld if getattr(i, 'visible', False) and i.visible]
 
     def will_hide (self, *ignore):
@@ -177,4 +173,3 @@ class WindowController (Controller):
         """
         return len(self.visibleChildren ())>0
     visible = property (_get_visible, doc="Is the window shown?")
-

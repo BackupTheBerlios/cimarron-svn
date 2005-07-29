@@ -46,7 +46,9 @@ class Button(GtkFocusableMixin, Control):
         @param label: text that is shown in the middle of the button.
         """
         if '_concreteWidget' not in self.__dict__:
-            self._activableWidget = self._focusWidget = self._outerWidget = self._concreteWidget = gtk.Button()
+            self._activableWidget = self._focusWidget = \
+                                    self._outerWidget = self._concreteWidget = \
+                                    gtk.Button()
             self._concreteWidget.set_use_underline(True)
         super(Button, self).__init__(**kwargs)
         self.label = label
@@ -112,7 +114,8 @@ class Entry(GtkFocusableMixin, Control):
     """
     def __init__(self, emptyValue=None, **kwargs):
         if '_concreteWidget' not in self.__dict__:
-            self._activableWidget = self._focusWidget = self._outerWidget = self._concreteWidget = gtk.Entry()
+            self._activableWidget = self._focusWidget = self._outerWidget = \
+                                    self._concreteWidget = gtk.Entry()
             self._concreteWidget.connect ('activate', self._activate)
             self._concreteWidget.connect ('key-release-event', self._keyreleased)
         self.emptyValue = emptyValue
@@ -190,11 +193,8 @@ class MultiLine(Entry):
             self.buffer = gtk.TextBuffer()
         else:
             self.buffer = aBuffer
-        #self._focusWidget = self._outerWidget = self._concreteWidget = gtk.TextView(self.buffer)
         if '_concreteWidget' not in self.__dict__:
             self._focusWidget = self._concreteWidget = gtk.TextView(self.buffer)
-        else:
-            self._focusWidget = self._concreteWidget
         """
         WRAP_CHAR gives word wraping character boundaries,
         this can be changed to words or not to wrap (WRAP_WORD, WRAP_NONE)
@@ -208,8 +208,7 @@ class MultiLine(Entry):
         self._concreteWidget.set_justification(gtk.JUSTIFY_LEFT)
         if '_outerWidget' not in self.__dict__:
             self._outerWidget = gtk.ScrolledWindow()
-        else:
-            self._outerWidget = self._concreteWidget
+        # FIXME: we can't assume this!
         self._outerWidget.add(self._concreteWidget)
         self.emptyValue = emptyValue
         super(MultiLine, self).__init__(**kwargs)
@@ -220,8 +219,8 @@ class MultiLine(Entry):
         Get the C{Multiline}'s buffer value.
         """
         return self.buffer.get_text(self.buffer.get_start_iter(),
-                                     self.buffer.get_end_iter(),
-                                     include_hidden_chars=False) or self.emptyValue
+                                    self.buffer.get_end_iter(),
+                                    include_hidden_chars=False) or self.emptyValue
     def _set_value (self, value):
         """
         Set the C{Multiline}'s buffer value. C{value} must be a unicode object.
@@ -230,6 +229,5 @@ class MultiLine(Entry):
             value = ''
         self.buffer.set_text(unicode(value))
         self._concreteWidget.set_buffer(self.buffer)
-        #traceback.print_stack()
         logger.debug(`value`)
     value = property (_get_value, _set_value)

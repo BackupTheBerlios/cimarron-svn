@@ -53,7 +53,6 @@ class HBox(Container):
         if '_concreteWidget' not in self.__dict__:
             self._innerWidget = self._outerWidget = \
                                 self._concreteWidget = gtk.HBox()
-        # self._concreteWidget.set_border_width (5)
         self._concreteWidget.set_spacing(5)
         super(HBox, self).__init__(**kwargs)
 

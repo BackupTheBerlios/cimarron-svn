@@ -104,7 +104,8 @@ class abstractTestDelegate(abstractTestBasic):
         self.assertEqual(bool(self.widget.delegate('foo')), True)
     def testBrokenDelegateRaisesException(self):
         self.widget.delegates.append(self.delegate_broken)
-        self.assertRaises(AttributeError, lambda *a: self.widget.delegate('foo'))
+        self.assertRaises(AttributeError,
+                          lambda *a: self.widget.delegate('foo'))
 
 if test_options.delegations:
     from generated import abstractTestDelegateGenerated
@@ -175,8 +176,6 @@ class abstractTestControl(abstractTestWidget):
         self.assertEqual (self.widget.value, self.widget.target)
 
     def testValueWithAttribute (self):
-        # I don't like this workaround that much...
-        # if not isinstance (self.widget, cimarron.controllers.Controller):
         self.widget.attribute= self.attribute
         self.widget.newTarget (self.target)
         
@@ -187,9 +186,6 @@ class abstractTestControl(abstractTestWidget):
         
         self.widget.value = None
         self.widget.value = self.value
-
-        # if self.attribute:
-        #self.assertEqual (getattr(self.target, self.attribute), self.widget.value)
 
     def testOnAction (self):
         self.widget.onAction= self.notify

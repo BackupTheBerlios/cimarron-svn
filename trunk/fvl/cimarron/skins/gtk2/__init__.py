@@ -26,6 +26,7 @@ __revision__ = int('$Rev$'[5:-1])
 
 import logging
 logger = logging.getLogger('fvl.cimarron.skins.gtk2')
+logger.setLevel(logging.WARNING)
 
 import pygtk
 pygtk.require('2.0')
@@ -117,6 +118,8 @@ def _concreteParenter(parent, child):
                     parent._childrenToParent = [child]
             else:
                 # print 'forwarded to', parent.parent
+                # logger.warning('using old forwarding; please update %r or %r' \
+                #                % (parent, child))
                 parent.parent._concreteParenter (child)
 
 moduleProvides(ISkin)

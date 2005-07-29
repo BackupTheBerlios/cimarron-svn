@@ -46,9 +46,9 @@ class TestController (abstractTestControl):
         self.assertRaises(OSError, self.widget.fromXmlFile, 'xyzzy')
 
     def testImport (self):
-        other= CRUDController.fromXmlFile ('test/import.xml')
-        self.assertEqual (other.idDict.has_key ('testButton'), True)
-        self.assert_ (other.idDict.has_key ('TestCheckbox'), True)
+        other = CRUDController.fromXmlFile ('test/import.xml')
+        self.assertEqual(other.idDict.has_key ('testButton'), True)
+        self.assert_(other.idDict.has_key ('TestCheckbox'), True)
 
     def connection (self):
         self.connected= True
@@ -123,7 +123,8 @@ class FooController(Controller):
         """
         super(FooController, self).refresh()
         if self.target is not None:
-            self.label.text= str (self.target.get (self.entry.value, 'Not found'))
+            self.label.text= str (self.target.get (self.entry.value,
+                                                   'Not found'))
         else:
             self.label.text= ''
         self.daLabel.text = pformat(self.value)
@@ -134,8 +135,8 @@ class Connection (object):
 class TestFooController(TestController):
     def setUp (self):
         super (TestController, self).setUp ()
-        self.parent = self.window = cimarron.skin.Window(title='Test',
-                                                      parent=self.app)
+        self.parent = self.window = \
+                      cimarron.skin.Window(title='Test', parent=self.app)
         self.widget= FooController (parent=self.window)
         self.setUpControl (dict(foo=1, bar=2, baz=3), None)
         
