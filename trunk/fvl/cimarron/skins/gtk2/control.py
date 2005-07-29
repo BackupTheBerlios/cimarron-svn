@@ -191,23 +191,26 @@ class MultiLine(Entry):
         else:
             self.buffer = aBuffer
         #self._focusWidget = self._outerWidget = self._concreteWidget = gtk.TextView(self.buffer)
-        self._tc = gtk.TextView(self.buffer)
+        if '_concreteWidget' not in self.__dict__:
+            self._focusWidget = self._concreteWidget = gtk.TextView(self.buffer)
+        else:
+            self._focusWidget = self._concreteWidget
         """
         WRAP_CHAR gives word wraping character boundaries,
         this can be changed to words or not to wrap (WRAP_WORD, WRAP_NONE)
         a parameter should be added for this, meanwhile it will stay
         like this beacause i think is the most frequent use case
         """
-        self._tc.set_wrap_mode(gtk.WRAP_CHAR)
+        self._concreteWidget.set_wrap_mode(gtk.WRAP_CHAR)
         """
         Same here that in wraping but options are (JUSTIFY_RIGHT, JUSTIFY_CENTER)
         """
-        self._tc.set_justification(gtk.JUSTIFY_LEFT)
-        if '_concreteWidget' not in self.__dict__:
-            self._focusWidget = self._outerWidget = self._concreteWidget = gtk.ScrolledWindow()
+        self._concreteWidget.set_justification(gtk.JUSTIFY_LEFT)
+        if '_outerWidget' not in self.__dict__:
+            self._outerWidget = gtk.ScrolledWindow()
         else:
-            self._focusWidget = self._outerWidget = self._concreteWidget
-        self._concreteWidget.add(self._tc)
+            self._outerWidget = self._concreteWidget
+        self._outerWidget.add(self._concreteWidget)
         self.emptyValue = emptyValue
         super(MultiLine, self).__init__(**kwargs)
         self.refresh ()
@@ -226,7 +229,7 @@ class MultiLine(Entry):
         if value is None:
             value = ''
         self.buffer.set_text(unicode(value))
-        self._tc.set_buffer(self.buffer)
+        self._concreteWidget.set_buffer(self.buffer)
         #traceback.print_stack()
         logger.debug(`value`)
     value = property (_get_value, _set_value)

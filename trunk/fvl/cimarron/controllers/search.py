@@ -130,10 +130,17 @@ class Search(ColumnAwareXmlMixin, Controller):
                 entry = entryConstr(parent=self.h, onAction=self.search,
                                     attribute=column.attribute)
                 entry.delegates.append (self)
+                #if columns are added at creation it willset the first entry
+                #as the _concreteWidget, else it will be the button
+                if '_concreteWidget' not in self.__dict__:
+                    self._concreteWidget = entry
                 self.entries.append (entry)
 
             # search button
-            b = Button(parent=self.h, label='Search!', onAction=self.search)
+            if '_concreteWidget' not in self.__dict__:
+                self._concreteWidget = b = Button(parent=self.h, label='Search!', onAction=self.search)
+            else:
+                b = Button(parent=self.h, label='Search!', onAction=self.search)
             
             # the widget that fires the action.
             self.mainWidget = b
