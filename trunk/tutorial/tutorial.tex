@@ -90,8 +90,8 @@ specifying each new widget's parent as we go. We start declaring
 \class{WindowController}. As such, every instance will already have a
 window associated with it through the \member{win} attribute. The
 constructor for \class{MainWindowController} sets the window's title and
-size. Then it creates a \class{Button} instance, at the same time
-specifying the window as its parent and ``Hello'' as its label.
+size. Then it creates a \class{Button} instance, while specifying the
+window as its parent and the string ``Hello'' as its label.
 
 By convention, you can initialize all the attributes you want on an
 instance of a \Cimarron{} object by passing the appropriate keyword
@@ -227,42 +227,118 @@ Here's how we can write a program that displays and edits a
 \verbatiminput{simplepersoneditor.py}
 
 As you can see, again the bulk of the code is concerned with creating
-and packing the widgets. Note that the \class{Entry} widgets' associated
-action doesn't update any information. In fact, the widgets don't even
-need to have any action at all in order to be able to interact with the
-model. The controller specifies the model's attribute that will be
-controlled by the widget instead. As shown in the code, a widget can
-have both an action and an attribute associated with it: the action
-establishes a communications channel back to the controller, while the
-attribute acts as a forward communication with the model. For
-\class{Entry} instances, the action is invoked only if the user presses
-\kbd{Enter}, but the value in the model is always updated. In order to
-see this in action, you may want to edit the contents in the window's
-fields and compare the result of leaving the field with \kbd{Enter} with
-that of leaving the field with \kbd{Tab} or with the mouse.
+and packing the widgets. This program shows off a few useful techniques
+for programming \Cimarron{} applications. Before you try to understand
+the program fully, you may want to try using it a bit, to get a feeling
+for what it does. Try to answer these questions: what is the difference
+between leaving an \class{Entry} with \kbd{Tab} or \kbd{Enter}? Can you
+set the value of one of the \class{Entry}s to the empty string? What
+happens to the case of letters you enter in the \class{Entry}s?
 
-Once the window is all set up, it is \class{PersonEditor}'s
-\method{newTarget()} method's responsibility to inform each widget which
-concrete instance they are to interact with at any given moment. To that
-end, \class(PersonEditor) instances keep a list of the widgets that it
-needs to update when its target changes. Once a widget's target is set,
-it's the widget's responsibility to keep its value in sync with the
-model.
+  \subsection{The \member{target} interface}
 
-The \method{checkValues()} method, invoked every time you press the
-``Check'' button or trigger the action of an \class{Entry} by pressing
-\kbd{Enter}, is meant to show that the actual \class{Person} object's
-values are being modified through the widgets.
+  From the earlier examples, you may have expected this program to use
+  its \member{action} attribute to update the model. However, if you
+  check the code, you will probably notice that none of it is concerned
+  with moving the values from and to the widgets. The \class{Entry}
+  widgets' associated action is \method{checkValues()}, which just reads
+  values from the model and formats them for display in a
+  \class{Label}.
 
-An interesting layout feature in this program is the use of the
-\var{expand} parameter in some of the widgets. This parameter, which
-defaults to \class{True}, controls whether the widget will expand in the
-direction of the enclosing box. When it is set to \class{False}, the
-widget will just take up its natural size, eventually allowing other
-widgets to take advantage of available window real estate. This can be
-easily seen in action when you resize the window using the mouse. You
-may want to experiment changing its value for different widgets, to see
-what happens.
+  As a matter of fact, the widgets don't even need to have any action at
+  all in order to be able to interact with the model, and they keep
+  synced with it even when the target is not invoked, such as when you
+  leave an \class{Entry} with \kbd{Tab}. All the controller has to do is
+  set the \class{Widget}'s \member{attribute} attribute to the name of
+  one of the model's attributes. Later, when a \member{target} is
+  associated with the \class{Widget}, it will automatically display the
+  value of the target's attribute, and it will try to edit it according
+  to the user's actions.
+
+  Once the window is all set up, it is \class{PersonEditor}'s
+  \method{newTarget()} method's responsibility to inform each widget
+  which concrete instance they are to interact with at any given
+  moment. To that end, \class(PersonEditor) instances keep a list of the
+  widgets that it needs to update when its target changes. Once a
+  widget's target is set, it's takes responsibility for keeping its
+  value in sync with the model.
+
+  \subsection{The \member{target} is independent of the action}
+
+  As shown in the code, a widget can have both an action and an
+  attribute associated with it: the action establishes a communications
+  channel back to the controller, while the attribute acts as a forward
+  communication with the model. For \class{Entry} instances, the action
+  is invoked only if the user presses \kbd{Enter}, but the value in the
+  model is always updated.
+
+  The \method{checkValues()} method, invoked every time you press the
+  ``Check'' button or trigger the action of an \class{Entry} by pressing
+  \kbd{Enter}, is meant to show that the actual \class{Person} object's
+  values are being modified through the widgets. The program would still
+  work perfectly if the \class{Entry}s had no associated action.
+
+  \subsection{Delegation}
+
+  Many \Cimarron{} widgets allow for customization of their behavior
+  through a mechanism called \emph{delegation}. Such widgets have a list
+  of delegates which can be set at instantiation (such as above), and
+  added to afterwards. A delegate is just any object that can answer to
+  one or more of the widget's \emph{delegate messages}, which typically
+  have names that begin with \member{will_} or \member{did_}. When
+  an event that may require cooperation from delegates takes place in
+  the widget, it scans its delegate list for objects that can answer to
+  the relevant message, and calls them in order. In the code above, we use the
+  \member{will_focus_out} delegate message of \class{Entry}
+  widgets to enforce proper capitalization of names, get rid of spurious
+  whitespace before or after the name, and to keep the user from
+  entering empty names.
+
+  Delegate messages whose name begins with \member{will_} are often used
+  to influence the way the widget acts, and can be understood as the
+  widget asking for permission to proceed. Whenever the \class{Entry} is
+  about to lose the input focus for any reason, it scans the delegate
+  list for objects that can answer to this message. The object can
+  answer with any of the values \member{ForcedNo}, \member{No},
+  \member{Unknown}, \member{Yes} or \member{ForcedYes}. The
+  \class{Entry} will only proceed with the focus out operation if the
+  combined answers of the delegates add up to allowing it. Returning
+  either \member{ForcedYes} or \member{ForcedNo} will cause the widget
+  to stop traversing the delegate list, and either proceed or abort the
+  operation. From the point of view of deciding whether to proceed or
+  not with the operation, returning \member{Unknown} is the same as not
+  answering to the message. The rules for combining the other values are
+  as follows:
+  \begin{itemize}
+   \item All \member{Unknown}s: proceed
+   \item At least one \member{No}, all others \member{Unknow}: abort
+   \item At least one \member{Yes}, all others \member{No} or
+	 \member{Unknown}: proceed
+  \end{itemize}
+
+  Delegate messages whose names begin with \member{did_} are scanned for
+  \emph{after} the action has taken place, and are typically used for
+  cleanup chores, or to keep other widgets in sync with the one that
+  triggered the delegation message.
+
+  Different widgets define different delegation messages, so you must
+  check the widget's documentation to find out which delegation messages
+  are supported by a widget, and what its parameters are. Since one
+  single object can act as the delegate of several widgets (as in the
+  code above), the first parameter of the delegate method is always the
+  widget.
+
+  \subsection{Layout tuning}
+
+  This program sets the \var{expand} parameter of some of the widgets to
+  \class{False} to optimize the window's layout. This parameter, which
+  defaults to \class{True}, controls whether the widget will expand in
+  the direction of the enclosing box. When it is set to \class{False},
+  the widget will only grow to its natural size, eventually allowing
+  other widgets to take better advantage of the available window real
+  estate. This can be easily seen in action when you resize the window
+  using the mouse. You may want to experiment changing its value for
+  different widgets, to see what happens.
 
 \section{A more involved model}
 
