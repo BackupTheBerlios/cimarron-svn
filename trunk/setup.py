@@ -22,9 +22,9 @@
 from distutils.core import setup
 
 setup(name='cimarron',
-      version='0.2.5',
+      version='0.2.9',
       description='Cimarrón GUI component framework',
-      long_description='''
+      long_description="""
 Cimarrón is a framework for the construction of reusable GUI
 components, using (recursive) variations of the classic (NeXT-like)
 MVC pattern. Provided are a pretty basic set of views (it is trivial to
@@ -33,7 +33,7 @@ a few controllers. Also provided is a small example.
 
 The aim of Cimarrón is to be toolkit-agnostic, but we've only had time
 to implement the Gtk2 'skin' so far.
-''',
+""",
       author='Fundación Vía Libre - PAPO team',
       author_email='cimarron-hackers@berlios.de',
       url='http://papo.vialibre.org.ar/',
@@ -47,6 +47,12 @@ to implement the Gtk2 'skin' so far.
                 'fvl.cimarron.tools',
                 'fvl.cimarron.controllers',
                 ],
+      # why this didn't work and I had to touch MANIFEST.in?
+      # data_files=['test', ('test/editor.xml',
+      #                      'test/import.xml',
+      #                      'test/testCrUDController.xml',
+      #                      ),
+      #             ],
       classifiers=['Development Status :: 3 - Alpha',
                    # some day:
                    # 'Environment :: Win32 (MS Windows)',
