@@ -158,6 +158,10 @@ class Entry(GtkFocusableMixin, Control):
         if self.delegate('will_focus_out'):
             self.commitValue()
             self.dirty()
+        else:
+            # we can't stop the focus-out-event, but we can grab the
+            # focus back once it's happened.
+            self._concreteWidget.grab_focus()
         return False
 
     def _keyreleased (self, widget, key_event):
