@@ -17,5 +17,7 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-include test/run.py
+include test/run.py test/editor.xml test/import.xml test/testCrUDController.xml
+                           
 recursive-include examples/ *.py *.txt
+recursive-include tutorial/ *.py *.tex
