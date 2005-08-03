@@ -176,8 +176,8 @@ class Search(ColumnAwareXmlMixin, Controller):
         self.onAction()
         return ans
 
-    def will_focus_out(self, *ignore):
-        return DelegateNo
+    # def will_focus_out(self, *ignore):
+    #     return DelegateNo
 
 class SearchEntry(Search):
     def _set_columns(self, columns):

@@ -27,6 +27,7 @@ import logging
 from fvl.cimarron.controllers.base import Controller, WindowController
 
 logger = logging.getLogger('fvl.cimarron.controllers.crud')
+logger.setLevel(logging.DEBUG)
 
 class CRUDController (WindowController):
     """
@@ -60,12 +61,13 @@ class CRUDController (WindowController):
 
         self.new = Button(parent=self.firstTab, label='New', expand=False)
         self.cls = cls
-        self.store = store
-
-        if searchColumns:
+        if searchColumns is not None:
             # add the Search thing
             self.search = Search(parent=self.firstTab, columns=searchColumns,
                                  onAction=self.changeModel)
+
+        if store is not None:
+            self.store = store
 
         # second tab
         if editorClass is not None:
@@ -103,6 +105,7 @@ class CRUDController (WindowController):
 
     def _set_store(self, store):
         self.__store = store
+        self.search.searcher = store
         for editor in self.editors:
             editor.store = store
     def _get_store(self):
@@ -113,7 +116,9 @@ class CRUDController (WindowController):
         """
         Create a new object and point the CRUD at it.
         """
-        self.changeModel(control, cls())
+        value = cls()
+        self.store.track(value)
+        self.changeModel(control, value)
 
     def changeModel(self, control, model=None):
         """
@@ -123,6 +128,7 @@ class CRUDController (WindowController):
             value = self.search.value
         else:
             value = model
+        logger.debug(`value`)
         self.commitValue(value)
 
         if value is not None:
