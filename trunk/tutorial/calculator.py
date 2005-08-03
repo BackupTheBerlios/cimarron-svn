@@ -32,10 +32,11 @@ class CalculatorController(cimarron.skin.WindowController):
         self.clear()
 
     def numberButton(self, sender=None):
-        if self.resetInput:
-            self.display.text = sender.label
-        else:
-            self.display.text = self.display.text + sender.label
+        if sender.label != '.' or '.' not in self.display.text:
+            if self.resetInput:
+                self.display.text = sender.label
+            else:
+                self.display.text = self.display.text + sender.label
         self.resetInput = False
 
     def clear(self, sender=None):
