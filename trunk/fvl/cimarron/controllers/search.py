@@ -127,8 +127,7 @@ class Search(ColumnAwareXmlMixin, Controller):
                 # build label and entry
                 Label(text=column.name+":", parent=self.h)
                 entryConstr = column.entry
-                entry = entryConstr(parent=self.h, onAction=self.search,
-                                    attribute=column.attribute)
+                entry = entryConstr(parent=self.h, onAction=self.search)
                 entry.delegates.append (self)
                 # if columns are added at creation it willset the first entry
                 # as the _concreteWidget, else it will be the button
@@ -237,5 +236,11 @@ class SearchEntry(Search):
         super(SearchEntry, self).refresh()
         logger.debug(`self.value`)
         entries = self.entries
-        for entry in self.entries:
-            entry.newTarget(self.value)
+        try:
+            self.value.getattr
+        except AttributeError:
+            for index, entry in enumerate(self.entries):
+                entry.value = None
+        else:
+            for index, entry in enumerate(self.entries):
+                entry.value = self.target.getattr(self.columns[index].attribute)

@@ -25,6 +25,7 @@ __revision__ = int('$Rev$'[5:-1])
 import logging
 
 from fvl.cimarron.controllers.base import Controller, WindowController
+from fvl.cimarron.controllers.search import Search
 
 logger = logging.getLogger('fvl.cimarron.controllers.crud')
 logger.setLevel(logging.DEBUG)
@@ -283,6 +284,8 @@ class Editor(Controller):
                         self._concreteWidget = obj
                     obj.onAction = self.modifyModel
                     obj.delegates.append(self)
+                    if isinstance(obj, Search):
+                        obj.searcher = self.store
                 attrs.update(attrsInChild)
             idDict.update(idDictInChild)
             
