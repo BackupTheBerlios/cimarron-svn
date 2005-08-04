@@ -18,11 +18,11 @@
       PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
       Suite 330, Boston, MA 02111-1307 USA
   -->
-<CrUDController title="person" klass="Person" id="Crud">
+<CrUDController title="person" cls="Person" id="Crud">
   <import from="model.person" what="Person" id="Person"/>
   <import from="model.person" what="Address" id="Address"/>
 
-  <SearchEntry onAction="Crud.changeModel" searcher="Person">
+  <SearchEntry onAction="Crud.changeModel" cls="Person">
     <Column name="Name" attribute="name"/>
     <Column name="Surname" attribute="surname"/>
   </SearchEntry>

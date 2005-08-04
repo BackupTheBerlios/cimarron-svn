@@ -28,7 +28,7 @@ from fvl.cimarron.controllers.base import Controller, WindowController
 from fvl.cimarron.controllers.search import Search
 
 logger = logging.getLogger('fvl.cimarron.controllers.crud')
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
 
 class CRUDController (WindowController):
     """

@@ -22,6 +22,8 @@ from zope import interface
 
 import fvl.cimarron
 
+from person import Person
+
 class Store(object):
     interface.implements(fvl.cimarron.interfaces.IStore)
 
@@ -30,3 +32,11 @@ class Store(object):
 
     def discard(self):
         self.discarded = True
+
+    def search(self, cls, **kwargs):
+        try:
+            cls.values
+        except AttributeError:
+            cls = globals()[cls]
+
+        return cls.values (cls, **kwargs)

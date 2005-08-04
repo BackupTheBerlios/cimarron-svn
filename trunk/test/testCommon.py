@@ -228,7 +228,7 @@ class abstractTestControl(abstractTestWidget):
         self.widget.newTarget(None)
         # this is sneaky: we use a list so that multivalued Controls
         # (that using IModel) skip the value, but single-valued
-        # Controls will try to getattr on the list and fail.  Of
+        # Controls will try to getattr on the list and fail. Of
         # course, then we fix the bug so they *don't* try to do that
         # :)
         self.widget.commitValue([])
