@@ -194,26 +194,28 @@ class Grid(ColumnAwareXmlMixin, Controller):
         """
         A key has been released: the user might be wanting to insert a row...
         """
-        if self.value is None:
-            valueLen = 0
-        else:
-            valueLen = len(self.value)
-        # conditions that assert we're in the last row of data.
-        last = self.value is None \
-               or valueLen == 0 \
-               or self.index == valueLen-1
                
-        logger.debug("%r %r %r", self.index, self.value, last)
-        if key_event.keyval == gtk.keysyms.Down and last and \
-               self.cls is not None and self._tvdatalen == valueLen:
-            # right conditions; insert a new row in the TreeView
-            # without changing the value yet.
-            self._tvdata.append(['' for j in self.columns])
-            self._tvdatalen += 1
-            self.index = valueLen
-            logger.debug('making new %r', self.index)
+        if key_event.keyval == gtk.keysyms.Down:
+            if self.value is None:
+                valueLen = 0
+            else:
+                valueLen = len(self.value)
+            # conditions that assert we're in the last row of data.
+            # those are:
+            # the value is None, or value is a empty list (see if above) or
+            # the index points to the last row.
+            last = valueLen == 0 or self.index == valueLen-1
+            logger.debug("%r %r %r", self.index, self.value, last)
+
+            if last and self.cls is not None and self._tvdatalen == valueLen:
+                # right conditions; insert a new row in the TreeView
+                # without changing the value yet.
+                self._tvdata.append(['' for j in self.columns])
+                self._tvdatalen += 1
+                self.index = valueLen
+                logger.debug('making new %r', self.index)
             
-        logger.debug(`self._tv.get_cursor()`)
+            logger.debug(`self._tv.get_cursor()`)
         return False
 
 class SelectionGrid(ColumnAwareXmlMixin, Controller):
