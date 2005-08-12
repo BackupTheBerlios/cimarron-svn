@@ -1,5 +1,5 @@
 from fvl import cimarron
-from simpleperson import Person
+from model import Person
 
 class PersonEditor(cimarron.skin.WindowController):
     def __init__(self, target=None, **kw):
@@ -17,7 +17,7 @@ class PersonEditor(cimarron.skin.WindowController):
              cimarron.skin.Entry(parent=vbox, attribute="surname",
                                  onAction=self.checkValues, delegates=[self]))
         cimarron.skin.Button(parent=outer_vbox, label='Check', 
-	     onAction = self.checkValues)
+             onAction = self.checkValues)
         self.label = cimarron.skin.Label(parent=outer_vbox, text="",
                                          expand=False)
         if target is not None:
@@ -41,6 +41,6 @@ class PersonEditor(cimarron.skin.WindowController):
         self.checkValues(self)
 
 app = cimarron.skin.Application()
-w = PersonEditor(parent=app, target=Person(name="John", surname="Cleese"))
+w = PersonEditor(parent=app, target=Person.__values__[0])
 w.show()
 app.run()

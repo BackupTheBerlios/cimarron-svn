@@ -208,32 +208,50 @@ interaction between a controller (\class{MainWindowController}), whose
 job is to set up a view (the window and its widgets), complete with the
 actions that must occur when something is triggered. The widgets also
 know how to interact with a model, over a simple API, to keep track of
-the values of particular attributes. The \class{Model} class can be
-derived to create classes that automatically implement this API. To
-illustrate, we'll use the following trivial model, which implements all
-the methods that are needed to interact with \Cimarron{} widgets.
+the values of particular attributes.
 
-\verbatiminput{simpleperson.py}
+  \subsection{A toy model}
 
-In this case, we define \class{Person} as a subclass of \class{Model}
-because the latter provides a trivial implementation of the
-\class{IModel} interface, which defines how widgets interact with the
-objects they display. Your classes can provide custom implementations of
-this interface to accomodate for special needs.
+  Since allowing for user interaction to edit a network of objects is
+  what \Cimarron{} is all about, here's a toy model for us to play
+  with. From this section on, we will be using the following data model:
 
-Here's how we can write a program that displays and edits a
-\class{Person} instance:
+  \verbatiminput{model.py}
 
-\verbatiminput{simplepersoneditor.py}
+  As you can see, the classes that make up the model are pretty
+  simple. All that \Cimarron{} demands of them is that they implement
+  the \class{IModel} interface. The \class{Model} class can be derived
+  to create classes that automatically implement the Interface.
 
-As you can see, again the bulk of the code is concerned with creating
-and packing the widgets. This program shows off a few useful techniques
-for programming \Cimarron{} applications. Before you try to understand
-the program fully, you may want to try using it a bit, to get a feeling
-for what it does. Try to answer these questions: what is the difference
-between leaving an \class{Entry} with \kbd{Tab} or \kbd{Enter}? Can you
-set the value of one of the \class{Entry}s to the empty string? What
-happens to the case of letters you enter in the \class{Entry}s?
+  There is one-to-many relationship between instances of \class{Person}
+  and \class{Address}. This is represented by \class{Person} having a
+  list-like (in this case, a true \class{List}) attribute where it can
+  store the related instances.
+
+  The last part of the declaration just fills creates a few instances of
+  the classes and stores in \class{Person}'s \member{__values__}
+  attribute, just so our programs will have something to play with. In a
+  real-world program, there would be a mechanism for retrieving and
+  storing instances of these classes in a database.
+
+  \subsection{Wiring widgets to the model}
+
+  Here's how we can write a program that displays and edits a
+  \class{Person} instance. This program displays a lot of the main
+  characteristics that a real \Cimarron{} program would have: user
+  feedback and input aids, validation, and editing of live objects.
+
+  \verbatiminput{simplepersoneditor.py}
+
+  As you can see, again the bulk of the code is concerned with creating
+  and packing the widgets. This program shows off a few useful
+  techniques for programming \Cimarron{} applications. Before you try to
+  understand the program fully, you may want to try using it a bit, to
+  get a feeling for what it does. Try to answer these questions: what is
+  the difference between leaving an \class{Entry} with \kbd{Tab} or
+  \kbd{Enter}? Can you set the value of one of the \class{Entry}s to the
+  empty string? What happens to the case of letters you enter in the
+  \class{Entry}s?
 
   \subsection{The \member{target} interface}
 
@@ -340,26 +358,26 @@ happens to the case of letters you enter in the \class{Entry}s?
   using the mouse. You may want to experiment changing its value for
   different widgets, to see what happens.
 
-\section{A more involved model}
+  \subsection{Multi-valued attributes}
 
-Since allowing for user interaction to edit a network of objects is what
-\Cimarron{} is all about, we'll need a more elaborate model to play
-with. From this section on, we will be using the following data model:
+  The list of addresses in the example model requires a way to handle
+  attributes that have several values. The \class{Grid} is the right
+  tool for this case. A \class{Grid}'s \member{attribute} must be a
+  list-like object, which the \class{Grid} will display one element per
+  row. Quite often, the elements themselves will be composite values,
+  such as in this case. To display the values of each row, the
+  \class{Grid} is divided in \class{Columns}. Each column has a
+  \member{name}, which is displayed at its top, and an
+  \member{attribute}, which specifies the element's attribute that
+  can be displayed/edited in the column. The \class{Grid} provides user
+  interface mechanisms to add, delete and edit values. Expanding the
+  previous example to handle the list of addresses is rather
+  straightforward:
 
-\verbatiminput{model.py}
+  \verbatiminput{personaddresseditor.py}
 
-As you can see, the classes that make up the model are pretty
-simple. All that \Cimarron{} demands of them is that they implement the
-\class{IModel} interface. There is one-to-many relationship between
-instances of \class{Person} and \class{Address}. This is represented by
-\class{Person} having a list-like (in this case, a true \class{List})
-attribute where it can store the related instances.
-
-The last part of the declaration just fills creates a few instances of
-the classes and stores in \class{Person}'s \member{__values__}
-attribute, just so our programs will have something to play with. In a
-real-world program, there would be a mechanism for retrieving and
-storing instances of these classes in a database.
-
-
+  The \class{Grid} class supports delegation methods to give controllers
+  the ability to fine-tune its behavior with regard to additions,
+  deletions and changes.
+  
 \end{document}
