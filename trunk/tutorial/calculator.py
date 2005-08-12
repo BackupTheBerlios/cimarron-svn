@@ -21,7 +21,9 @@ class CalculatorController(cimarron.skin.WindowController):
              ({'label': '+', 'onAction': self.operate, 'calcOp': operator.add},
               {'label': '-', 'onAction': self.operate, 'calcOp': operator.sub},
               {'label': '*', 'onAction': self.operate, 'calcOp': operator.mul},
-              {'label': '/', 'onAction': self.operate, 'calcOp': operator.div}))
+              {'label': '/', 'onAction': self.operate, 'calcOp': operator.div}),
+             ({'label': '=', 'onAction': self.equals},
+              ))
         vbox = cimarron.skin.VBox(parent=self.window)
         self.display = cimarron.skin.Label(parent=vbox, text='0')
         hbox = cimarron.skin.HBox(parent=vbox)
@@ -30,6 +32,9 @@ class CalculatorController(cimarron.skin.WindowController):
             for parms in aRow:
                 cimarron.skin.Button(parent=vbox, **parms)
         self.clear()
+
+    def equals (self, sender=None):
+        self.operate ()
 
     def numberButton(self, sender=None):
         if sender.label != '.' or '.' not in self.display.text:
@@ -54,7 +59,8 @@ class CalculatorController(cimarron.skin.WindowController):
                 self.display.text = str(val)
                 self.X = val
                 self.resetInput = True
-            self.op = sender.calcOp
+            if sender is not None:
+                self.op = sender.calcOp
         except (ArithmeticError, ValueError):
             self.clear()
             self.display.text = '-- Error --'
