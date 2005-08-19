@@ -100,3 +100,17 @@ class Notebook (Container):
         Makes that page switching
         """
         return self.delegate('will_change_page')
+
+class Frame(Container):
+    def __init__(self, label='', **kwargs):
+        if '_concreteWidget' not in self.__dict__:
+            self._innerWidget = self._outerWidget = \
+                                self._concreteWidget = gtk.Frame()
+        super(Frame, self).__init__(**kwargs)
+        self.label = label
+
+    def _set_label(self, label):
+        self._concreteWidget.set_label(label)
+    def _get_label(self):
+        return self._concreteWidget.get_label()
+    label = property(_get_label, _set_label)
