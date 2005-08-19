@@ -18,6 +18,10 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
+import logging
+# logger = logging.getLogger('examples.person.model.person')
+# logger.setLevel(logging.DEBUG)
+
 from fvl.cimarron.model import Model
 
 class Person(Model):
@@ -43,8 +47,12 @@ class Person(Model):
 
     def values(cls, ignore, **values):
         name = values['name']
-        surname = values['surname']
+        try:
+            surname = values['surname']
+        except KeyError:
+            surname = None
         ans = []
+        # logger.debug(name, surname)
 
         for i in cls.__values__:
             found = False

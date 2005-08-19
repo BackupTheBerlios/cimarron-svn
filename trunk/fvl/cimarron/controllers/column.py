@@ -71,7 +71,7 @@ class Column(XmlMixin):
     A Column describes a field. This field can be used for both
     B{SearchEntry}s and B{Grid}s.
     """
-    def __init__(self, name='', attribute='', readOnly=False, entry=None):
+    def __init__(self, name='', attribute='', readOnly=False, entry=None, **kwargs):
         """
         @param name: A text associated with the field.
             In the case of B{Grids}, it's the colunm header.
@@ -82,3 +82,12 @@ class Column(XmlMixin):
             from fvl.cimarron.skin import Entry as entry
         self.entry = entry
         self.readOnly = readOnly
+
+        # set any other attrs
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+#     def __repr__(self):
+#         return 'Column('+','.join(["%s: %s" % (key, getattr(self, key)) \
+#                                    for key in dir(self) \
+#                                    if not key.startswith('_')])+')'

@@ -90,16 +90,18 @@ class Grid(ColumnAwareXmlMixin, Controller):
             else:
                 self._tvdata = gtk.ListStore(str)
 
+            index = None
             if value is not None:
+                # WARNING: this make all the values to be fetched from the model
                 for i in value:
-                    self._tvdata.append([i.getattr(j.attribute)
-                                         for j in self.columns])
+                    self._tvdata.append([i.getattr(column.attribute)
+                                         for column in self.columns])
                 self._tvdatalen = len(value)
-                self.index = 0
+                index = 0
             else:
                 self._tvdatalen = 0
-                self.index = None
             self._tv.set_model(self._tvdata)
+            self.index = index
         finally:
             if self.window is not None:
                 self.window.enable()
@@ -114,10 +116,10 @@ class Grid(ColumnAwareXmlMixin, Controller):
 
     def _set_columns(self, columns):
         """
-        Set the grid's columns. C{columns} should be a list of L{Column}-like
-        objects.
+        Set the grid's columns. C{columns} should be a sequence of
+        L{Column}-like objects.
         """
-        self._columns = columns or []
+        self._columns = columns or ()
         if columns:
             # build the tv columns and the data types tuple
             # i don't find a socking way to tell the focusing to skip
@@ -172,6 +174,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
         """
         A cell has been edited: keep the models in sync.
         """
+        logger.debug(`cell`+','+`path`+','+`newVal`)
         attribute = self.columns[colNo].attribute
         # modify the ListStore model...
         self._tvdata[path][colNo] = newVal
