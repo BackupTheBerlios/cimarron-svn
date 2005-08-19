@@ -133,7 +133,7 @@ class Window(GtkVisibilityMixin, Container):
             cell = self._get_cell_size()
             width = int(width * cell[0])
             height = int(height * cell[1])
-        self._concreteWidget.set_size_request(width, height)
+        self._concreteWidget.resize(width, height)
     size = property(_get_size, _set_size)
 
     def _define_cursor_window(self):
